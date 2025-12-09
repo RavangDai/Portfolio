@@ -94,7 +94,7 @@ export function ProjectsSection() {
           </h2>
           <p className="mt-3 text-sm text-white/55 sm:text-base">
             Each project focuses on clean UX, solid engineering, and solving a
-            specific problem — from visualizing algorithms to building focused
+            specific problem from visualizing algorithms to building focused
             productivity tools.
           </p>
         </motion.div>

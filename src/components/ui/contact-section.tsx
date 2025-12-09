@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const container = {
@@ -12,7 +12,6 @@ const container = {
     y: 0,
     transition: {
       duration: 0.8,
-      // use default easing
     },
   },
 };
@@ -25,12 +24,16 @@ const item = (delay: number) => ({
     transition: {
       duration: 0.7,
       delay,
-      // no custom ease here either
     },
   },
 });
 
 export function ContactSection() {
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
+  const [feedback, setFeedback] = useState<string | null>(null);
+
   return (
     <section
       id="contact"
@@ -99,9 +102,44 @@ export function ContactSection() {
           <motion.form
             variants={item(0.08)}
             className="space-y-6"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              // hook this up to your email service / API route later
+              setStatus("loading");
+              setFeedback(null);
+
+              const form = e.currentTarget as HTMLFormElement;
+              const formData = new FormData(form);
+
+              const payload = {
+                name: formData.get("name") || "",
+                email: formData.get("email") || "",
+                subject: formData.get("subject") || "",
+                message: formData.get("message") || "",
+              };
+
+              try {
+                const res = await fetch("/api/contact", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(payload),
+                });
+
+                if (!res.ok) {
+                  throw new Error("Request failed");
+                }
+
+                setStatus("success");
+                setFeedback("Message sent! I’ll get back to you soon.");
+                form.reset();
+              } catch (err) {
+                console.error(err);
+                setStatus("error");
+                setFeedback(
+                  "Something went wrong. Please try again or email me directly."
+                );
+              } finally {
+                setTimeout(() => setStatus("idle"), 2000);
+              }
             }}
           >
             {/* Name + Email */}
@@ -114,6 +152,7 @@ export function ContactSection() {
                   placeholder="Your name"
                   autoComplete="name"
                   className={inputClass}
+                  required
                 />
               </FormField>
 
@@ -125,6 +164,7 @@ export function ContactSection() {
                   placeholder="you@example.com"
                   autoComplete="email"
                   className={inputClass}
+                  required
                 />
               </FormField>
             </div>
@@ -137,6 +177,7 @@ export function ContactSection() {
                 type="text"
                 placeholder="What would you like to work on?"
                 className={inputClass}
+                required
               />
             </FormField>
 
@@ -151,6 +192,7 @@ export function ContactSection() {
                   inputClass,
                   "min-h-[130px] resize-none py-3.5 leading-relaxed"
                 )}
+                required
               />
               <p className="mt-2 text-[0.7rem] text-white/35">
                 I usually reply within 24 hours, and always with something
@@ -158,10 +200,11 @@ export function ContactSection() {
               </p>
             </FormField>
 
-            {/* Button */}
-            <div className="pt-1">
+            {/* Button + feedback */}
+            <div className="pt-1 space-y-2">
               <button
                 type="submit"
+                disabled={status === "loading"}
                 className={cn(
                   "group inline-flex items-center gap-2 rounded-full border border-white/15",
                   "bg-white/[0.08] px-6 py-2.5 text-sm font-medium text-white",
@@ -169,12 +212,36 @@ export function ContactSection() {
                   "transition-all duration-300",
                   "hover:border-indigo-300/70 hover:bg-gradient-to-r",
                   "hover:from-indigo-400/40 hover:via-white/10 hover:to-rose-400/40",
-                  "hover:shadow-[0_22px_70px_rgba(0,0,0,0.95)]"
+                  "hover:shadow-[0_22px_70px_rgba(0,0,0,0.95)]",
+                  status === "loading" && "opacity-70 cursor-wait"
                 )}
               >
-                <span>Send message</span>
-                <ArrowRight className="h-4 w-4 translate-x-0 transition-transform duration-200 group-hover:translate-x-1" />
+                <span>
+                  {status === "loading" ? "Sending..." : "Send message"}
+                </span>
+                <ArrowRight
+                  className={cn(
+                    "h-4 w-4 translate-x-0 transition-transform duration-200",
+                    "group-hover:translate-x-1",
+                    status === "loading" && "animate-pulse"
+                  )}
+                />
               </button>
+
+              {feedback && (
+                <p
+                  className={cn(
+                    "text-xs",
+                    status === "success"
+                      ? "text-emerald-300"
+                      : status === "error"
+                      ? "text-rose-300"
+                      : "text-white/50"
+                  )}
+                >
+                  {feedback}
+                </p>
+              )}
             </div>
           </motion.form>
 

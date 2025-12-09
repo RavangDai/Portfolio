@@ -24,6 +24,7 @@ export function MainNavbar() {
     { name: "Home", href: "/" },
     { name: "Projects", href: "#projects" },
     { name: "About", href: "#about" },
+    { name: "Certificates", href: "#certificates" },
     { name: "Contact", href: "#contact" },
   ];
 

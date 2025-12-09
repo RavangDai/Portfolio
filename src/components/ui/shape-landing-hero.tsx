@@ -74,6 +74,8 @@ type HeroGeometricProps = {
   subtitle?: React.ReactNode;
 };
 
+
+
 function HeroGeometric({ badge = "Bibek ·Full-stack · Data / AI ", title, subtitle, }: HeroGeometricProps) {
   const [showFullQuote, setShowFullQuote] = useState(false);
 
