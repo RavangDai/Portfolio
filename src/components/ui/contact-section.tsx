@@ -29,9 +29,6 @@ const item = (delay: number) => ({
 });
 
 export function ContactSection() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
-    "idle"
-  );
   const [feedback, setFeedback] = useState<string | null>(null);
 
   return (
@@ -55,7 +52,6 @@ export function ContactSection() {
         }}
         transition={{
           duration: 0.45,
-          ease: [0.22, 1, 0.36, 1],
         }}
         className={cn(
           "relative group overflow-hidden rounded-[32px] border border-white/10",
@@ -74,6 +70,7 @@ export function ContactSection() {
           )}
         />
 
+        {/* header */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <motion.div variants={item(0)}>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] font-medium uppercase tracking-[0.28em] text-white/60">
@@ -85,7 +82,7 @@ export function ContactSection() {
             </h2>
             <p className="mt-2 max-w-xl text-sm text-white/60 sm:text-base">
               Whether it&apos;s a data project, full-stack app, or something
-              experimental, I&apos;m always open to interesting problems.
+              experimental, you can reach me quickly with a short message.
             </p>
           </motion.div>
 
@@ -98,48 +95,39 @@ export function ContactSection() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] md:gap-10">
-          {/* === LEFT: FORM === */}
+          {/* === LEFT: FORM THAT OPENS MAILTO === */}
           <motion.form
             variants={item(0.08)}
             className="space-y-6"
-            onSubmit={async (e) => {
+            onSubmit={(e) => {
               e.preventDefault();
-              setStatus("loading");
-              setFeedback(null);
-
-              const form = e.currentTarget as HTMLFormElement;
+              const form = e.currentTarget;
               const formData = new FormData(form);
 
-              const payload = {
-                name: formData.get("name") || "",
-                email: formData.get("email") || "",
-                subject: formData.get("subject") || "",
-                message: formData.get("message") || "",
-              };
+              const name = (formData.get("name") as string | null)?.trim() || "";
+              const email =
+                (formData.get("email") as string | null)?.trim() || "";
+              const subject =
+                (formData.get("subject") as string | null)?.trim() ||
+                "New message from portfolio";
+              const message =
+                (formData.get("message") as string | null)?.trim() || "";
 
-              try {
-                const res = await fetch("/api/contact", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(payload),
-                });
+              const lines = [
+                `Name: ${name}`,
+                `Email: ${email}`,
+                "",
+                "Message:",
+                message,
+              ];
 
-                if (!res.ok) {
-                  throw new Error("Request failed");
-                }
+              const mailto = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(
+                subject
+              )}&body=${encodeURIComponent(lines.join("\n"))}`;
 
-                setStatus("success");
-                setFeedback("Message sent! I’ll get back to you soon.");
-                form.reset();
-              } catch (err) {
-                console.error(err);
-                setStatus("error");
-                setFeedback(
-                  "Something went wrong. Please try again or email me directly."
-                );
-              } finally {
-                setTimeout(() => setStatus("idle"), 2000);
-              }
+              window.location.href = mailto;
+              setFeedback("Your email app should have opened with everything ready.");
+              form.reset();
             }}
           >
             {/* Name + Email */}
@@ -195,8 +183,8 @@ export function ContactSection() {
                 required
               />
               <p className="mt-2 text-[0.7rem] text-white/35">
-                I usually reply within 24 hours, and always with something
-                thoughtful.
+                When you hit send, your default email app opens with this info
+                filled in. You can edit it before you actually send.
               </p>
             </FormField>
 
@@ -204,7 +192,6 @@ export function ContactSection() {
             <div className="pt-1 space-y-2">
               <button
                 type="submit"
-                disabled={status === "loading"}
                 className={cn(
                   "group inline-flex items-center gap-2 rounded-full border border-white/15",
                   "bg-white/[0.08] px-6 py-2.5 text-sm font-medium text-white",
@@ -212,35 +199,15 @@ export function ContactSection() {
                   "transition-all duration-300",
                   "hover:border-indigo-300/70 hover:bg-gradient-to-r",
                   "hover:from-indigo-400/40 hover:via-white/10 hover:to-rose-400/40",
-                  "hover:shadow-[0_22px_70px_rgba(0,0,0,0.95)]",
-                  status === "loading" && "opacity-70 cursor-wait"
+                  "hover:shadow-[0_22px_70px_rgba(0,0,0,0.95)]"
                 )}
               >
-                <span>
-                  {status === "loading" ? "Sending..." : "Send message"}
-                </span>
-                <ArrowRight
-                  className={cn(
-                    "h-4 w-4 translate-x-0 transition-transform duration-200",
-                    "group-hover:translate-x-1",
-                    status === "loading" && "animate-pulse"
-                  )}
-                />
+                <span>Send message</span>
+                <ArrowRight className="h-4 w-4 translate-x-0 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
 
               {feedback && (
-                <p
-                  className={cn(
-                    "text-xs",
-                    status === "success"
-                      ? "text-emerald-300"
-                      : status === "error"
-                      ? "text-rose-300"
-                      : "text-white/50"
-                  )}
-                >
-                  {feedback}
-                </p>
+                <p className="text-xs text-white/60">{feedback}</p>
               )}
             </div>
           </motion.form>
@@ -260,20 +227,25 @@ export function ContactSection() {
                   <p className="text-[0.7rem] uppercase tracking-[0.22em] text-white/40">
                     Email
                   </p>
-                  <a
-                    href="mailto:bibekg2029@gmail.com"
-                    className="text-sm text-white/85 hover:text-white"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText("bibekg2029@gmail.com");
+                      setFeedback("Email copied to clipboard.");
+                    }}
+                    className="text-left text-sm text-white/85 hover:text-white"
                   >
                     bibekg2029@gmail.com
-                  </a>
+                  </button>
                 </div>
               </div>
 
               <button
                 type="button"
-                onClick={() =>
-                  navigator.clipboard.writeText("bibekg2029@gmail.com")
-                }
+                onClick={() => {
+                  navigator.clipboard.writeText("bibekg2029@gmail.com");
+                  setFeedback("Email copied to clipboard.");
+                }}
                 className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/65 transition hover:border-white/30 hover:bg-white/[0.08]"
               >
                 Copy
@@ -285,7 +257,7 @@ export function ContactSection() {
               <InfoBlock
                 label="Based in"
                 title="Southeastern Louisiana University"
-                description="Open to remote & hybrid roles"
+                description="Open to remote and hybrid roles"
               />
               <InfoBlock
                 label="Focus"
@@ -297,7 +269,7 @@ export function ContactSection() {
             {/* Quote */}
             <div className="mt-2 rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-3 text-xs text-white/60">
               <p>
-                “Clear communication, fast iteration, and thoughtful UX. That&apos;s
+                “Clear communication, fast iteration, and thoughtful UX. That is
                 how I like to work on every project.”
               </p>
             </div>
