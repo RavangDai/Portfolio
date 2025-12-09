@@ -1,3 +1,4 @@
+LIVE=https://bibek-site.vercel.app/
 # 🌐 Bibek Pathak — Portfolio  
 Modern full-stack & data-driven portfolio built with **Next.js 16**, **TypeScript**, **Framer Motion**, and **TailwindCSS**.
 
