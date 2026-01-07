@@ -256,7 +256,7 @@ function HeroGeometric({ badge = "Bibek ·Full-stack · Data / AI ", title, subt
 
   {/* Download Resume → download PDF from /public */}
   <a
-    href="/Bibek_Pathak_Resume.png"
+    href="/ComputerScienceResume_Bibek Jan 26.pdf"
     download
     className="inline-flex items-center justify-center rounded-full border border-white/14 bg-white/[0.04] px-5 py-2 text-sm font-medium text-white/90 shadow-[0_10px_40px_rgba(0,0,0,0.65)] backdrop-blur-md transition hover:border-white/35 hover:bg-white/[0.06]"
   >
