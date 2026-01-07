@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Award, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/* animations */
 const container = {
   hidden: { opacity: 0, y: 32 },
   visible: {
@@ -19,6 +20,7 @@ const item = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
+/* types */
 type Certificate = {
   title: string;
   issuer: string;
@@ -29,39 +31,40 @@ type Certificate = {
   url?: string;
 };
 
+/* data */
 const certificates: Certificate[] = [
   {
-    title: "AWS Cloud Practitioner",
-    issuer: "Amazon Web Services",
+    title: "Software Engineer Certificate",
+    issuer: "HackerRank",
     year: 2025,
-    tag: "Cloud",
-    status: "In progress",
-    highlight:
-      "Learning core AWS services, security, pricing, and basic cloud architectures.",
-    url: "",
+    tag: "Full-stack",
+    status: "Completed",
+    highlight: "Building the web, end-to-end.",
+    url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
   },
   {
-    title: "Python for Data Analysis",
-    issuer: "Coursera",
-    year: 2024,
-    tag: "Data",
+    title: "SQL (Advanced) Certificate",
+    issuer: "HackerRank",
+    year: 2025,
+    tag: "Data,Backend",
     status: "Completed",
     highlight:
-      "Hands-on work with Pandas, NumPy, and data cleaning for analytics projects.",
-    url: "https://www.coursera.org", // replace with your real link
+      "Mastering complex data manipulation, query optimization, and high-performance database architecture.",
+    url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
   },
   {
-    title: "Full-stack Web Development Bootcamp",
-    issuer: "Online Program",
+    title: " Excel Fundamentals – Formulas for Finance.",
+    issuer: "Corporate Finance Institute® (CFI)",
     year: 2024,
     tag: "Full-stack",
     status: "Completed",
     highlight:
       "Built end-to-end apps using React, Node.js, REST APIs, and deployments.",
-    url: "",
+      url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa#acc.bE0HptmS",
   },
 ];
 
+/* helpers */
 function statusBadgeClass(status?: Certificate["status"]) {
   if (status === "Completed") {
     return "border-emerald-400/20 bg-emerald-400/10 text-emerald-200";
@@ -72,6 +75,7 @@ function statusBadgeClass(status?: Certificate["status"]) {
   return "border-white/10 bg-white/[0.02] text-white/55";
 }
 
+/* component */
 export function CertificatesSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
 
@@ -84,7 +88,7 @@ export function CertificatesSection() {
       id="certificates"
       className="relative mx-auto w-full max-w-6xl px-4 py-20 md:px-6 md:py-28"
     >
-      {/* subtle section glow */}
+      {/* section glow */}
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-52 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.35),transparent_60%)]" />
 
       <motion.div
@@ -92,11 +96,11 @@ export function CertificatesSection() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
-        className="space-y-8"
+        className="space-y-10"
       >
         {/* header */}
         <motion.div variants={item} className="space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] font-medium uppercase tracking-[0.28em] text-white/60">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
             Certificates
           </div>
@@ -115,7 +119,6 @@ export function CertificatesSection() {
             {/* sort buttons */}
             <div className="flex gap-2">
               <button
-                type="button"
                 onClick={() => setSort("newest")}
                 className={cn(
                   "rounded-full border px-4 py-1.5 text-xs transition",
@@ -126,9 +129,7 @@ export function CertificatesSection() {
               >
                 Newest
               </button>
-
               <button
-                type="button"
                 onClick={() => setSort("oldest")}
                 className={cn(
                   "rounded-full border px-4 py-1.5 text-xs transition",
@@ -143,10 +144,10 @@ export function CertificatesSection() {
           </div>
         </motion.div>
 
-        {/* cards */}
+        {/* cards grid */}
         <motion.div
           variants={container}
-          className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+          className="grid justify-center gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
           {sortedCertificates.map((cert) => (
             <motion.article
@@ -155,15 +156,13 @@ export function CertificatesSection() {
               whileHover={{ y: -4, scale: 1.01 }}
               transition={{ duration: 0.25 }}
               className={cn(
-                "relative overflow-hidden rounded-2xl border border-white/10",
-                "bg-white/[0.03] px-5 py-5",
+                "relative w-full max-w-[420px] overflow-hidden rounded-2xl",
+                "border border-white/10 bg-white/[0.03] px-5 py-5",
                 "shadow-[0_18px_60px_rgba(0,0,0,0.85)]"
               )}
             >
-              {/* MATCH SNAPSHOT GLOW */}
+              {/* snapshot-style glow */}
               <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-[radial-gradient(circle_at_top_left,_rgba(129,140,248,0.30),transparent_58%),radial-gradient(circle_at_bottom_right,_rgba(244,114,182,0.22),transparent_58%)] opacity-70" />
-
-              {/* subtle inner sheen (helps it feel like Snapshot) */}
               <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />
 
               <div className="flex items-start gap-3">
@@ -182,7 +181,7 @@ export function CertificatesSection() {
                       </p>
                     </div>
 
-                    {cert.status ? (
+                    {cert.status && (
                       <span
                         className={cn(
                           "shrink-0 rounded-full border px-2 py-0.5 text-[0.7rem]",
@@ -191,19 +190,18 @@ export function CertificatesSection() {
                       >
                         {cert.status}
                       </span>
-                    ) : null}
+                    )}
                   </div>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-[0.7rem]">
                     <span className="rounded-full border border-white/12 bg-white/[0.04] px-2 py-0.5 text-white/65">
                       {cert.tag}
                     </span>
-
                     <span className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-0.5 text-white/45">
                       {cert.year}
                     </span>
 
-                    {cert.url ? (
+                    {cert.url && (
                       <a
                         href={cert.url}
                         target="_blank"
@@ -212,7 +210,7 @@ export function CertificatesSection() {
                       >
                         View <ExternalLink className="h-3 w-3" />
                       </a>
-                    ) : null}
+                    )}
                   </div>
 
                   <p className="mt-3 text-xs leading-relaxed text-white/60">
