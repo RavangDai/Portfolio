@@ -62,7 +62,7 @@ const projects: Project[] = [
      description:
        "A recommendation platform with modern full-stack architecture and AI-driven personalization.",
      tech: ["Next.js", "FastAPI", "PostgreSQL", "Docker"],
-     github: "https://github.com/yourname/watchthis-ai",
+     github: "https://github.com/RavangDai/WatchThisAI",
      live: "",
      year: 2026,
      status: "In progress",
