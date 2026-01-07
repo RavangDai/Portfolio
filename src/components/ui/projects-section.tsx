@@ -1,8 +1,11 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Github, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+type ProjectStatus = "Completed" | "In progress";
 
 type Project = {
   name: string;
@@ -11,6 +14,10 @@ type Project = {
   tech: string[];
   github: string;
   live?: string;
+
+  // NEW
+  year: number;
+  status: ProjectStatus;
 };
 
 const projects: Project[] = [
@@ -22,6 +29,8 @@ const projects: Project[] = [
     tech: ["TypeScript", "React", "Vite", "Tailwind"],
     github: "https://github.com/RavangDai/GridNavigator",
     live: "https://grid-navigator-mu.vercel.app/",
+    year: 2025,
+    status: "Completed",
   },
   {
     name: "TickTickFocus",
@@ -31,6 +40,8 @@ const projects: Project[] = [
     tech: ["TypeScript", "React", "Tailwind", "PWA"],
     github: "https://github.com/RavangDai/TickTickFocus",
     live: "https://tick-tick-focus.vercel.app/",
+    year: 2025,
+    status: "Completed",
   },
   {
     name: "Quotex",
@@ -40,7 +51,22 @@ const projects: Project[] = [
     tech: ["JavaScript", "React", "Tailwind"],
     github: "https://github.com/RavangDai/Quotex",
     live: "https://quotex-five.vercel.app/",
+    year: 2024,
+    status: "Completed",
   },
+
+  // Example in-progress (you can remove this if you don’t want it)
+  {
+  name: "WatchThis!AI",
+   tag: "Full-stack · AI",
+     description:
+       "A recommendation platform with modern full-stack architecture and AI-driven personalization.",
+     tech: ["Next.js", "FastAPI", "PostgreSQL", "Docker"],
+     github: "https://github.com/yourname/watchthis-ai",
+     live: "",
+     year: 2026,
+     status: "In progress",
+   },
 ];
 
 const sectionVariants = {
@@ -48,10 +74,7 @@ const sectionVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.9,
-      ease: [0.25, 0.4, 0.25, 1] as any,
-    },
+    transition: { duration: 0.9, ease: [0.25, 0.4, 0.25, 1] as any },
   },
 };
 
@@ -68,7 +91,29 @@ const cardVariants = {
   }),
 };
 
+function statusBadgeClass(status: ProjectStatus) {
+  if (status === "Completed") {
+    return "border-emerald-400/20 bg-emerald-400/10 text-emerald-200";
+  }
+  return "border-amber-400/20 bg-amber-400/10 text-amber-200";
+}
+
 export function ProjectsSection() {
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
+  const [statusFilter, setStatusFilter] = useState<"All" | ProjectStatus>("All");
+
+  const filteredProjects = useMemo(() => {
+    let list = [...projects];
+
+    if (statusFilter !== "All") {
+      list = list.filter((p) => p.status === statusFilter);
+    }
+
+    list.sort((a, b) => (sort === "newest" ? b.year - a.year : a.year - b.year));
+
+    return list;
+  }, [sort, statusFilter]);
+
   return (
     <section
       id="projects"
@@ -79,29 +124,65 @@ export function ProjectsSection() {
 
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 md:px-6">
         {/* header */}
-        <motion.div
-          variants={sectionVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
-          className="max-w-2xl"
-        >
-          <p className="text-xs font-medium uppercase tracking-[0.25em] text-indigo-200/70">
-            Selected Projects
-          </p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
-            A small collection of interactive and data-driven builds.
-          </h2>
-          <p className="mt-3 text-sm text-white/55 sm:text-base">
-            Each project focuses on clean UX, solid engineering, and solving a
-            specific problem from visualizing algorithms to building focused
-            productivity tools.
-          </p>
-        </motion.div>
+        {/* header (About-style) */}
+<motion.div
+  variants={sectionVariants}
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true, amount: 0.4 }}
+  className="flex max-w-5xl flex-col gap-4 md:flex-row md:items-end md:justify-between"
+>
+  {/* LEFT */}
+  <div className="max-w-3xl space-y-4">
+    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] font-medium uppercase tracking-[0.28em] text-white/60">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+      Selected Projects
+    </div>
+
+    <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-5xl">
+      <span className="bg-gradient-to-r from-white via-indigo-200 to-rose-200 bg-clip-text text-transparent">
+        A small collection of interactive and data-driven builds.
+      </span>
+    </h2>
+
+    <p className="max-w-2xl text-sm text-white/55 sm:text-base">
+      Each project focuses on clean UX, solid engineering, and solving a specific
+      problem from visualizing algorithms to building focused productivity tools.
+    </p>
+  </div>
+
+  {/* RIGHT: sort buttons */}
+  <div className="flex gap-2">
+    <button
+      onClick={() => setSort("newest")}
+      className={cn(
+        "rounded-full border px-4 py-1.5 text-xs transition",
+        sort === "newest"
+          ? "border-white/25 bg-white/[0.08] text-white"
+          : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
+      )}
+    >
+      Newest
+    </button>
+    <button
+      onClick={() => setSort("oldest")}
+      className={cn(
+        "rounded-full border px-4 py-1.5 text-xs transition",
+        sort === "oldest"
+          ? "border-white/25 bg-white/[0.08] text-white"
+          : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
+      )}
+    >
+      Oldest
+    </button>
+  </div>
+</motion.div>
+
+
 
         {/* cards grid */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, index) => (
+          {filteredProjects.map((project, index) => (
             <motion.article
               key={project.name}
               custom={index}
@@ -122,12 +203,31 @@ export function ProjectsSection() {
               </div>
 
               <div className="relative z-10 flex flex-col gap-3">
-                <div className="flex flex-col">
-                  <h3 className="text-base font-semibold text-white sm:text-lg">
-                    {project.name}
-                  </h3>
-                  <span className="text-xs font-medium text-white/45">
-                    {project.tag}
+                {/* title row with badge */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col">
+                    <h3 className="text-base font-semibold text-white sm:text-lg">
+                      {project.name}
+                    </h3>
+                    <span className="text-xs font-medium text-white/45">
+                      {project.tag}
+                    </span>
+                  </div>
+
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full border px-2 py-0.5 text-[0.7rem]",
+                      statusBadgeClass(project.status)
+                    )}
+                  >
+                    {project.status}
+                  </span>
+                </div>
+
+                {/* meta chips */}
+                <div className="flex flex-wrap items-center gap-2 text-[0.7rem]">
+                  <span className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-0.5 text-white/55">
+                    {project.year}
                   </span>
                 </div>
 
@@ -173,6 +273,13 @@ export function ProjectsSection() {
             </motion.article>
           ))}
         </div>
+
+        {/* empty state */}
+        {filteredProjects.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-sm text-white/60">
+            No projects match this filter.
+          </div>
+        ) : null}
       </div>
     </section>
   );
