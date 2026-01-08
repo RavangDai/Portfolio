@@ -23,9 +23,9 @@ export function MainNavbar() {
   const links = [
     { name: "Home", href: "/" },
     { name: "Projects", href: "#projects" },
-    { name: "About", href: "#about" },
     { name: "Certificates", href: "#certificates" },
     { name: "Contact", href: "#contact" },
+    { name: "Blog", href: "#blog" },
   ];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
