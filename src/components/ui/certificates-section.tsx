@@ -46,21 +46,21 @@ const certificates: Certificate[] = [
     title: "SQL (Advanced) Certificate",
     issuer: "HackerRank",
     year: 2025,
-    tag: "Data,Backend",
+    tag: "Data / Backend",
     status: "Completed",
     highlight:
       "Mastering complex data manipulation, query optimization, and high-performance database architecture.",
     url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
   },
   {
-    title: " Excel Fundamentals – Formulas for Finance.",
+    title: "Excel Fundamentals – Formulas for Finance",
     issuer: "Corporate Finance Institute® (CFI)",
     year: 2024,
-    tag: "Full-stack",
+    tag: "Finance",
     status: "Completed",
     highlight:
-      "Built end-to-end apps using React, Node.js, REST APIs, and deployments.",
-      url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa#acc.bE0HptmS",
+      "Building strong spreadsheet logic for finance modeling, formulas, and analysis workflows.",
+    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa#acc.bE0HptmS",
   },
 ];
 
@@ -75,6 +75,12 @@ function statusBadgeClass(status?: Certificate["status"]) {
   return "border-white/10 bg-white/[0.02] text-white/55";
 }
 
+// clean chip style (same vibe as your projects chips)
+const chip =
+  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] leading-none " +
+  "border border-white/10 bg-white/[0.03] text-white/70 backdrop-blur-md " +
+  "transition-colors duration-200 hover:border-white/15 hover:text-white/85";
+
 /* component */
 export function CertificatesSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
@@ -84,13 +90,17 @@ export function CertificatesSection() {
   );
 
   return (
-    <section
-      id="certificates"
-      className="relative mx-auto w-full max-w-6xl px-4 py-20 md:px-6 md:py-28"
-    >
-      {/* section glow */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-52 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.35),transparent_60%)]" />
+  <section
+    id="certificates"
+    className="relative w-full border-t border-white/[0.04] bg-gradient-to-b from-[#050509] to-[#030308] py-16 sm:py-20"
+  >
+    {/*Clean looks */}
+    <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-[radial-gradient(...)] opacity-70" />
 
+    {/* same soft bg as Projects */}
+    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.14),_transparent_55%)]" />
+
+    <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
       <motion.div
         variants={container}
         initial="hidden"
@@ -144,7 +154,7 @@ export function CertificatesSection() {
           </div>
         </motion.div>
 
-        {/* cards grid */}
+        {/* cards */}
         <motion.div
           variants={container}
           className="grid justify-center gap-5 sm:grid-cols-2 lg:grid-cols-3"
@@ -153,20 +163,18 @@ export function CertificatesSection() {
             <motion.article
               key={cert.title}
               variants={item}
-              whileHover={{ y: -4, scale: 1.01 }}
-              transition={{ duration: 0.25 }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.22 }}
               className={cn(
-                "relative w-full max-w-[420px] overflow-hidden rounded-2xl",
-                "border border-white/10 bg-white/[0.03] px-5 py-5",
-                "shadow-[0_18px_60px_rgba(0,0,0,0.85)]"
+                "group relative w-full max-w-[420px] overflow-hidden rounded-2xl",
+                "border border-white/[0.10] bg-white/[0.02] px-5 py-5",
+                "shadow-[0_18px_45px_rgba(0,0,0,0.75)] backdrop-blur-md",
+                "transition-colors duration-200 hover:border-white/[0.16]"
               )}
             >
-              {/* snapshot-style glow */}
-              <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-[radial-gradient(circle_at_top_left,_rgba(129,140,248,0.30),transparent_58%),radial-gradient(circle_at_bottom_right,_rgba(244,114,182,0.22),transparent_58%)] opacity-70" />
-              <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />
-
+              {/* NO glow overlay inside card ✅ */}
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/[0.04] text-white/80">
+                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80">
                   <Award className="h-4 w-4" />
                 </div>
 
@@ -193,20 +201,21 @@ export function CertificatesSection() {
                     )}
                   </div>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[0.7rem]">
-                    <span className="rounded-full border border-white/12 bg-white/[0.04] px-2 py-0.5 text-white/65">
+                  {/* meta row */}
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className={chip}>
+                      <span className="h-1 w-1 rounded-full bg-white/30 group-hover:bg-white/50" />
                       {cert.tag}
                     </span>
-                    <span className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-0.5 text-white/45">
-                      {cert.year}
-                    </span>
+
+                    <span className={chip}>{cert.year}</span>
 
                     {cert.url && (
                       <a
                         href={cert.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="ml-auto inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.02] px-2 py-0.5 text-white/55 hover:text-white"
+                        className={cn(chip, "ml-auto")}
                       >
                         View <ExternalLink className="h-3 w-3" />
                       </a>
@@ -222,6 +231,7 @@ export function CertificatesSection() {
           ))}
         </motion.div>
       </motion.div>
+    </div>
     </section>
   );
 }

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { TechIcons } from "@/components/ui/tech-icons";
+
 
 // at the top you already have: import { motion } from "framer-motion";
 
@@ -77,13 +77,7 @@ export function AboutSection() {
             , while building a portfolio of thoughtful, real-world projects.
           </p>
 
-          {/* Tech stack icons */}
-          <div className="mt-8">
-            <p className="text-xs font-medium uppercase tracking-[0.26em] text-white/45 mb-4">
-              Tech Stack
-            </p>
-            <TechIcons />
-          </div>
+        
         </motion.div>
 
         {/* Right: glass card with stats */}
