@@ -140,7 +140,8 @@ export function ProjectsSection() {
     </div>
 
     <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-5xl">
-      <span className="bg-gradient-to-r from-white via-indigo-200 to-rose-200 bg-clip-text text-transparent">
+      <span className="text-hero-gradient">
+
         A small collection of interactive and data-driven builds.
       </span>
     </h2>
@@ -190,27 +191,29 @@ export function ProjectsSection() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
-              className={cn(
-                "group relative overflow-hidden rounded-2xl border border-white/[0.08]",
-                "bg-white/[0.02] px-4 py-4 sm:px-4 sm:py-5",
-                "shadow-[0_18px_45px_rgba(0,0,0,0.7)] backdrop-blur-md",
-                "transition-transform duration-300 ease-out hover:-translate-y-1 hover:border-indigo-300/60"
-              )}
-            >
-              {/* hover glow */}
-              <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.22),_transparent_55%)]" />
-              </div>
+             className={cn(
+  "group relative overflow-hidden rounded-2xl",
+  "border border-white/[0.08]",
+  "bg-white/[0.02] px-4 py-4 sm:px-4 sm:py-5",
+  "backdrop-blur-md",
+  "shadow-[0_12px_32px_rgba(0,0,0,0.55)]",
+  "transition-all duration-300 ease-out",
+  "hover:-translate-y-1 hover:border-indigo-300/40"
+)}
 
-              <div className="relative z-10 flex flex-col gap-3">
+            >
+
+
+              <div className="relative z-10 flex flex-col gap-3 ">
                 {/* title row with badge */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col">
-                    <h3 className="text-base font-semibold text-white sm:text-lg">
+                    <h3 className="text-base font-semibold text-white transition-colors group-hover:text-indigo-200 sm:text-lg">
                       {project.name}
                     </h3>
                     <span className="text-xs font-medium text-white/45">
                       {project.tag}
+
                     </span>
                   </div>
 
@@ -226,23 +229,40 @@ export function ProjectsSection() {
 
                 {/* meta chips */}
                 <div className="flex flex-wrap items-center gap-2 text-[0.7rem]">
-                  <span className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-0.5 text-white/55">
-                    {project.year}
-                  </span>
+                 <span
+  key={project.year}
+  className={cn(
+    "rounded-full px-2.5 py-1 text-[0.68rem] leading-none",
+    "border border-white/10 bg-white/[0.03] text-white/70",
+    "backdrop-blur-md",
+    "transition-colors duration-200",
+    "group-hover:border-white/15 group-hover:text-white/85"
+  )}
+>
+  {project.year }
+</span>
+
                 </div>
 
                 <p className="text-xs text-white/60 sm:text-sm">
                   {project.description}
                 </p>
 
-                <div className="mt-1 flex flex-wrap gap-1.5">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {project.tech.map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-full border border-white/10 bg-white/[0.02] px-2 py-0.5 text-[0.68rem] text-white/60"
-                    >
-                      {t}
-                    </span>
+                   <span
+  key={t}
+  className={cn(
+    "rounded-full px-2.5 py-1 text-[0.68rem] leading-none",
+    "border border-white/10 bg-white/[0.03] text-white/70",
+    "backdrop-blur-md",
+    "transition-colors duration-200",
+    "group-hover:border-white/15 group-hover:text-white/85"
+  )}
+>
+  {t}
+</span>
+
                   ))}
                 </div>
 
@@ -251,7 +271,7 @@ export function ProjectsSection() {
                     href={project.github}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-indigo-200/90 transition hover:text-white"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-cyan-200/90 transition hover:text-white"
                   >
                     <Github className="h-3.5 w-3.5" />
                     <span>View on GitHub</span>

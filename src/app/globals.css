@@ -141,3 +141,50 @@ html {
   color: #ffffff;
   transform: translateY(-1px);
 }
+/* ===== Portfolio Theme Tokens (no tailwind.config needed) ===== */
+:root {
+  --bg-0: #030308;
+  --bg-1: #050509;
+
+  /* primary accents */
+  --accent-1: 99 102 241;  /* indigo */
+  --accent-2: 56 189 248;  /* cyan */
+  --accent-3: 52 211 153;  /* emerald */
+
+  /* “steel” highlight for text gradients */
+  --steel-1: 255 255 255;
+  --steel-2: 207 214 255;
+  --steel-3: 238 242 255;
+}
+
+/* Optional: smoother blur on some browsers */
+.glass {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Reusable hero/project text gradient */
+.text-hero-gradient {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--steel-1)) 0%,
+    rgb(var(--steel-2)) 45%,
+    rgb(var(--steel-3)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Stronger “tech” gradient (no pink) */
+.text-tech-gradient {
+  background: linear-gradient(
+    90deg,
+    rgba(241, 245, 249, 1) 0%,
+    rgba(199, 210, 254, 1) 55%,
+    rgba(165, 243, 252, 1) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
