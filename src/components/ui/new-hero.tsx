@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, Download } from "lucide-react";
+import { LayoutGrid, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -138,10 +138,9 @@ export function NewHero() {
 
             <div className="mt-8 w-full max-w-md rounded-2xl border border-white/12 bg-gradient-to-r from-indigo-500/14 via-violet-500/10 to-cyan-400/10 px-6 py-4 backdrop-blur-md">
               <p className="text-sm text-white/85">
-                Building modern web experiences with{" "}
-                <span className={strongGradientText}>clean UX + solid engineering</span>.
+              {"A jack of all trades is a master of none "}
+                <span className={strongGradientText}>, but oftentimes better than a master of one</span>.
               </p>
-              <p className="mt-1 text-xs text-white/55">React · Next.js · TypeScript · Tailwind</p>
             </div>
           </motion.div>
 
@@ -181,22 +180,25 @@ export function NewHero() {
               <a
                 href="#projects"
                 className={cn(
-                  "inline-flex items-center justify-center gap-2 rounded-full border border-white/15",
+                  "group inline-flex items-center justify-center gap-2 rounded-full border border-white/15",
                   "bg-white/[0.04] px-5 py-2.5 text-sm text-white/90",
                   "shadow-[0_18px_45px_rgba(0,0,0,0.6)] hover:bg-white/[0.07]"
                 )}
               >
-                View Projects <ArrowRight className="h-4 w-4" />
+                View Projects{" "}
+                <LayoutGrid className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-[-2px] group-hover:scale-105" />
               </a>
 
               <a
                 href="/resume.pdf"
                 className={cn(
-                  "inline-flex items-center justify-center gap-2 rounded-full border border-white/12",
-                  "bg-white/[0.02] px-5 py-2.5 text-sm text-white/75 hover:bg-white/[0.05]"
+                  "group inline-flex items-center justify-center gap-2 rounded-full border border-white/15",
+                  "bg-white/[0.04] px-5 py-2.5 text-sm text-white/90",
+                  "shadow-[0_18px_45px_rgba(0,0,0,0.6)] hover:bg-white/[0.07]"
                 )}
               >
-                Download Resume <Download className="h-4 w-4" />
+                Download Resume{" "}
+                <FileText className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-[-1px] group-hover:scale-105" />
               </a>
             </motion.div>
 
@@ -207,8 +209,8 @@ export function NewHero() {
               custom={5}
               className="mt-10 flex items-center gap-3 text-xs text-white/45"
             >
-              <span className="h-1 w-1 rounded-full bg-white/30" />
-              Focus: React · Next.js · TypeScript · Tailwind · Data · Cloud
+              <span className="h-1 w-8 rounded-full bg-white/30" />
+              Focus: React · TypeScript · Python · Tailwind · Node.js · SQL · MongoDB
             </motion.div>
           </div>
         </div>
