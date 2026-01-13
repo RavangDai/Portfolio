@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Mail } from "lucide-react";
+import { SendHorizonal, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const container = {
@@ -25,6 +25,7 @@ const item = (delay: number) => ({
 
 export function ContactSection() {
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [isSent, setIsSent] = useState(false);
 
   return (
     <section
@@ -112,6 +113,8 @@ export function ContactSection() {
                 setFeedback(
                   "Your email app should have opened with everything ready."
                 );
+                setIsSent(true);
+                setTimeout(() => setIsSent(false), 2500);
                 form.reset();
               }}
             >
@@ -167,27 +170,38 @@ export function ContactSection() {
                   )}
                   required
                 />
-                <p className="mt-2 text-[0.7rem] text-white/35">
-                  When you hit send, your default email app opens with this info
-                  filled in. You can edit it before you actually send.
-                </p>
+              
               </FormField>
 
               {/* Button + feedback */}
               <div className="space-y-2 pt-1">
-                <button
+                <motion.button
                   type="submit"
+                  whileTap={{ scale: 0.97 }}
                   className={cn(
                     "group inline-flex items-center gap-2 rounded-full border border-white/15",
                     "bg-white/[0.04] px-6 py-2.5 text-sm font-medium text-white/90",
                     "shadow-[0_12px_32px_rgba(0,0,0,0.55)]",
                     "transition-all duration-300",
-                    "hover:bg-white/[0.07] hover:border-white/25"
+                    "hover:bg-white/[0.07] hover:border-white/25",
+                    "disabled:cursor-default disabled:opacity-75"
                   )}
+                  disabled={isSent}
                 >
-                  <span>Send message</span>
-                  <ArrowRight className="h-4 w-4 translate-x-0 transition-transform duration-200 group-hover:translate-x-1" />
-                </button>
+                  <span>{isSent ? "Sent" : "Send Message"}</span>
+                  <motion.span
+                    initial={false}
+                    animate={
+                      isSent
+                        ? { x: 24, y: -18, opacity: 0 }
+                        : { x: 0, y: 0, opacity: 1 }
+                    }
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="inline-flex"
+                  >
+                    <SendHorizonal className="h-4 w-4" />
+                  </motion.span>
+                </motion.button>
 
                 {feedback && <p className="text-xs text-white/60">{feedback}</p>}
               </div>
@@ -247,13 +261,7 @@ export function ContactSection() {
                 />
               </div>
 
-              {/* Quote */}
-              <div className="mt-2 rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-3 text-xs text-white/60">
-                <p>
-                  “Clear communication, fast iteration, and thoughtful UX. That is
-                  how I like to work on every project.”
-                </p>
-              </div>
+              
             </motion.div>
           </div>
         </motion.div>
