@@ -1,45 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Award, ExternalLink } from "lucide-react";
+import { Award, ExternalLink, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/* animations */
-const container = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, staggerChildren: 0.08 },
-  },
-};
+/* -------------------------------------------------------------------------- */
+/* TYPES                                   */
+/* -------------------------------------------------------------------------- */
 
-const item = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+type CertificateStatus = "Completed" | "In progress";
 
-/* types */
 type Certificate = {
   title: string;
   issuer: string;
   year: number;
   tag: string;
   highlight: string;
-  status?: "Completed" | "In progress";
+  status: CertificateStatus;
   url?: string;
 };
 
-/* data */
+
+
 const certificates: Certificate[] = [
   {
     title: "Software Engineer Certificate",
     issuer: "HackerRank",
     year: 2025,
-    tag: "Full-stack",
+    tag: "Full-stack Engineering",
     status: "Completed",
-    highlight: "Building the web, end-to-end.",
+    highlight: "Validated proficiency in problem-solving, REST APIs, and full-stack architecture.",
     url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
   },
   {
@@ -49,193 +40,212 @@ const certificates: Certificate[] = [
     tag: "Data / Backend",
     status: "Completed",
     highlight:
-      "Mastering complex data manipulation, query optimization, and high-performance database architecture.",
+      "Mastering complex data manipulation, query optimization, and high-performance database design.",
     url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
   },
   {
-    title: "Excel Fundamentals – Formulas for Finance",
-    issuer: "Corporate Finance Institute® (CFI)",
+    title: "Excel Fundamentals – Finance",
+    issuer: "Corporate Finance Institute®",
     year: 2024,
-    tag: "Finance",
+    tag: "Finance & Analysis",
     status: "Completed",
     highlight:
-      "Building strong spreadsheet logic for finance modeling, formulas, and analysis workflows.",
-    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa#acc.bE0HptmS",
+      "Building strong spreadsheet logic for financial modeling, formulas, and large-scale data analysis.",
+    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
   },
 ];
 
-/* helpers */
-function statusBadgeClass(status?: Certificate["status"]) {
+/* -------------------------------------------------------------------------- */
+/* VARIANTS                                  */
+/* -------------------------------------------------------------------------- */
+
+// Shared easing curve for consistency
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      delay: 0.1 + i * 0.1,
+      ease,
+    },
+  }),
+};
+
+/* -------------------------------------------------------------------------- */
+/* HELPERS                                  */
+/* -------------------------------------------------------------------------- */
+
+function statusBadgeClass(status: CertificateStatus) {
   if (status === "Completed") {
-    return "border-emerald-400/20 bg-emerald-400/10 text-emerald-200";
+    return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
   }
-  if (status === "In progress") {
-    return "border-amber-400/20 bg-amber-400/10 text-amber-200";
-  }
-  return "border-white/10 bg-white/[0.02] text-white/55";
+  return "border-amber-500/20 bg-amber-500/10 text-amber-300";
 }
 
-// clean chip style (same vibe as your projects chips)
-const chip =
-  "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] leading-none " +
-  "border border-white/10 bg-white/[0.03] text-white/70 backdrop-blur-md " +
-  "transition-all duration-300 " +
-  "group-hover:border-indigo-400/30 group-hover:text-white/90 " +
-  "group-hover:bg-indigo-500/10 group-hover:scale-105";
+/* -------------------------------------------------------------------------- */
+/* COMPONENT                                 */
+/* -------------------------------------------------------------------------- */
 
-/* component */
 export function CertificatesSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
 
-  const sortedCertificates = [...certificates].sort((a, b) =>
-    sort === "newest" ? b.year - a.year : a.year - b.year
-  );
+  const sortedCertificates = useMemo(() => {
+    return [...certificates].sort((a, b) =>
+      sort === "newest" ? b.year - a.year : a.year - b.year
+    );
+  }, [sort]);
 
   return (
-  <section
-    id="certificates"
-    className="relative w-full border-t border-white/[0.04] bg-gradient-to-b from-[#050509] to-[#030308] py-16 sm:py-20"
-  >
-    {/*Clean looks */}
-    <div className="pointer-events-none absolute inset-0 -z-10 rounded-2xl bg-[radial-gradient(...)] opacity-70" />
+    <section
+      id="certificates"
+      className={cn(
+        "relative w-full border-t border-white/[0.08] bg-[#030308] py-24 md:py-32"
+      )}
+    >
+      {/* Background Ambience */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(129,140,248,0.04),_transparent_40%)]" />
 
-    {/* same soft bg as Projects */}
-    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.14),_transparent_55%)]" />
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
+        
+        {/* HEADER */}
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between mb-16"
+        >
+          <div className="max-w-2xl space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              Certifications
+            </div>
 
-    <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
-      <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="space-y-10"
-      >
-        {/* header */}
-        <motion.div variants={item} className="space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Certificates
+            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
+              Proof of learning <br className="hidden sm:block" />
+              <span className="text-indigo-100">& continuous momentum.</span>
+            </h2>
+
+            <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
+              A collection of professional certifications and courses that validate my technical expertise in development, data, and cloud.
+            </p>
           </div>
 
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-4xl">
-                Proof of learning and momentum.
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm text-white/60 sm:text-base">
-                A growing collection of certifications and courses that support
-                my path in full-stack development, data, and cloud.
-              </p>
-            </div>
-
-            {/* sort buttons */}
-            <div className="flex gap-2">
+          {/* Sort Toggles */}
+          <div className="flex items-center gap-2">
+            {(["newest", "oldest"] as const).map((option) => (
               <button
-                onClick={() => setSort("newest")}
+                key={option}
+                onClick={() => setSort(option)}
                 className={cn(
-                  "rounded-full border px-4 py-1.5 text-xs transition",
-                  sort === "newest"
-                    ? "border-white/25 bg-white/[0.08] text-white"
-                    : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
+                  "px-4 py-2 text-xs font-medium rounded-full transition-all duration-300 border",
+                  sort === option
+                    ? "bg-white/[0.08] border-white/20 text-white"
+                    : "bg-transparent border-transparent text-slate-500 hover:text-white hover:bg-white/[0.02]"
                 )}
               >
-                Newest
+                {option.charAt(0).toUpperCase() + option.slice(1)}
               </button>
-              <button
-                onClick={() => setSort("oldest")}
-                className={cn(
-                  "rounded-full border px-4 py-1.5 text-xs transition",
-                  sort === "oldest"
-                    ? "border-white/25 bg-white/[0.08] text-white"
-                    : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
-                )}
-              >
-                Oldest
-              </button>
-            </div>
+            ))}
           </div>
         </motion.div>
 
-        {/* cards */}
-        <motion.div
-          variants={container}
-          className="grid justify-center gap-5 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {sortedCertificates.map((cert) => (
+        {/* GRID */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {sortedCertificates.map((cert, index) => (
             <motion.article
               key={cert.title}
-              variants={item}
+              custom={index}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
               className={cn(
-                "group relative w-full max-w-[420px] overflow-hidden rounded-2xl",
-                "border border-white/[0.10] bg-white/[0.02] px-5 py-5",
-                "shadow-[0_18px_45px_rgba(0,0,0,0.75)] backdrop-blur-md",
-                "transition-all duration-500 ease-out",
-                "hover:-translate-y-2 hover:scale-[1.02]",
-                "hover:border-indigo-400/60",
-                "hover:bg-white/[0.04]",
-                "cursor-pointer"
+                "group relative flex flex-col justify-between overflow-hidden rounded-2xl",
+                "border border-white/[0.08] bg-white/[0.02]",
+                "p-6 backdrop-blur-sm",
+                "transition-all duration-500",
+                "hover:border-indigo-500/30 hover:bg-white/[0.04] hover:-translate-y-1"
               )}
             >
-              {/* NO glow overlay inside card ✅ */}
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all duration-300 group-hover:border-indigo-400/30 group-hover:bg-indigo-500/10 group-hover:scale-110">
-                  <Award className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+              {/* Content Wrapper */}
+              <div className="relative z-10 flex flex-col gap-4">
+                
+                {/* Header Row */}
+                <div className="flex items-start justify-between gap-4">
+                  {/* Icon Box */}
+                  <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] transition-all duration-500 group-hover:border-indigo-500/20 group-hover:bg-indigo-500/10">
+                    <Award className="h-5 w-5 text-slate-400 transition-colors duration-500 group-hover:text-indigo-300" />
+                  </div>
+                  
+                  {/* Status Badge */}
+                  <span
+                    className={cn(
+                      "inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider",
+                      statusBadgeClass(cert.status)
+                    )}
+                  >
+                    {cert.status}
+                  </span>
                 </div>
 
-                <div className="flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="text-sm font-semibold text-white transition-all duration-300 group-hover:text-indigo-200 group-hover:translate-x-0.5 sm:text-base">
-                        {cert.title}
-                      </h3>
-                      <p className="mt-1 text-[0.8rem] text-white/55 transition-colors duration-300 group-hover:text-white/65">
-                        {cert.issuer}
-                      </p>
-                    </div>
-
-                    {cert.status && (
-                      <span
-                        className={cn(
-                          "shrink-0 rounded-full border px-2 py-0.5 text-[0.7rem]",
-                          statusBadgeClass(cert.status)
-                        )}
-                      >
-                        {cert.status}
-                      </span>
-                    )}
+                {/* Text Content */}
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-white transition-colors group-hover:text-indigo-100">
+                    {cert.title}
+                  </h3>
+                  <div className="text-xs font-medium text-slate-500">
+                    {cert.issuer}
                   </div>
+                </div>
 
-                  {/* meta row */}
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <span className={chip}>
-                      <span className="h-1 w-1 rounded-full bg-white/30 group-hover:bg-white/50" />
-                      {cert.tag}
-                    </span>
+                <p className="text-sm leading-relaxed text-slate-400 transition-colors group-hover:text-slate-300">
+                  {cert.highlight}
+                </p>
 
-                    <span className={chip}>{cert.year}</span>
-
-                    {cert.url && (
-                      <a
-                        href={cert.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={cn(chip, "ml-auto hover:gap-2 hover:translate-x-0.5")}
-                      >
-                        View <ExternalLink className="h-3 w-3 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
-                      </a>
-                    )}
-                  </div>
-
-                  <p className="mt-3 text-xs leading-relaxed text-white/60 transition-colors duration-300 group-hover:text-white/70">
-                    {cert.highlight}
-                  </p>
+                {/* Meta Info */}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center rounded-md border border-white/5 bg-white/[0.03] px-2.5 py-1 text-[0.7rem] text-slate-300">
+                    {cert.tag}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md border border-white/5 bg-white/[0.03] px-2.5 py-1 text-[0.7rem] text-slate-300">
+                    <Calendar className="h-3 w-3 opacity-70" />
+                    {cert.year}
+                  </span>
                 </div>
               </div>
+
+              {/* Action Area */}
+              {cert.url && (
+                <div className="relative z-10 mt-6 border-t border-white/[0.06] pt-4">
+                  <a
+                    href={cert.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-xs font-medium text-indigo-300 transition-colors hover:text-indigo-200 group/link"
+                  >
+                    Verify Credential
+                    <ExternalLink className="h-3.5 w-3.5 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                  </a>
+                </div>
+              )}
             </motion.article>
           ))}
-        </motion.div>
-      </motion.div>
-    </div>
+        </div>
+      </div>
     </section>
   );
 }
