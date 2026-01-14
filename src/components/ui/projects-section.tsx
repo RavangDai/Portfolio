@@ -14,13 +14,22 @@ type Project = {
   tech: string[];
   github: string;
   live?: string;
-
-  // NEW
   year: number;
   status: ProjectStatus;
 };
 
 const projects: Project[] = [
+  {
+    name: "WatchThis!AI",
+    tag: "Full-stack · AI",
+    description:
+      "A recommendation platform with modern full-stack architecture and AI-driven personalization.",
+    tech: ["Next.js", "FastAPI", "PostgreSQL", "Docker"],
+    github: "https://github.com/RavangDai/WatchThisAI",
+    live: "",
+    year: 2026,
+    status: "In progress",
+  },
   {
     name: "GridNavigator",
     tag: "Algorithms · Visualization",
@@ -54,19 +63,6 @@ const projects: Project[] = [
     year: 2024,
     status: "Completed",
   },
-
-  // Example in-progress (you can remove this if you don’t want it)
-  {
-  name: "WatchThis!AI",
-   tag: "Full-stack · AI",
-     description:
-       "A recommendation platform with modern full-stack architecture and AI-driven personalization.",
-     tech: ["Next.js", "FastAPI", "PostgreSQL", "Docker"],
-     github: "https://github.com/RavangDai/WatchThisAI",
-     live: "",
-     year: 2026,
-     status: "In progress",
-   },
 ];
 
 const sectionVariants = {
@@ -74,7 +70,7 @@ const sectionVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease: [0.25, 0.4, 0.25, 1] as any },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
@@ -85,104 +81,91 @@ const cardVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      delay: 0.15 + i * 0.08,
-      ease: [0.25, 0.4, 0.25, 1] as any,
+      delay: 0.1 + i * 0.1,
+      ease: [0.22, 1, 0.36, 1],
     },
   }),
 };
 
 function statusBadgeClass(status: ProjectStatus) {
   if (status === "Completed") {
-    return "border-emerald-400/20 bg-emerald-400/10 text-emerald-200";
+    return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
   }
-  return "border-amber-400/20 bg-amber-400/10 text-amber-200";
+  // Using amber for "In progress" to match your design
+  return "border-amber-500/20 bg-amber-500/10 text-amber-300";
 }
 
 export function ProjectsSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
-  const [statusFilter, setStatusFilter] = useState<"All" | ProjectStatus>("All");
+  const [statusFilter] = useState<"All" | ProjectStatus>("All");
 
   const filteredProjects = useMemo(() => {
     let list = [...projects];
-
     if (statusFilter !== "All") {
       list = list.filter((p) => p.status === statusFilter);
     }
-
     list.sort((a, b) => (sort === "newest" ? b.year - a.year : a.year - b.year));
-
     return list;
   }, [sort, statusFilter]);
 
   return (
     <section
       id="projects"
-      className="relative w-full border-t border-white/[0.04] bg-gradient-to-b from-[#050509] to-[#030308] py-16 sm:py-20"
-    >
-      {/* soft glow background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.14),_transparent_55%)]" />
-
-      <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 md:px-6">
-        {/* header */}
-        {/* header (About-style) */}
-<motion.div
-  variants={sectionVariants}
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true, amount: 0.4 }}
-  className="flex max-w-5xl flex-col gap-4 md:flex-row md:items-end md:justify-between"
->
-  {/* LEFT */}
-  <div className="max-w-3xl space-y-4">
-    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] font-medium uppercase tracking-[0.28em] text-white/60">
-      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-      Selected Projects
-    </div>
-
-    <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl md:text-5xl">
-      <span className="text-hero-gradient">
-
-        A small collection of interactive and data-driven builds.
-      </span>
-    </h2>
-
-    <p className="max-w-2xl text-sm text-white/55 sm:text-base">
-      Each project focuses on clean UX, solid engineering, and solving a specific
-      problem from visualizing algorithms to building focused productivity tools.
-    </p>
-  </div>
-
-  {/* RIGHT: sort buttons */}
-  <div className="flex gap-2">
-    <button
-      onClick={() => setSort("newest")}
       className={cn(
-        "rounded-full border px-4 py-1.5 text-xs transition",
-        sort === "newest"
-          ? "border-white/25 bg-white/[0.08] text-white"
-          : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
+        "relative w-full border-t border-white/[0.08] bg-[#030308] py-24 md:py-32"
       )}
     >
-      Newest
-    </button>
-    <button
-      onClick={() => setSort("oldest")}
-      className={cn(
-        "rounded-full border px-4 py-1.5 text-xs transition",
-        sort === "oldest"
-          ? "border-white/25 bg-white/[0.08] text-white"
-          : "border-white/10 bg-white/[0.02] text-white/60 hover:text-white"
-      )}
-    >
-      Oldest
-    </button>
-  </div>
-</motion.div>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.04),_transparent_40%)]" />
 
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 md:px-6">
+        
+        {/* HEADER SECTION */}
+        <motion.div
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between"
+        >
+          {/* Left: Title & Subtitle */}
+          <div className="max-w-2xl space-y-6">
+            
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              Selected Projects
+            </div>
 
+            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
+              A small collection of <br className="hidden sm:block" />
+              <span className="text-indigo-100">interactive & data-driven builds.</span>
+            </h2>
 
-        {/* cards grid */}
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
+              Each project focuses on clean UX, solid engineering, and solving specific problems from visualizing algorithms to productivity tools.
+            </p>
+          </div>
+
+          {/* Right: Sort Buttons */}
+          <div className="flex items-center gap-2">
+            {(["newest", "oldest"] as const).map((option) => (
+              <button
+                key={option}
+                onClick={() => setSort(option)}
+                className={cn(
+                  "px-4 py-2 text-xs font-medium rounded-full transition-all duration-300 border",
+                  sort === option
+                    ? "bg-white/[0.08] border-white/20 text-white"
+                    : "bg-transparent border-transparent text-slate-500 hover:text-white hover:bg-white/[0.02]"
+                )}
+              >
+                {option.charAt(0).toUpperCase() + option.slice(1)}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* PROJECTS GRID */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project, index) => (
             <motion.article
               key={project.name}
@@ -190,119 +173,90 @@ export function ProjectsSection() {
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-             className={cn(
-  "group relative overflow-hidden rounded-2xl",
-  "border border-white/[0.08]",
-  "bg-white/[0.02] px-4 py-4 sm:px-4 sm:py-5",
-  "backdrop-blur-md",
-  "shadow-[0_12px_32px_rgba(0,0,0,0.55)]",
-  "transition-all duration-500 ease-out",
-  "hover:-translate-y-2 hover:scale-[1.02]",
-  "hover:border-indigo-400/60",
-  "hover:bg-white/[0.04]",
-  "cursor-pointer"
-)}
-
+              viewport={{ once: true, amount: 0.2 }}
+              className={cn(
+                "group relative flex flex-col justify-between overflow-hidden rounded-2xl",
+                "border border-white/[0.08] bg-white/[0.02]",
+                "p-6 backdrop-blur-sm",
+                "transition-all duration-500 hover:border-indigo-500/30 hover:bg-white/[0.04] hover:-translate-y-1"
+              )}
             >
-              <div className="relative z-10 flex flex-col gap-3 ">
-                {/* title row with badge */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex flex-col">
-                    <h3 className="text-base font-semibold text-white transition-all duration-300 group-hover:text-indigo-200 group-hover:translate-x-0.5 sm:text-lg">
+              {/* Card Content */}
+              <div className="relative z-10 flex flex-col gap-4">
+                
+                {/* Top Row: Title & Status */}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white transition-colors group-hover:text-indigo-200">
                       {project.name}
                     </h3>
-                    <span className="text-xs font-medium text-white/45 transition-colors duration-300 group-hover:text-white/60">
+                    <span className="mt-1 block text-xs font-medium text-slate-500 group-hover:text-slate-400">
                       {project.tag}
-
                     </span>
                   </div>
-
+                  
                   <span
                     className={cn(
-                      "shrink-0 rounded-full border px-2 py-0.5 text-[0.7rem]",
+                      "inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider",
                       statusBadgeClass(project.status)
                     )}
                   >
+                  
                     {project.status}
                   </span>
                 </div>
 
-                {/* meta chips */}
-                <div className="flex flex-wrap items-center gap-2 text-[0.7rem]">
-                 <span
-  key={project.year}
-  className={cn(
-    "rounded-full px-2.5 py-1 text-[0.68rem] leading-none",
-    "border border-white/10 bg-white/[0.03] text-white/70",
-    "backdrop-blur-md",
-    "transition-all duration-300",
-    "group-hover:border-indigo-400/30 group-hover:text-white/90",
-    "group-hover:bg-indigo-500/10 group-hover:scale-105"
-  )}
->
-  {project.year }
-</span>
-
-                </div>
-
-                <p className="text-xs text-white/60 transition-colors duration-300 group-hover:text-white/70 sm:text-sm">
+                <p className="text-sm leading-relaxed text-slate-400 transition-colors group-hover:text-slate-300">
                   {project.description}
                 </p>
 
-                <div className="mt-2 flex flex-wrap gap-2">
+                {/* Tech Stack Chips */}
+                <div className="flex flex-wrap gap-2 pt-2">
                   {project.tech.map((t) => (
-                   <span
-  key={t}
-  className={cn(
-    "rounded-full px-2.5 py-1 text-[0.68rem] leading-none",
-    "border border-white/10 bg-white/[0.03] text-white/70",
-    "backdrop-blur-md",
-    "transition-all duration-300",
-    "group-hover:border-indigo-400/30 group-hover:text-white/90",
-    "group-hover:bg-indigo-500/10 group-hover:scale-105"
-  )}
->
-  {t}
-</span>
-
+                    <span
+                      key={t}
+                      className="inline-flex items-center rounded-md border border-white/5 bg-white/[0.03] px-2.5 py-1 text-[0.7rem] text-slate-300 transition-colors group-hover:bg-white/[0.08] group-hover:text-white"
+                    >
+                      {t}
+                    </span>
                   ))}
                 </div>
+              </div>
 
-                <div className="mt-3 flex items-center justify-between gap-2">
+              {/* Bottom Row: Links */}
+              <div className="relative z-10 mt-8 flex items-center gap-4 border-t border-white/[0.06] pt-4">
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-xs font-medium text-slate-400 transition-colors hover:text-white group/link"
+                >
+                  <Github className="h-4 w-4 transition-transform group-hover/link:scale-110" />
+                  View Code
+                </a>
+
+                {project.live && (
                   <a
-                    href={project.github}
+                    href={project.live}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-cyan-200/90 transition-all duration-300 hover:text-white hover:gap-1.5 hover:translate-x-0.5"
+                    className="flex items-center gap-2 text-xs font-medium text-indigo-300 transition-colors hover:text-indigo-200 group/link"
                   >
-                    <Github className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110" />
-                    <span>View on GitHub</span>
+                    <ExternalLink className="h-4 w-4 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
+                    Live Demo
                   </a>
-
-                  {project.live && (
-                    <a
-                      href={project.live}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[0.7rem] text-white/55 underline-offset-2 transition-all duration-300 hover:text-white hover:underline hover:gap-1.5 hover:translate-x-0.5"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
-                      <span>Live demo</span>
-                    </a>
-                  )}
-                </div>
+                )}
               </div>
             </motion.article>
           ))}
         </div>
 
-        {/* empty state */}
-        {filteredProjects.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-sm text-white/60">
-            No projects match this filter.
+        {/* Empty State */}
+        {filteredProjects.length === 0 && (
+          <div className="flex justify-center py-20 text-center">
+            <p className="text-slate-500">No projects found for this filter.</p>
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );
