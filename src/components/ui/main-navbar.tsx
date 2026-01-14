@@ -25,7 +25,7 @@ export function MainNavbar() {
 
   // Track active section based on scroll
   useEffect(() => {
-    const sections = ["home", "projects", "certificates", "contact", "about"];
+    const sections = ["home", "projects", "certificates", "contact", "blog"];
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -61,7 +61,7 @@ export function MainNavbar() {
     { name: "Projects", href: "#projects", id: "projects" },
     { name: "Certificates", href: "#certificates", id: "certificates" },
     { name: "Contact", href: "#contact", id: "contact" },
-    { name: "About", href: "#about", id: "about" },
+    { name: "Blog", href: "#blog", id: "blog" },
   ];
 
   const handleLinkClick = (href: string) => {
