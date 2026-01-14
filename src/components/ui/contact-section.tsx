@@ -213,13 +213,13 @@ export function ContactSection() {
               className="space-y-4 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.55)] md:p-6"
             >
               {/* Email row */}
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3">
+              <div className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 transition-all duration-300 hover:border-indigo-400/60 hover:bg-white/[0.04]">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-white/80">
-                    <Mail className="h-4 w-4" />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-white/80 transition-all duration-300 group-hover:border-indigo-400/30 group-hover:bg-indigo-500/10 group-hover:scale-110">
+                    <Mail className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                   </div>
                   <div>
-                    <p className="text-[0.7rem] uppercase tracking-[0.22em] text-white/40">
+                    <p className="text-[0.7rem] uppercase tracking-[0.22em] text-white/40 transition-colors duration-300 group-hover:text-white/50">
                       Email
                     </p>
                     <button
@@ -228,7 +228,7 @@ export function ContactSection() {
                         navigator.clipboard.writeText("bibekg2029@gmail.com");
                         setFeedback("Email copied to clipboard.");
                       }}
-                      className="text-left text-sm text-white/85 hover:text-white"
+                      className="text-left text-sm text-white/85 transition-all duration-300 hover:text-white hover:translate-x-0.5"
                     >
                       bibekg2029@gmail.com
                     </button>
@@ -241,7 +241,7 @@ export function ContactSection() {
                     navigator.clipboard.writeText("bibekg2029@gmail.com");
                     setFeedback("Email copied to clipboard.");
                   }}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/65 transition hover:border-white/30 hover:bg-white/[0.08]"
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/65 transition-all duration-300 hover:border-indigo-400/30 hover:bg-indigo-500/10 hover:text-white hover:scale-105"
                 >
                   Copy
                 </button>
@@ -298,12 +298,12 @@ type InfoBlockProps = {
 
 function InfoBlock({ label, title, description }: InfoBlockProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3">
-      <p className="text-[0.7rem] uppercase tracking-[0.22em] text-white/40">
+    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:border-indigo-400/60 hover:bg-white/[0.04] cursor-pointer">
+      <p className="text-[0.7rem] uppercase tracking-[0.22em] text-white/40 transition-colors duration-300 group-hover:text-white/50">
         {label}
       </p>
-      <p className="mt-1 text-sm text-white/85">{title}</p>
-      <p className="mt-1 text-[0.75rem] text-white/40">{description}</p>
+      <p className="mt-1 text-sm font-medium text-white/85 transition-all duration-300 group-hover:text-indigo-200 group-hover:translate-x-0.5">{title}</p>
+      <p className="mt-1 text-[0.75rem] text-white/40 transition-colors duration-300 group-hover:text-white/55">{description}</p>
     </div>
   );
 }

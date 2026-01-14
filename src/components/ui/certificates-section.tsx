@@ -79,7 +79,9 @@ function statusBadgeClass(status?: Certificate["status"]) {
 const chip =
   "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] leading-none " +
   "border border-white/10 bg-white/[0.03] text-white/70 backdrop-blur-md " +
-  "transition-colors duration-200 hover:border-white/15 hover:text-white/85";
+  "transition-all duration-300 " +
+  "group-hover:border-indigo-400/30 group-hover:text-white/90 " +
+  "group-hover:bg-indigo-500/10 group-hover:scale-105";
 
 /* component */
 export function CertificatesSection() {
@@ -163,28 +165,30 @@ export function CertificatesSection() {
             <motion.article
               key={cert.title}
               variants={item}
-              whileHover={{ y: -4 }}
-              transition={{ duration: 0.22 }}
               className={cn(
                 "group relative w-full max-w-[420px] overflow-hidden rounded-2xl",
                 "border border-white/[0.10] bg-white/[0.02] px-5 py-5",
                 "shadow-[0_18px_45px_rgba(0,0,0,0.75)] backdrop-blur-md",
-                "transition-colors duration-200 hover:border-white/[0.16]"
+                "transition-all duration-500 ease-out",
+                "hover:-translate-y-2 hover:scale-[1.02]",
+                "hover:border-indigo-400/60",
+                "hover:bg-white/[0.04]",
+                "cursor-pointer"
               )}
             >
               {/* NO glow overlay inside card ✅ */}
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80">
-                  <Award className="h-4 w-4" />
+                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all duration-300 group-hover:border-indigo-400/30 group-hover:bg-indigo-500/10 group-hover:scale-110">
+                  <Award className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="text-sm font-semibold text-white sm:text-base">
+                      <h3 className="text-sm font-semibold text-white transition-all duration-300 group-hover:text-indigo-200 group-hover:translate-x-0.5 sm:text-base">
                         {cert.title}
                       </h3>
-                      <p className="mt-1 text-[0.8rem] text-white/55">
+                      <p className="mt-1 text-[0.8rem] text-white/55 transition-colors duration-300 group-hover:text-white/65">
                         {cert.issuer}
                       </p>
                     </div>
@@ -215,14 +219,14 @@ export function CertificatesSection() {
                         href={cert.url}
                         target="_blank"
                         rel="noreferrer"
-                        className={cn(chip, "ml-auto")}
+                        className={cn(chip, "ml-auto hover:gap-2 hover:translate-x-0.5")}
                       >
-                        View <ExternalLink className="h-3 w-3" />
+                        View <ExternalLink className="h-3 w-3 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                       </a>
                     )}
                   </div>
 
-                  <p className="mt-3 text-xs leading-relaxed text-white/60">
+                  <p className="mt-3 text-xs leading-relaxed text-white/60 transition-colors duration-300 group-hover:text-white/70">
                     {cert.highlight}
                   </p>
                 </div>

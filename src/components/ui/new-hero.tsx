@@ -190,7 +190,7 @@ export function NewHero() {
               </a>
 
               <a
-                href="/resume.pdf"
+                href="/resumebibekjan26.pdf"
                 className={cn(
                   "group inline-flex items-center justify-center gap-2 rounded-full border border-white/15",
                   "bg-white/[0.04] px-5 py-2.5 text-sm text-white/90",
