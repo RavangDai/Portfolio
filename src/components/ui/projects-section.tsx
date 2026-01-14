@@ -197,21 +197,22 @@ export function ProjectsSection() {
   "bg-white/[0.02] px-4 py-4 sm:px-4 sm:py-5",
   "backdrop-blur-md",
   "shadow-[0_12px_32px_rgba(0,0,0,0.55)]",
-  "transition-all duration-300 ease-out",
-  "hover:-translate-y-1 hover:border-indigo-300/40"
+  "transition-all duration-500 ease-out",
+  "hover:-translate-y-2 hover:scale-[1.02]",
+  "hover:border-indigo-400/60",
+  "hover:bg-white/[0.04]",
+  "cursor-pointer"
 )}
 
             >
-
-
               <div className="relative z-10 flex flex-col gap-3 ">
                 {/* title row with badge */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex flex-col">
-                    <h3 className="text-base font-semibold text-white transition-colors group-hover:text-indigo-200 sm:text-lg">
+                    <h3 className="text-base font-semibold text-white transition-all duration-300 group-hover:text-indigo-200 group-hover:translate-x-0.5 sm:text-lg">
                       {project.name}
                     </h3>
-                    <span className="text-xs font-medium text-white/45">
+                    <span className="text-xs font-medium text-white/45 transition-colors duration-300 group-hover:text-white/60">
                       {project.tag}
 
                     </span>
@@ -235,8 +236,9 @@ export function ProjectsSection() {
     "rounded-full px-2.5 py-1 text-[0.68rem] leading-none",
     "border border-white/10 bg-white/[0.03] text-white/70",
     "backdrop-blur-md",
-    "transition-colors duration-200",
-    "group-hover:border-white/15 group-hover:text-white/85"
+    "transition-all duration-300",
+    "group-hover:border-indigo-400/30 group-hover:text-white/90",
+    "group-hover:bg-indigo-500/10 group-hover:scale-105"
   )}
 >
   {project.year }
@@ -244,7 +246,7 @@ export function ProjectsSection() {
 
                 </div>
 
-                <p className="text-xs text-white/60 sm:text-sm">
+                <p className="text-xs text-white/60 transition-colors duration-300 group-hover:text-white/70 sm:text-sm">
                   {project.description}
                 </p>
 
@@ -256,8 +258,9 @@ export function ProjectsSection() {
     "rounded-full px-2.5 py-1 text-[0.68rem] leading-none",
     "border border-white/10 bg-white/[0.03] text-white/70",
     "backdrop-blur-md",
-    "transition-colors duration-200",
-    "group-hover:border-white/15 group-hover:text-white/85"
+    "transition-all duration-300",
+    "group-hover:border-indigo-400/30 group-hover:text-white/90",
+    "group-hover:bg-indigo-500/10 group-hover:scale-105"
   )}
 >
   {t}
@@ -271,9 +274,9 @@ export function ProjectsSection() {
                     href={project.github}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-cyan-200/90 transition hover:text-white"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-cyan-200/90 transition-all duration-300 hover:text-white hover:gap-1.5 hover:translate-x-0.5"
                   >
-                    <Github className="h-3.5 w-3.5" />
+                    <Github className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110" />
                     <span>View on GitHub</span>
                   </a>
 
@@ -282,9 +285,9 @@ export function ProjectsSection() {
                       href={project.live}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[0.7rem] text-white/55 underline-offset-2 hover:text-white hover:underline"
+                      className="inline-flex items-center gap-1 text-[0.7rem] text-white/55 underline-offset-2 transition-all duration-300 hover:text-white hover:underline hover:gap-1.5 hover:translate-x-0.5"
                     >
-                      <ExternalLink className="h-3.5 w-3.5" />
+                      <ExternalLink className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                       <span>Live demo</span>
                     </a>
                   )}
