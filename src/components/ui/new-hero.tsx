@@ -8,46 +8,43 @@ import { cn } from "@/lib/utils";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const fade = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, delay: 0.08 * i, ease },
+    transition: { duration: 0.8, delay: 0.1 * i, ease },
   }),
 };
 
 const lineVariants = {
-  hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
+  hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.85, delay: 0.18 + i * 0.12, ease },
+    transition: { duration: 0.9, delay: 0.2 + i * 0.15, ease },
   }),
 };
 
 const wordWrap = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.03, delayChildren: 0.25 } },
+  visible: { transition: { staggerChildren: 0.04, delayChildren: 0.3 } },
 };
 
 const word = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
 };
-
-const strongGradientText =
-  "bg-gradient-to-r from-slate-100 via-indigo-200 to-cyan-100 bg-clip-text font-semibold text-transparent";
 
 function AnimatedHeroHeadline() {
   return (
-    <div className="relative">
-      <div className="pointer-events-none absolute -inset-x-10 -top-10 h-24 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.16),transparent_70%)] blur-2xl" />
+    <div className="relative z-10">
+      <div className="pointer-events-none absolute -inset-x-10 -top-20 h-32 bg-indigo-500/10 blur-3xl" />
 
       <motion.h1
         initial="hidden"
         animate="visible"
-        className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl"
+        className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.1]"
       >
         <motion.span custom={0} variants={lineVariants} className="block">
           <motion.span variants={wordWrap} className="inline-block">
@@ -59,7 +56,7 @@ function AnimatedHeroHeadline() {
           </motion.span>
         </motion.span>
 
-        <motion.span custom={1} variants={lineVariants} className="block">
+        <motion.span custom={1} variants={lineVariants} className="block text-indigo-100">
           <motion.span variants={wordWrap} className="inline-block">
             {"full-stack engineering.".split(" ").map((w, i) => (
               <motion.span key={`${w}-${i}`} variants={word} className="inline-block">
@@ -78,74 +75,72 @@ export function NewHero() {
     <section
       id="home"
       className={cn(
-        "relative overflow-hidden border-b border-white/[0.06]",
-        "bg-gradient-to-b from-[#050509] to-[#030308]"
+        "relative overflow-hidden border-b border-white/[0.08]",
+        "bg-[#030308]"
       )}
     >
-      {/* background */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.14),transparent_55%)]" />
-        <div className="absolute -left-56 top-20 h-[720px] w-[720px] rounded-full bg-[radial-gradient(circle,_rgba(99,102,241,0.16),transparent_62%)] blur-3xl" />
-        <div className="absolute -right-64 top-16 h-[760px] w-[760px] rounded-full bg-[radial-gradient(circle,_rgba(129,140,248,0.18),transparent_60%)] blur-3xl" />
-        <div className="absolute -bottom-64 right-[-180px] h-[720px] w-[720px] rounded-full bg-[radial-gradient(circle,_rgba(34,211,238,0.10),transparent_62%)] blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_45%,rgba(0,0,0,0.55)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.08),transparent_60%)]" />
+        <div className="absolute -left-56 top-20 h-[720px] w-[720px] rounded-full bg-indigo-600/10 blur-[120px]" />
+        <div className="absolute -right-64 top-16 h-[760px] w-[760px] rounded-full bg-violet-600/10 blur-[120px]" />
         <div
-          className="absolute inset-0 opacity-[0.06] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(0deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 3px)",
+              "linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
           }}
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030308]/60 to-[#030308]" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-24 md:px-6 md:pb-24 md:pt-28">
-        <div className="grid items-center gap-14 lg:grid-cols-[1fr_1fr]">
-          {/* LEFT */}
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-20 pt-28 md:px-6 md:pb-32 md:pt-32">
+        <div className="grid items-center gap-16 lg:grid-cols-[0.8fr_1.2fr]">
+          
+          {/* LEFT COLUMN */}
           <motion.div
             variants={fade}
             initial="hidden"
             animate="visible"
             custom={0}
-            className="relative flex flex-col items-center"
+            className="relative flex flex-col items-center justify-center lg:items-end"
           >
-            <div className="group relative h-72 w-72">
-              {/* ✅ single-line className (no \r\n) */}
-              <div className="pointer-events-none absolute inset-[-18px] rounded-full bg-[radial-gradient(circle,_rgba(129,140,248,0.18),transparent_62%)] blur-2xl opacity-60 transition-opacity duration-500 group-hover:opacity-95" />
+            <div className="group relative h-64 w-64 sm:h-72 sm:w-72">
+              <div className="pointer-events-none absolute -inset-6 rounded-full bg-indigo-500/20 blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
 
               <motion.div
                 initial={{ rotate: 0 }}
-                whileHover={{ rotate: 120 }}
-                transition={{ duration: 1.1, ease: "easeInOut" }}
-                className="absolute inset-0 rounded-full p-[3px] bg-[conic-gradient(from_210deg,_rgba(99,102,241,0.80),_rgba(129,140,248,0.55),_rgba(34,211,238,0.55),_rgba(99,102,241,0.80))] shadow-[0_0_0_1px_rgba(255,255,255,0.10)]"
+                whileHover={{ rotate: 5 }}
+                className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500"
               >
-                <div className="h-full w-full rounded-full bg-[#050509]" />
+                <div className="h-full w-full rounded-full bg-[#050509] p-1" />
               </motion.div>
 
-              <div className="absolute inset-[9px] overflow-hidden rounded-full bg-white/[0.04] shadow-[0_14px_55px_rgba(0,0,0,0.60)] transition-transform duration-700 group-hover:scale-[1.03]">
+              <div className="absolute inset-[6px] overflow-hidden rounded-full border border-white/5 bg-white/[0.02]">
                 <Image
                   src="/hero-me.png"
                   alt="Bibek Pathak"
                   fill
                   priority
-                  className="object-cover object-[50%_22%]"
+                  className="object-cover object-[50%_20%] grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.10),transparent_55%)]" />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/0 to-black/45" />
               </div>
-
-              <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/10 opacity-70 transition-opacity duration-500 group-hover:opacity-100" />
             </div>
 
-            <div className="mt-8 w-full max-w-md rounded-2xl border border-white/12 bg-gradient-to-r from-indigo-500/14 via-violet-500/10 to-cyan-400/10 px-6 py-4 backdrop-blur-md">
-              <p className="text-sm text-white/85">
-              {"A jack of all trades is a master of none "}
-                <span className={strongGradientText}>, but oftentimes better than a master of one</span>.
-              </p>
+            <div className="relative -mt-10 max-w-[280px] sm:max-w-xs text-center z-20">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+                <p className="text-sm italic leading-relaxed text-indigo-100/90">
+                  "A jack of all trades is a master of none,{" "}
+                  <span className="text-white not-italic font-semibold">but oftentimes better than a master of one."</span>
+                </p>
+              </div>
             </div>
           </motion.div>
 
-          {/* RIGHT */}
-          <div className="relative">
+          {/* RIGHT COLUMN */}
+          <div className="relative flex flex-col items-center text-center lg:items-start lg:text-left">
+            
+            {/* RESTORED PILL COMPONENT EXACTLY AS REQUESTED */}
             <motion.div
               variants={fade}
               initial="hidden"
@@ -164,7 +159,7 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={3}
-              className="mt-4 max-w-xl text-sm text-white/55 sm:text-base"
+              className="mt-6 max-w-xl text-lg text-slate-400 leading-relaxed"
             >
               I blend clean UX, solid engineering, and practical problem-solving to ship modern web
               experiences. From frontend systems to data workflows and cloud-ready builds.
@@ -175,30 +170,25 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={4}
-              className="mt-8 flex flex-col gap-3 sm:flex-row"
+              className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start"
             >
               <a
                 href="#projects"
-                className={cn(
-                  "group inline-flex items-center justify-center gap-2 rounded-full border border-white/15",
-                  "bg-white/[0.04] px-5 py-2.5 text-sm text-white/90",
-                  "shadow-[0_18px_45px_rgba(0,0,0,0.6)] hover:bg-white/[0.07]"
-                )}
+                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-indigo-600 px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-indigo-500 hover:ring-2 hover:ring-indigo-500/50 hover:ring-offset-2 hover:ring-offset-slate-950"
               >
-                View Projects{" "}
-                <LayoutGrid className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-[-2px] group-hover:scale-105" />
+                <span className="relative z-10 flex items-center gap-2">
+                  View Projects
+                  <LayoutGrid className="h-4 w-4 transition-transform group-hover:rotate-12" />
+                </span>
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-100 transition-opacity group-hover:opacity-90" />
               </a>
 
               <a
                 href="/resumebibekjan26.pdf"
-                className={cn(
-                  "group inline-flex items-center justify-center gap-2 rounded-full border border-white/15",
-                  "bg-white/[0.04] px-5 py-2.5 text-sm text-white/90",
-                  "shadow-[0_18px_45px_rgba(0,0,0,0.6)] hover:bg-white/[0.07]"
-                )}
+                className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-8 py-3 text-sm font-medium text-white transition-all hover:bg-white/[0.08] hover:border-white/20"
               >
-                Download Resume{" "}
-                <FileText className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-[-1px] group-hover:scale-105" />
+                Download Resume
+                <FileText className="h-4 w-4 text-white/70 transition-transform group-hover:-translate-y-0.5" />
               </a>
             </motion.div>
 
@@ -207,10 +197,23 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={5}
-              className="mt-10 flex items-center gap-3 text-xs text-white/45"
+              className="mt-12 flex flex-col items-center gap-4 lg:items-start"
             >
-              <span className="h-1 w-8 rounded-full bg-white/30" />
-              Focus: React · TypeScript · Python · Tailwind · Node.js · SQL · MongoDB
+              <div className="text-xs font-medium uppercase tracking-widest text-slate-500">
+                Tech Stack Focus
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+                {[
+                  "React", "TypeScript", "Python", "Tailwind", "Node.js", "SQL", "MongoDB"
+                ].map((tech) => (
+                  <span 
+                    key={tech} 
+                    className="inline-flex items-center rounded-md border border-white/5 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300 transition-colors hover:bg-white/[0.08]"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>
