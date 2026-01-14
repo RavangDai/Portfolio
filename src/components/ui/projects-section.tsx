@@ -65,15 +65,17 @@ const projects: Project[] = [
   },
 ];
 
+// FIXED: Added "as const" to ease array to fix TypeScript error
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
+// FIXED: Added "as const" to ease array to fix TypeScript error
 const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
@@ -82,7 +84,7 @@ const cardVariants = {
     transition: {
       duration: 0.6,
       delay: 0.1 + i * 0.1,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as const,
     },
   }),
 };
@@ -91,7 +93,6 @@ function statusBadgeClass(status: ProjectStatus) {
   if (status === "Completed") {
     return "border-emerald-500/20 bg-emerald-500/10 text-emerald-300";
   }
-  // Using amber for "In progress" to match your design
   return "border-amber-500/20 bg-amber-500/10 text-amber-300";
 }
 
@@ -141,7 +142,7 @@ export function ProjectsSection() {
             </h2>
 
             <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
-              Each project focuses on clean UX, solid engineering, and solving specific problems from visualizing algorithms to productivity tools.
+              Each project focuses on clean UX, solid engineering, and solving specific problemsfrom visualizing algorithms to productivity tools.
             </p>
           </div>
 
@@ -201,7 +202,6 @@ export function ProjectsSection() {
                       statusBadgeClass(project.status)
                     )}
                   >
-                  
                     {project.status}
                   </span>
                 </div>
