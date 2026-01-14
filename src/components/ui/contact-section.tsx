@@ -118,7 +118,7 @@ export function ContactSection() {
                 icon={Target}
                 label="Focus"
                 value="Full-stack · Data / AI"
-                subtitle="Clean interfaces & solid engineering"
+              
               />
             </motion.div>
 
