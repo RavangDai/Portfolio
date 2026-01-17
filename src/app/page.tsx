@@ -12,8 +12,7 @@ export default function HomePage() {
   return (
     <>
       <NewHero />
-      <ProjectsSection />
-      
+      <ProjectsSection />      
       <CertificatesSection />
       <ContactSection />
       <BlogSection />
