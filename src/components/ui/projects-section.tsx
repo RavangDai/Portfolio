@@ -103,7 +103,11 @@ export function ProjectsSection() {
   }, [sort, statusFilter]);
 
   return (
-    <section id="projects" className="relative w-full border-t border-white/[0.08] bg-[#030308] py-24 md:py-32 overflow-hidden">
+    <section id="projects" className="relative w-full border-t border-white/[0.08] bg-[#030308] py-16 md:py-24 lg:py-32 overflow-hidden">
+      
+      {/* 1. BACKGROUND GRID PATTERN */}
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
       {/* Background Ambience (Subtle Purple) */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_center,_rgba(168,85,247,0.04),_transparent_60%)]" />
     
@@ -115,14 +119,14 @@ export function ProjectsSection() {
           initial="hidden" 
           whileInView="visible" 
           viewport={{ once: true, amount: 0.2 }}
-          className="mb-20 flex flex-col justify-between gap-12 md:flex-row md:items-end"
+          className="mb-12 md:mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end"
         >
           {/* Left Side: Title & Subtitle */}
-          <div className="max-w-3xl space-y-6">
+          <div className="max-w-3xl space-y-4 md:space-y-6">
              
              {/* Green Dot Badge */}
              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
               Selected Projects
             </div>
 
@@ -131,19 +135,19 @@ export function ProjectsSection() {
               <span className="text-indigo-100">interactive & data-driven builds.</span>
             </h2>
 
-            <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
-              Each project focuses on clean UX, solid engineering, and solving specific problemsfrom visualizing algorithms to productivity tools.
+            <p className="max-w-xl text-base md:text-lg text-slate-400 leading-relaxed">
+              Each project focuses on clean UX, solid engineering, and solving specific problems—from visualizing algorithms to productivity tools.
             </p>
           </div>
 
           {/* Right Side: Sort Toggle */}
-          <div className="flex shrink-0 gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] p-1.5 backdrop-blur-md">
+          <div className="flex shrink-0 self-start md:self-auto gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] p-1 backdrop-blur-md">
             {(["newest", "oldest"] as const).map((option) => (
               <button
                 key={option}
                 onClick={() => setSort(option)}
                 className={cn(
-                  "relative px-6 py-2 text-xs font-semibold rounded-full transition-all duration-300 z-10 tracking-wide",
+                  "relative px-4 py-2 md:px-6 text-xs font-semibold rounded-full transition-all duration-300 z-10 tracking-wide",
                   sort === option 
                     ? "text-white" 
                     : "text-slate-500 hover:text-white"
@@ -163,7 +167,7 @@ export function ProjectsSection() {
         </motion.div>
 
         {/* PROJECTS GRID */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
           {filteredProjects.map((project, index) => (
             <motion.article
               key={project.name}
@@ -171,49 +175,79 @@ export function ProjectsSection() {
               variants={cardVariants}
               initial="hidden"
               whileInView="visible"
-              whileHover={{ y: -8, scale: 1.01 }} // Physics-based lift
+              whileHover={{ y: -5 }} 
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               viewport={{ once: true, amount: 0.1 }}
               className={cn(
-                "group relative flex flex-col overflow-hidden rounded-[2rem]",
-                "border border-white/[0.05] bg-[#08080a]", // Dark Base
+                "group relative flex flex-col overflow-hidden",
+                "rounded-2xl md:rounded-[2rem]",
+                // Main Background is here on the parent
+                "bg-[#08080a]", 
+                // Default Border
+                "border border-white/[0.08]", 
                 "transition-all duration-500 ease-out",
-                "hover:shadow-[0_0_40px_-10px_rgba(168,85,247,0.15)]", // Purple Glow
-                "hover:border-purple-500/30" // Purple Border
               )}
             >
               
-              {/* 1. VISUAL AREA - UPDATED FOR BETTER FIT */}
-              {/* Changed 'aspect-[16/11]' to 'aspect-video' (16/9) for standard screenshots */}
-              {/* Reduced 'p-4' to 'p-2' to allow image to be larger */}
-              <div className="relative aspect-video overflow-hidden bg-[#030305] p-2">
-                <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg z-10">
-                   {/* Used 'object-top' to ensure header of website is always seen */}
-                   <img 
-                    src={project.image} 
-                    alt={project.name}
-                    className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
-                   />
-                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                </div>
-                <div className="absolute inset-0 z-0 bg-purple-500/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-40" />
-              </div>
+              {/* --- GLOW EFFECTS (Now correctly layered) --- */}
+              
+              {/* 1. Border Glow (Top Layer) */}
+              <div className="pointer-events-none absolute -inset-px z-30 rounded-[inherit] border border-transparent opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:border-purple-500/50" />
+              
+              {/* 2. Background Gradient Glow (Bottom Layer) */}
+              <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-purple-500/[0.08] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-              {/* 2. CONTENT AREA */}
-              <div className="flex flex-1 flex-col justify-between p-6 relative z-20 bg-[#08080a]">
+              {/* 3. Corner Accents (Top Layer) */}
+              <div className="absolute top-4 right-4 h-2 w-2 border-t border-r border-white/10 transition-colors group-hover:border-purple-500/50 z-20" />
+              <div className="absolute bottom-4 left-4 h-2 w-2 border-b border-l border-white/10 transition-colors group-hover:border-purple-500/50 z-20" />
+
+
+              {/* --- CONTENT --- */}
+
+              {/* Visual Area */}
+              {project.live ? (
+                <a 
+                  href={project.live}
+                  target="_blank"
+                  className="relative block aspect-video overflow-hidden bg-[#030305] p-2 cursor-pointer z-10"
+                >
+                  <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg">
+                    <img 
+                      src={project.image} 
+                      alt={project.name}
+                      className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
+                    />
+                    {/* Image Glint */}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  </div>
+                </a>
+              ) : (
+                <div className="relative aspect-video overflow-hidden bg-[#030305] p-2 z-10">
+                  <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg">
+                    <img 
+                      src={project.image} 
+                      alt={project.name}
+                      className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  </div>
+                </div>
+              )}
+
+              {/* Content Area - REMOVED BACKGROUND COLOR HERE */}
+              <div className="flex flex-1 flex-col justify-between p-5 md:p-6 relative z-10">
                 <div>
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                        <p className="text-xs font-bold uppercase tracking-wider mb-2 text-purple-300">{project.tag}</p>
-                        <h3 className="text-2xl font-bold text-white">{project.name}</h3>
+                        <p className="text-xs font-bold uppercase tracking-wider mb-2 text-indigo-300">{project.tag}</p>
+                        <h3 className="text-xl md:text-2xl font-bold text-white transition-colors group-hover:text-purple-100">{project.name}</h3>
                     </div>
                     
-                    {/* DYNAMIC STATUS BADGE */}
                     <span className={cn(
                       "inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider",
                       project.status === "Completed" 
-                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300" // Green for Completed
-                        : "border-amber-500/20 bg-amber-500/10 text-amber-300"   // Amber for In Progress
+                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300" 
+                        : "border-amber-500/20 bg-amber-500/10 text-amber-300"
                     )}>
                       {project.status}
                     </span>
@@ -225,7 +259,7 @@ export function ProjectsSection() {
                 </div>
 
                 {/* Footer: Tech & Links */}
-                <div className="mt-6 flex flex-col gap-4 border-t border-white/[0.06] pt-4">
+                <div className="mt-6 flex flex-col gap-4 border-t border-white/[0.06] pt-4 group-hover:border-white/[0.1] transition-colors">
                   <div className="flex flex-wrap gap-2 items-center">
                     {project.tech.slice(0, 3).map((t) => (
                       <span key={t} className="text-[0.75rem] font-medium text-slate-500">
@@ -237,7 +271,7 @@ export function ProjectsSection() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-4 mt-2">
                      <a 
                       href={project.github}
                       target="_blank"
@@ -251,16 +285,16 @@ export function ProjectsSection() {
                        <a 
                         href={project.live}
                         target="_blank"
-                        className="flex items-center gap-2 text-sm font-semibold text-purple-300 transition-colors hover:text-purple-200 group/live"
+                        className="flex items-center gap-2 text-sm font-semibold text-indigo-300 transition-colors hover:text-purple-200 group/live"
                       >
                         <ExternalLink className="h-4 w-4 transition-transform group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
                         <span>Live Demo</span>
                       </a>
                     )}
                   </div>
-
                 </div>
               </div>
+
             </motion.article>
           ))}
         </div>
