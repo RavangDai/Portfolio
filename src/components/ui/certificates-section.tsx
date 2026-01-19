@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState,  } from "react";
-import { motion, } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Award, ExternalLink, CheckCircle2, Loader2} from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -73,7 +73,15 @@ const cardVariants = {
     transition: { duration: 0.5, delay: i * 0.1, ease: "easeOut" },
   }),
 };
-
+const CardVariants: Variants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: (i: number) => ({
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.5, delay: i * 0.1, ease: "easeOut" },
+  }),
+};
 /* -------------------------------------------------------------------------- */
 /* COMPONENT                                                                  */
 /* -------------------------------------------------------------------------- */
@@ -110,7 +118,7 @@ export function CertificatesSection() {
           {/* Left Side */}
           <div className="max-w-3xl space-y-4 md:space-y-6">
              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
               Certifications
             </div>
 
@@ -156,7 +164,7 @@ export function CertificatesSection() {
             <motion.article
               key={cert.title}
               custom={index}
-              variants={cardVariants}
+              variants={CardVariants}
               initial="hidden"
               whileInView="visible"
               whileHover={{ y: -5 }}
