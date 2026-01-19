@@ -6,7 +6,6 @@ import { LayoutGrid, FileText, Code2, Database, Terminal, Cpu, Globe, LayoutTemp
 import { cn } from "@/lib/utils";
 
 // --- CONFIGURATION ---
-// I added icons to make the moving "buttons" look premium like your request
 const TECH_STACK = [
   { name: "React", icon: Globe },
   { name: "TypeScript", icon: Code2 },
@@ -53,7 +52,6 @@ const word = {
 };
 
 // --- MARQUEE COMPONENT ---
-// This fits exactly into the width of the right column
 function TechMarquee() {
   return (
     <div className="relative flex w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
@@ -66,7 +64,7 @@ function TechMarquee() {
           x: {
             repeat: Infinity,
             repeatType: "loop",
-            duration: 40, // Slower speed for elegance
+            duration: 40,
             ease: "linear",
           },
         }}
@@ -97,7 +95,7 @@ function AnimatedHeroHeadline() {
       <motion.h1
         initial="hidden"
         animate="visible"
-        className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.1]"
+        className="mt-6 text-3xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.1]"
       >
         <motion.span custom={0} variants={lineVariants} className="block">
           <motion.span variants={wordWrap} className="inline-block">
@@ -147,10 +145,13 @@ export function NewHero() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030308]/60 to-[#030308]" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-28 md:px-6 md:pb-20 md:pt-32">
-        <div className="grid items-center gap-16 lg:grid-cols-[0.8fr_1.2fr]">
+      {/* RESPONSIVE PADDING: pt-24 for mobile, pt-32 for desktop */}
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-24 md:px-6 md:pb-20 md:pt-32">
+        
+        {/* RESPONSIVE GRID: grid-cols-1 (stack) for mobile, 2 columns for lg screens */}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           
-          {/* LEFT COLUMN (Your Photo) */}
+          {/* LEFT COLUMN (Photo) */}
           <motion.div
             variants={fade}
             initial="hidden"
@@ -158,7 +159,8 @@ export function NewHero() {
             custom={0}
             className="relative flex flex-col items-center justify-center lg:items-end"
           >
-            <div className="group relative h-64 w-64 sm:h-72 sm:w-72">
+            {/* Responsive sizing: h-56/w-56 on mobile, h-72/w-72 on larger screens */}
+            <div className="group relative h-56 w-56 sm:h-72 sm:w-72">
               <div className="pointer-events-none absolute -inset-6 rounded-full bg-indigo-500/20 blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
               <motion.div
                 initial={{ rotate: 0 }}
@@ -177,11 +179,12 @@ export function NewHero() {
                 />
               </div>
             </div>
-            <div className="relative -mt-10 max-w-[280px] sm:max-w-xs text-center z-20">
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-                <p className="text-sm italic leading-relaxed text-indigo-100/90">
+            
+            <div className="relative -mt-8 max-w-[260px] sm:-mt-10 sm:max-w-xs text-center z-20">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:px-5 sm:py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+                <p className="text-xs sm:text-sm italic leading-relaxed text-indigo-100/90">
                   "A jack of all trades is a master of none,{" "}
-                  <span className="text-white not-italic font-semibold">but oftentimes better than a master of one."</span>
+                  <span className="text-white italic font-semibold">but oftentimes better than a master of one."</span>
                 </p>
               </div>
             </div>
@@ -194,7 +197,7 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={1}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.6rem] sm:text-[0.7rem] uppercase tracking-[0.28em] text-white/60"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
               Bibek · Full-stack · Data / AI
@@ -207,7 +210,7 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={3}
-              className="mt-6 max-w-xl text-lg text-slate-400 leading-relaxed"
+              className="mt-4 sm:mt-6 max-w-xl text-base sm:text-lg text-slate-400 leading-relaxed"
             >
               I blend clean UX, solid engineering, and practical problem-solving to ship modern web
               experiences. From frontend systems to data workflows and cloud-ready builds.
@@ -218,7 +221,7 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={4}
-              className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start"
+              className="mt-8 sm:mt-10 flex flex-wrap justify-center gap-4 lg:justify-start"
             >
               <a
                 href="#projects"
@@ -241,14 +244,15 @@ export function NewHero() {
             </motion.div>
 
             {/* --- TECH STACK (MARQUEE) --- */}
+            {/* Added max-w-[90vw] to ensure it doesn't break mobile layout */}
             <motion.div
               variants={fade}
               initial="hidden"
               animate="visible"
               custom={5}
-              className="mt-12 w-full max-w-2xl" 
+              className="mt-10 sm:mt-12 w-full max-w-[90vw] sm:max-w-2xl" 
             >
-              <div className="mb-4 text-center text-xs font-medium uppercase tracking-widest text-slate-500 lg:text-left">
+              <div className="mb-4 text-center text-[10px] sm:text-xs font-medium uppercase tracking-widest text-slate-500 lg:text-left">
                 Tech Stack Focus
               </div>
               
