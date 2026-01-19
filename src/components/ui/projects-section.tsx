@@ -136,7 +136,7 @@ export function ProjectsSection() {
             </h2>
 
             <p className="max-w-xl text-base md:text-lg text-slate-400 leading-relaxed">
-              Each project focuses on clean UX, solid engineering, and solving specific problems—from visualizing algorithms to productivity tools.
+              Each project focuses on clean UX, solid engineering, and solving specific problems from visualizing algorithms to productivity tools.
             </p>
           </div>
 

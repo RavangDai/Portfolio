@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -15,11 +16,7 @@ type GlowState = {
 
 export function MainNavbar() {
   const pathname = usePathname();
-  const [glow, setGlow] = useState<GlowState>({
-    x: 0,
-    y: 0,
-    active: false,
-  });
+  const [glow, setGlow] = useState<GlowState>({ x: 0, y: 0, active: false });
   const [activeSection, setActiveSection] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -42,11 +39,8 @@ export function MainNavbar() {
       if (el) observer.observe(el);
     });
 
-    // Handle home section
     const handleScroll = () => {
-      if (window.scrollY < 100) {
-        setActiveSection("home");
-      }
+      if (window.scrollY < 100) setActiveSection("home");
     };
     window.addEventListener("scroll", handleScroll);
 
@@ -73,13 +67,7 @@ export function MainNavbar() {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setGlow({ x, y, active: true });
-  };
-
-  const handleMouseLeave = () => {
-    setGlow((prev) => ({ ...prev, active: false }));
+    setGlow({ x: e.clientX - rect.left, y: e.clientY - rect.top, active: true });
   };
 
   return (
@@ -87,35 +75,34 @@ export function MainNavbar() {
       <nav
         className={cn(
           "relative flex w-full max-w-6xl items-center justify-between gap-8",
-          "rounded-[2.5rem] border border-white/10 bg-white/[0.03]",
+          // UPDATED: Darker background (black/20) for better visibility on dark modes
+          "rounded-[2.5rem] border border-white/10 bg-black/20",
           "backdrop-blur-xl shadow-[0_12px_45px_rgba(0,0,0,0.65)]",
           "px-5 py-3 sm:px-8 sm:py-3.5",
           "transition-all duration-500",
-          "hover:border-white/20 hover:bg-white/[0.05]",
+          "hover:border-white/20 hover:bg-black/30", 
           "hover:shadow-[0_20px_60px_rgba(0,0,0,0.75)]"
         )}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={() => setGlow((prev) => ({ ...prev, active: false }))}
       >
         {/* Magnetic glow */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.5rem]">
           <div
             className={cn(
               "absolute h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full",
-              "bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.35),transparent_65%)]",
+              "bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.25),transparent_65%)]", // Slightly softer glow
               "blur-2xl transition-all duration-500",
               glow.active ? "opacity-100 scale-100" : "opacity-0 scale-75"
             )}
-            style={{
-              left: glow.x,
-              top: glow.y,
-            }}
+            style={{ left: glow.x, top: glow.y }}
           />
         </div>
 
-        {/* Actual navbar content */}
+        {/* Content */}
         <div className="relative z-10 flex flex-1 items-center justify-between gap-6">
-          {/* Brand */}
+          
+          {/* Brand / Logo */}
           <button
             onClick={() => {
               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -123,18 +110,16 @@ export function MainNavbar() {
             }}
             className="group flex items-center gap-2.5 transition-transform duration-300 hover:scale-105"
           >
-            <div
-              className={cn(
-                "relative h-9 w-9 overflow-hidden rounded-full",
-                "border border-white/25 bg-white/5",
-                "ring-1 ring-white/5",
-                "transition-all duration-300",
-                "group-hover:ring-indigo-300/70 group-hover:border-indigo-200/70",
-                "group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]"
-              )}
-            >
+            <div className={cn(
+              "relative h-9 w-9 overflow-hidden rounded-full",
+              "border border-white/25 bg-white/5",
+              "ring-1 ring-white/5",
+              "transition-all duration-300",
+              "group-hover:ring-indigo-300/70 group-hover:border-indigo-200/70",
+              "group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]"
+            )}>
               <Image
-                src="/bibek-avatar.jpg"
+                src="/hero-me.png" // Ensure this path matches your hero image
                 alt="Bibek Pathak"
                 fill
                 sizes="36px"
@@ -142,7 +127,6 @@ export function MainNavbar() {
                 priority
               />
             </div>
-
             <span className="hidden text-[11px] font-medium tracking-[0.24em] text-white/60 transition-colors duration-300 group-hover:text-white/80 sm:inline">
               BIBEK · PATHAK
             </span>
@@ -167,7 +151,6 @@ export function MainNavbar() {
                   )}
                 >
                   <span className="relative z-10">{link.name}</span>
-                  {/* Active underline */}
                   <span
                     className={cn(
                       "pointer-events-none absolute left-1/2 -bottom-0.5 h-[2px]",
@@ -177,77 +160,49 @@ export function MainNavbar() {
                       "group-hover:w-full group-hover:opacity-100"
                     )}
                   />
-                  {/* Hover background */}
-                  <span
-                    className={cn(
-                      "pointer-events-none absolute inset-0 -z-0 rounded-full",
-                      "bg-white/[0.05] opacity-0 transition-opacity duration-300",
-                      "group-hover:opacity-100"
-                    )}
-                  />
                 </Link>
               );
             })}
           </div>
 
-          {/* Social icons + Mobile menu button */}
+          {/* Right Side: Socials + Mobile Toggle */}
           <div className="flex items-center gap-3">
-            {/* Social icons */}
             <div className="hidden items-center gap-2.5 sm:flex">
               <Link
                 href="https://github.com/RavangDai"
                 target="_blank"
                 rel="noreferrer"
-                className={cn(
-                  "group inline-flex h-9 w-9 items-center justify-center rounded-full",
-                  "border border-white/15 bg-white/[0.03] text-white/80",
-                  "shadow-sm transition-all duration-300",
-                  "hover:border-indigo-400/60 hover:bg-indigo-500/20",
-                  "hover:text-white hover:scale-110",
-                  "hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]"
-                )}
+                className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 shadow-sm transition-all hover:border-indigo-400/60 hover:bg-indigo-500/20 hover:text-white hover:scale-110"
               >
-                <Github className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                <Github className="h-4 w-4 transition-transform group-hover:scale-110" />
               </Link>
               <Link
                 href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
                 target="_blank"
                 rel="noreferrer"
-                className={cn(
-                  "group inline-flex h-9 w-9 items-center justify-center rounded-full",
-                  "border border-white/15 bg-white/[0.03] text-white/80",
-                  "shadow-sm transition-all duration-300",
-                  "hover:border-indigo-400/60 hover:bg-indigo-500/20",
-                  "hover:text-white hover:scale-110",
-                  "hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]"
-                )}
+                className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 shadow-sm transition-all hover:border-indigo-400/60 hover:bg-indigo-500/20 hover:text-white hover:scale-110"
               >
-                <Linkedin className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                <Linkedin className="h-4 w-4 transition-transform group-hover:scale-110" />
               </Link>
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className={cn(
                 "inline-flex h-9 w-9 items-center justify-center rounded-full",
                 "border border-white/15 bg-white/[0.03] text-white/80",
                 "transition-all duration-300 sm:hidden",
-                "hover:border-indigo-400/60 hover:bg-indigo-500/20",
-                "hover:text-white hover:scale-110"
+                "hover:border-indigo-400/60 hover:bg-indigo-500/20 hover:text-white",
+                mobileMenuOpen && "bg-white/10 text-white border-white/30"
               )}
-              aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Dropdown */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -256,53 +211,52 @@ export function MainNavbar() {
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "absolute left-0 right-0 top-full mt-2 rounded-2xl",
-                "border border-white/10 bg-white/[0.05] backdrop-blur-xl",
-                "shadow-[0_20px_60px_rgba(0,0,0,0.75)]",
+                "absolute left-0 right-0 top-[120%] rounded-2xl",
+                // UPDATED: Much darker background to cover content behind it
+                "border border-white/10 bg-[#030308]/95 backdrop-blur-2xl",
+                "shadow-[0_20px_60px_rgba(0,0,0,0.9)]",
                 "p-4 sm:hidden z-50"
               )}
             >
-            <div className="flex flex-col gap-2">
-              {links.map((link) => {
-                const isActive =
-                  (link.href === "/" && pathname === "/" && activeSection === "home") ||
-                  (link.href.startsWith("#") && activeSection === link.id);
-                return (
+              <div className="flex flex-col gap-2">
+                {links.map((link) => {
+                  const isActive =
+                    (link.href === "/" && pathname === "/" && activeSection === "home") ||
+                    (link.href.startsWith("#") && activeSection === link.id);
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => handleLinkClick(link.href)}
+                      className={cn(
+                        "rounded-xl px-4 py-3 text-sm font-medium",
+                        "text-white/70 transition-all duration-300",
+                        "hover:bg-white/[0.08] hover:text-white",
+                        isActive && "bg-indigo-500/20 text-indigo-200 border border-indigo-500/30"
+                      )}
+                    >
+                      {link.name}
+                    </Link>
+                  );
+                })}
+                <div className="mt-2 flex items-center justify-center gap-4 border-t border-white/10 pt-4">
                   <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => handleLinkClick(link.href)}
-                    className={cn(
-                      "rounded-xl px-4 py-2.5 text-sm font-medium",
-                      "text-white/70 transition-all duration-300",
-                      "hover:bg-white/[0.08] hover:text-white",
-                      isActive && "bg-white/[0.08] text-white"
-                    )}
+                    href="https://github.com/RavangDai"
+                    target="_blank"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all hover:bg-indigo-500/20"
                   >
-                    {link.name}
+                    <Github className="h-5 w-5" />
                   </Link>
-                );
-              })}
-              <div className="mt-2 flex items-center gap-2 border-t border-white/10 pt-3">
-                <Link
-                  href="https://github.com/RavangDai"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all hover:border-indigo-400/60 hover:bg-indigo-500/20"
-                >
-                  <Github className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all hover:border-indigo-400/60 hover:bg-indigo-500/20"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </Link>
+                  <Link
+                    href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
+                    target="_blank"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all hover:bg-indigo-500/20"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
       </nav>
