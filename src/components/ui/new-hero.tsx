@@ -145,13 +145,14 @@ export function NewHero() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030308]/60 to-[#030308]" />
       </div>
 
-      {/* RESPONSIVE PADDING: pt-24 for mobile, pt-32 for desktop */}
+      {/* RESPONSIVE PADDING */}
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-24 md:px-6 md:pb-20 md:pt-32">
         
-        {/* RESPONSIVE GRID: grid-cols-1 (stack) for mobile, 2 columns for lg screens */}
+        {/* RESPONSIVE GRID */}
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           
           {/* LEFT COLUMN (Photo) */}
+          {/* UPDATED: Changed alignment logic. The column aligns to 'end' (right), but the inner content is centered relative to itself. */}
           <motion.div
             variants={fade}
             initial="hidden"
@@ -159,34 +160,41 @@ export function NewHero() {
             custom={0}
             className="relative flex flex-col items-center justify-center lg:items-end"
           >
-            {/* Responsive sizing: h-56/w-56 on mobile, h-72/w-72 on larger screens */}
-            <div className="group relative h-56 w-56 sm:h-72 sm:w-72">
-              <div className="pointer-events-none absolute -inset-6 rounded-full bg-indigo-500/20 blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-              <motion.div
-                initial={{ rotate: 0 }}
-                whileHover={{ rotate: 5 }}
-                className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500"
-              >
-                <div className="h-full w-full rounded-full bg-[#050509] p-1" />
-              </motion.div>
-              <div className="absolute inset-[6px] overflow-hidden rounded-full border border-white/5 bg-white/[0.02]">
-                <Image
-                  src="/hero-me.png"
-                  alt="Bibek Pathak"
-                  fill
-                  priority
-                  className="object-cover object-[50%_20%] grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
-                />
+            {/* WRAPPER DIV: Keeps Image and Quote centered together */}
+            <div className="flex flex-col items-center">
+              
+              {/* IMAGE CONTAINER */}
+              <div className="group relative h-56 w-56 sm:h-72 sm:w-72">
+                <div className="pointer-events-none absolute -inset-6 rounded-full bg-indigo-500/20 blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+                <motion.div
+                  initial={{ rotate: 0 }}
+                  whileHover={{ rotate: 5 }}
+                  className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500"
+                >
+                  <div className="h-full w-full rounded-full bg-[#050509] p-1" />
+                </motion.div>
+                <div className="absolute inset-[6px] overflow-hidden rounded-full border border-white/5 bg-white/[0.02]">
+                  <Image
+                    src="/hero-me.png"
+                    alt="Bibek Pathak"
+                    fill
+                    priority
+                    className="object-cover object-[50%_20%] grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
+                  />
+                </div>
               </div>
-            </div>
-            
-            <div className="relative -mt-8 max-w-[260px] sm:-mt-10 sm:max-w-xs text-center z-20">
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:px-5 sm:py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-                <p className="text-xs sm:text-sm italic leading-relaxed text-indigo-100/90">
-                  "A jack of all trades is a master of none,{" "}
-                  <span className="text-white italic font-semibold">but oftentimes better than a master of one."</span>
-                </p>
+              
+              {/* QUOTE CONTAINER */}
+              {/* Added min-w to prevent text wrapping too early if container shrinks */}
+              <div className="relative -mt-8 w-full max-w-[260px] sm:-mt-10 sm:max-w-xs text-center z-20">
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:px-5 sm:py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
+                  <p className="text-xs sm:text-sm italic leading-relaxed text-indigo-100/90">
+                    "A jack of all trades is a master of none,{" "}
+                    <span className="text-white italic font-semibold">but oftentimes better than a master of one."</span>
+                  </p>
+                </div>
               </div>
+
             </div>
           </motion.div>
 
@@ -244,7 +252,6 @@ export function NewHero() {
             </motion.div>
 
             {/* --- TECH STACK (MARQUEE) --- */}
-            {/* Added max-w-[90vw] to ensure it doesn't break mobile layout */}
             <motion.div
               variants={fade}
               initial="hidden"
