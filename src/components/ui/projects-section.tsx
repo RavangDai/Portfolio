@@ -1,4 +1,3 @@
-// # verified: react, framer-motion, lucide-react, clsx, tailwind-merge
 "use client";
 
 import { useMemo, useState } from "react";
@@ -23,6 +22,20 @@ type Project = {
 
 // --- DATA ---
 const projects: Project[] = [
+  {
+    name: "Smart Todo",
+    // UPDATED: Reflected MERN Stack
+    tag: "MERN Stack · Productivity",
+    // UPDATED: Description emphasizes full-stack features
+    description: "Full-stack task manager featuring secure JWT authentication, real-time MongoDB syncing, and intelligent task categorization.",
+    // UPDATED: Added Node, Express, MongoDB
+    tech: ["React", "Node.js", "MongoDB", "Express", "Tailwind"],
+    github: "https://github.com/RavangDai/SmartTodo",
+    //live: "https://smart-todo-demo.vercel.app/",
+    year: 2026,
+    status: "In progress",
+    image: "smarttodo.png", 
+  },
   {
     name: "WatchThis!AI",
     tag: "Full-stack · AI",
@@ -123,7 +136,7 @@ export function ProjectsSection() {
         >
           {/* Left Side: Title & Subtitle */}
           <div className="max-w-3xl space-y-4 md:space-y-6">
-             
+              
              {/* Green Dot Badge */}
              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
@@ -189,7 +202,7 @@ export function ProjectsSection() {
               )}
             >
               
-              {/* --- GLOW EFFECTS (Now correctly layered) --- */}
+              {/* --- GLOW EFFECTS --- */}
               
               {/* 1. Border Glow (Top Layer) */}
               <div className="pointer-events-none absolute -inset-px z-30 rounded-[inherit] border border-transparent opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:border-purple-500/50" />
@@ -234,7 +247,7 @@ export function ProjectsSection() {
                 </div>
               )}
 
-              {/* Content Area - REMOVED BACKGROUND COLOR HERE */}
+              {/* Content Area */}
               <div className="flex flex-1 flex-col justify-between p-5 md:p-6 relative z-10">
                 <div>
                   <div className="flex items-start justify-between gap-4">
@@ -266,7 +279,7 @@ export function ProjectsSection() {
                         {t}
                       </span>
                     ))}
-                     {project.tech.length > 3 && (
+                      {project.tech.length > 3 && (
                       <span className="text-[0.7rem] text-slate-600">+{project.tech.length - 3}</span>
                     )}
                   </div>
