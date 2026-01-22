@@ -44,7 +44,7 @@ const projects: Project[] = [
     github: "https://github.com/RavangDai/WatchThisAI",
     year: 2026,
     status: "In progress",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
+    image: "watchthisai.png",
   },
   {
     name: "GridNavigator",
