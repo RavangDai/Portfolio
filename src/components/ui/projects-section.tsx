@@ -23,9 +23,9 @@ type Project = {
 // --- DATA ---
 const projects: Project[] = [
   {
-    name: "Smart Todo",
+    name: "KaryaAI",
     // UPDATED: Reflected MERN Stack
-    tag: "MERN Stack · Productivity",
+    tag: "MERN Stack · Productivity ",
     // UPDATED: Description emphasizes full-stack features
     description: "Full-stack task manager featuring secure JWT authentication, real-time MongoDB syncing, and intelligent task categorization.",
     // UPDATED: Added Node, Express, MongoDB
@@ -34,7 +34,7 @@ const projects: Project[] = [
     //live: "https://smart-todo-demo.vercel.app/",
     year: 2026,
     status: "In progress",
-    image: "smarttodo.png", 
+    image: "KaryaAI.png", 
   },
   {
     name: "WatchThis!AI",
