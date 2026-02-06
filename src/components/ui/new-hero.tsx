@@ -68,7 +68,7 @@ function TechMarquee() {
             ease: "linear",
           },
         }}
-        whileHover={{ animationPlayState: "paused" }} 
+        whileHover={{ animationPlayState: "paused" }}
       >
         {/* Doubled list for seamless loop */}
         {[...TECH_STACK, ...TECH_STACK].map((tech, index) => {
@@ -147,10 +147,10 @@ export function NewHero() {
 
       {/* RESPONSIVE PADDING */}
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-24 md:px-6 md:pb-20 md:pt-32">
-        
+
         {/* RESPONSIVE GRID */}
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          
+
           {/* LEFT COLUMN (Photo) */}
           {/* UPDATED: Changed alignment logic. The column aligns to 'end' (right), but the inner content is centered relative to itself. */}
           <motion.div
@@ -162,7 +162,7 @@ export function NewHero() {
           >
             {/* WRAPPER DIV: Keeps Image and Quote centered together */}
             <div className="flex flex-col items-center">
-              
+
               {/* IMAGE CONTAINER */}
               <div className="group relative h-56 w-56 sm:h-72 sm:w-72">
                 <div className="pointer-events-none absolute -inset-6 rounded-full bg-indigo-500/20 blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
@@ -183,14 +183,14 @@ export function NewHero() {
                   />
                 </div>
               </div>
-              
+
               {/* QUOTE CONTAINER */}
               {/* Added min-w to prevent text wrapping too early if container shrinks */}
               <div className="relative -mt-8 w-full max-w-[260px] sm:-mt-10 sm:max-w-xs text-center z-20">
                 <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:px-5 sm:py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
                   <p className="text-xs sm:text-sm italic leading-relaxed text-indigo-100/90">
-                    "A jack of all trades is a master of none,{" "}
-                    <span className="text-white italic font-semibold">but oftentimes better than a master of one."</span>
+                    "Synthesizing code, design, and data{" "}
+                    <span className="text-white italic font-semibold">into a unified, intelligent system."</span>
                   </p>
                 </div>
               </div>
@@ -257,12 +257,12 @@ export function NewHero() {
               initial="hidden"
               animate="visible"
               custom={5}
-              className="mt-10 sm:mt-12 w-full max-w-[90vw] sm:max-w-2xl" 
+              className="mt-10 sm:mt-12 w-full max-w-[90vw] sm:max-w-2xl"
             >
               <div className="mb-4 text-center text-[10px] sm:text-xs font-medium uppercase tracking-widest text-slate-500 lg:text-left">
                 Tech Stack Focus
               </div>
-              
+
               <TechMarquee />
             </motion.div>
           </div>

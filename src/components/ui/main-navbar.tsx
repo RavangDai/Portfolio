@@ -80,7 +80,7 @@ export function MainNavbar() {
           "backdrop-blur-xl shadow-[0_12px_45px_rgba(0,0,0,0.65)]",
           "px-5 py-3 sm:px-8 sm:py-3.5",
           "transition-all duration-500",
-          "hover:border-white/20 hover:bg-black/30", 
+          "hover:border-white/20 hover:bg-black/30",
           "hover:shadow-[0_20px_60px_rgba(0,0,0,0.75)]"
         )}
         onMouseMove={handleMouseMove}
@@ -101,7 +101,7 @@ export function MainNavbar() {
 
         {/* Content */}
         <div className="relative z-10 flex flex-1 items-center justify-between gap-6">
-          
+
           {/* Brand / Logo */}
           <button
             onClick={() => {
