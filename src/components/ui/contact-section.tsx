@@ -64,10 +64,10 @@ export function ContactSection() {
           viewport={{ once: true, amount: 0.2 }}
           className="space-y-16"
         >
-          
+
           {/* HEADER */}
-          <motion.div variants={item(0)} className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl space-y-6">
+          <motion.div variants={item(0)} className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Contact
@@ -79,7 +79,7 @@ export function ContactSection() {
               </h2>
 
               <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
-                Whether it's a data project, full-stack app, or something experimental, 
+                Whether it's a data project, full-stack app, or something experimental,
                 you can reach me quickly with a short message.
               </p>
             </div>
@@ -98,7 +98,7 @@ export function ContactSection() {
 
           {/* CONTENT GRID */}
           <div className="grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
-            
+
             {/* LEFT COLUMN: CARDS */}
             <motion.div variants={item(0.1)} className="flex flex-col gap-4">
               <ContactCard
@@ -118,7 +118,7 @@ export function ContactSection() {
                 icon={Target}
                 label="Focus"
                 value="Full-stack · Data / AI"
-              
+
               />
             </motion.div>
 
@@ -132,9 +132,9 @@ export function ContactSection() {
                 const name = (formData.get("name") as string)?.trim() || "";
                 const subject = (formData.get("subject") as string)?.trim() || "New message";
                 const message = (formData.get("message") as string)?.trim() || "";
-                
+
                 const mailto = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
-                
+
                 window.location.href = mailto;
                 setIsSent(true);
                 setTimeout(() => setIsSent(false), 2500);
@@ -255,7 +255,7 @@ function ContactCard({
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-white/[0.03] text-slate-400 transition-colors group-hover:border-indigo-500/20 group-hover:bg-indigo-500/10 group-hover:text-indigo-300">
         <Icon className="h-5 w-5" />
       </div>
-      
+
       <div className="min-w-0 flex-1">
         <div className="text-xs font-medium uppercase tracking-wider text-slate-500">
           {label}

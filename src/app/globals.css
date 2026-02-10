@@ -124,6 +124,17 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+/* Brand-colored text selection */
+::selection {
+  background: rgba(99, 102, 241, 0.4);
+  color: #fff;
+}
+::-moz-selection {
+  background: rgba(99, 102, 241, 0.4);
+  color: #fff;
+}
+
 /* Social icon subtle glow (GitHub + LinkedIn etc.) */
 .social-icon {
   transition:
