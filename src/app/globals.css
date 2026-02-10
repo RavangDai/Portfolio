@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
 html {
   scroll-behavior: smooth;
 }
@@ -120,6 +121,7 @@ html {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -130,6 +132,7 @@ html {
   background: rgba(99, 102, 241, 0.4);
   color: #fff;
 }
+
 ::-moz-selection {
   background: rgba(99, 102, 241, 0.4);
   color: #fff;
@@ -146,21 +149,27 @@ html {
 }
 
 .social-icon:hover {
-  border-color: rgba(199, 210, 254, 0.9); /* indigo-200 */
-  background-color: rgba(79, 70, 229, 0.18); /* indigo-600/18 */
+  border-color: rgba(199, 210, 254, 0.9);
+  /* indigo-200 */
+  background-color: rgba(79, 70, 229, 0.18);
+  /* indigo-600/18 */
   box-shadow: 0 0 18px rgba(129, 140, 248, 0.7);
   color: #ffffff;
   transform: translateY(-1px);
 }
+
 /* ===== Portfolio Theme Tokens (no tailwind.config needed) ===== */
 :root {
   --bg-0: #030308;
   --bg-1: #050509;
 
   /* primary accents */
-  --accent-1: 99 102 241;  /* indigo */
-  --accent-2: 56 189 248;  /* cyan */
-  --accent-3: 52 211 153;  /* emerald */
+  --accent-1: 99 102 241;
+  /* indigo */
+  --accent-2: 56 189 248;
+  /* cyan */
+  --accent-3: 52 211 153;
+  /* emerald */
 
   /* “steel” highlight for text gradients */
   --steel-1: 255 255 255;
@@ -176,12 +185,10 @@ html {
 
 /* Reusable hero/project text gradient */
 .text-hero-gradient {
-  background: linear-gradient(
-    90deg,
-    rgb(var(--steel-1)) 0%,
-    rgb(var(--steel-2)) 45%,
-    rgb(var(--steel-3)) 100%
-  );
+  background: linear-gradient(90deg,
+      rgb(var(--steel-1)) 0%,
+      rgb(var(--steel-2)) 45%,
+      rgb(var(--steel-3)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -189,13 +196,149 @@ html {
 
 /* Stronger “tech” gradient (no pink) */
 .text-tech-gradient {
-  background: linear-gradient(
-    90deg,
-    rgba(241, 245, 249, 1) 0%,
-    rgba(199, 210, 254, 1) 55%,
-    rgba(165, 243, 252, 1) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(241, 245, 249, 1) 0%,
+      rgba(199, 210, 254, 1) 55%,
+      rgba(165, 243, 252, 1) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* ===== Chat Artifact — Micro-Details ===== */
+
+/* AI text: wider spacing, slightly lighter weight */
+.ai-text {
+  letter-spacing: 0.02em;
+  font-weight: 350;
+}
+
+/* Skill keyword: faint underline that pulses once */
+.skill-mention {
+  position: relative;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 450;
+}
+
+.skill-mention::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  animation: skill-pulse 1.5s ease-out 0.3s forwards;
+}
+
+@keyframes skill-pulse {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  40% {
+    opacity: 0.5;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: 0.15;
+    transform: scaleX(1);
+  }
+}
+
+/* ===== Chat — Scrollbar ===== */
+
+/* Webkit (Chrome, Edge, Safari) */
+.chat-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Firefox */
+.chat-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+/* ===== Chat — Visual Hierarchy ===== */
+
+/* Inline code spans inside chat messages */
+.chat-code {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.85em;
+  color: rgba(165, 180, 252, 0.9);
+  /* indigo-300 */
+}
+
+/* Heading lines inside chat messages */
+.chat-heading {
+  display: block;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  margin-top: 8px;
+  margin-bottom: 2px;
+  letter-spacing: 0.01em;
+}
+
+.chat-heading:first-child {
+  margin-top: 0;
+}
+
+/* Code blocks (multi-line) */
+.chat-code-block {
+  display: block;
+  padding: 10px 12px;
+  margin: 6px 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.82em;
+  line-height: 1.6;
+  color: rgba(199, 210, 254, 0.85);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* List items with accented left border */
+.chat-list-item {
+  display: block;
+  padding-left: 12px;
+  margin: 3px 0;
+  border-left: 2px solid rgba(99, 102, 241, 0.35);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.92em;
+  line-height: 1.65;
+}
+
+/* Prompt buttons hover glow */
+.chat-prompt-btn {
+  transition: all 200ms ease;
+}
+
+.chat-prompt-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
 }
