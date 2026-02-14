@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { SendHorizonal, Mail, MapPin, Target, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SectionReveal } from "@/components/ui/section-reveal";
 
 /* -------------------------------------------------------------------------- */
 /* ANIMATIONS                                 */
@@ -51,12 +52,12 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative w-full border-t border-white/[0.08] bg-[#030308] py-24 md:py-32"
+      className="section-divider relative w-full bg-[#040410] py-24 md:py-32"
     >
       {/* Background Ambience */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.03),_transparent_50%)]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
+      <SectionReveal className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
         <motion.div
           variants={container}
           initial="hidden"
@@ -199,7 +200,7 @@ export function ContactSection() {
             </motion.form>
           </div>
         </motion.div>
-      </div>
+      </SectionReveal>
     </section>
   );
 }

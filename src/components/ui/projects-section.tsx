@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Github, ExternalLink } from "lucide-react";
+import { useMemo, useState, useRef, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Github, ExternalLink, Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SectionReveal } from "@/components/ui/section-reveal";
 
 // --- TYPES ---
 type ProjectStatus = "Completed" | "In progress";
@@ -18,28 +19,27 @@ type Project = {
   year: number;
   status: ProjectStatus;
   image: string;
+  video?: string;
 };
 
 // --- DATA ---
 const projects: Project[] = [
   {
     name: "KaryaAI",
-    // UPDATED: Reflected MERN Stack
-    tag: "MERN Stack · Productivity ",
-    // UPDATED: Description emphasizes full-stack features
-    description: "Full-stack task manager featuring secure JWT authentication, real-time MongoDB syncing, and intelligent task categorization.",
-    // UPDATED: Added Node, Express, MongoDB
+    tag: "MERN Stack · Productivity",
+    description: "Task manager with JWT auth, MongoDB syncing, and AI-powered task sorting.",
     tech: ["React", "Node.js", "MongoDB", "Express", "Tailwind"],
     github: "https://github.com/RavangDai/SmartTodo",
     live: "https://karyaai.vercel.app/",
     year: 2026,
     status: "Completed",
     image: "KaryaAI.png",
+    video: "karyaai.mp4",
   },
   {
     name: "WatchThis!AI",
     tag: "Full-stack · AI",
-    description: "A recommendation platform with modern architecture and AI-driven personalization.",
+    description: "Movie/show recommender powered by AI. Still cooking.",
     tech: ["Next.js", "FastAPI", "PostgreSQL", "Docker"],
     github: "https://github.com/RavangDai/WatchThisAI",
     year: 2026,
@@ -49,7 +49,7 @@ const projects: Project[] = [
   {
     name: "GridNavigator",
     tag: "Algorithms · Visualization",
-    description: "Interactive grid & maze visualizer exploring pathfinding algorithms.",
+    description: "Visualize pathfinding algorithms like A*, Dijkstra, and BFS on interactive grids.",
     tech: ["TypeScript", "React", "Vite"],
     github: "https://github.com/RavangDai/GridNavigator",
     live: "https://grid-navigator-mu.vercel.app/",
@@ -60,7 +60,7 @@ const projects: Project[] = [
   {
     name: "TickTickFocus",
     tag: "Productivity · PWA",
-    description: "Distraction-free Pomodoro app built as a PWA for deep work sessions.",
+    description: "Minimal Pomodoro timer PWA — no distractions, just focus.",
     tech: ["React", "Tailwind", "PWA"],
     github: "https://github.com/RavangDai/TickTickFocus",
     live: "https://tick-tick-focus.vercel.app/",
@@ -71,7 +71,7 @@ const projects: Project[] = [
   {
     name: "Quotex",
     tag: "Frontend · API",
-    description: "Dynamic quote generator with theme toggling and micro-interactions.",
+    description: "Random quote generator with theme switching and smooth animations.",
     tech: ["JavaScript", "React", "Tailwind"],
     github: "https://github.com/RavangDai/Quotex",
     live: "https://quotex-five.vercel.app/",
@@ -105,6 +105,41 @@ const cardVariants = {
 export function ProjectsSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [statusFilter, setStatusFilter] = useState<"All" | ProjectStatus>("All");
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const activeProject = useMemo(
+    () => projects.find((p) => p.name === activeVideo),
+    [activeVideo]
+  );
+
+  const handlePlayVideo = useCallback((projectName: string) => {
+    setActiveVideo(projectName);
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play();
+      }
+    }, 150);
+  }, []);
+
+  const handleCloseVideo = useCallback(() => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    setActiveVideo(null);
+  }, []);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!activeVideo) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleCloseVideo();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activeVideo, handleCloseVideo]);
 
   const filteredProjects = useMemo(() => {
     let list = [...projects];
@@ -116,7 +151,7 @@ export function ProjectsSection() {
   }, [sort, statusFilter]);
 
   return (
-    <section id="projects" className="relative w-full border-t border-white/[0.08] bg-[#030308] py-16 md:py-24 lg:py-32 overflow-hidden">
+    <section id="projects" className="section-divider relative w-full bg-[#040410] py-16 md:py-24 lg:py-32 overflow-hidden">
 
       {/* 1. BACKGROUND GRID PATTERN */}
       <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
@@ -124,7 +159,7 @@ export function ProjectsSection() {
       {/* Background Ambience (Subtle Purple) */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_center,_rgba(168,85,247,0.04),_transparent_60%)]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 md:px-6">
+      <SectionReveal className="relative z-10 mx-auto w-full max-w-7xl px-4 md:px-6">
 
         {/* HEADER SECTION */}
         <motion.div
@@ -144,12 +179,12 @@ export function ProjectsSection() {
             </div>
 
             <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
-              A small collection of <br className="hidden sm:block" />
-              <span className="text-indigo-100">interactive & data-driven builds.</span>
+              Stuff I&apos;ve <br className="hidden sm:block" />
+              <span className="text-indigo-100">built & shipped.</span>
             </h2>
 
             <p className="max-w-xl text-base md:text-lg text-slate-400 leading-relaxed">
-              Each project focuses on clean UX, solid engineering, and solving specific problems from visualizing algorithms to productivity tools.
+              Real projects, real problems. From full-stack apps to algorithm visualizers.
             </p>
           </div>
 
@@ -218,34 +253,47 @@ export function ProjectsSection() {
               {/* --- CONTENT --- */}
 
               {/* Visual Area */}
-              {project.live ? (
-                <a
-                  href={project.live}
-                  target="_blank"
-                  className="relative block aspect-video overflow-hidden bg-[#030305] p-2 cursor-pointer z-10"
-                >
-                  <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg">
+              <div className="relative aspect-video overflow-hidden bg-[#030305] p-2 z-10">
+                <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg">
+
+                  {/* Thumbnail Image */}
+                  {project.live ? (
+                    <a href={project.live} target="_blank" className="block h-full w-full">
+                      <img
+                        src={project.image}
+                        alt={project.name}
+                        className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
+                      />
+                    </a>
+                  ) : (
                     <img
                       src={project.image}
                       alt={project.name}
                       className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
                     />
-                    {/* Image Glint */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  </div>
-                </a>
-              ) : (
-                <div className="relative aspect-video overflow-hidden bg-[#030305] p-2 z-10">
-                  <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg">
-                    <img
-                      src={project.image}
-                      alt={project.name}
-                      className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
-                    />
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  </div>
+                  )}
+
+                  {/* Image Glint */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+                  {/* Play Button Overlay (only for projects with video) */}
+                  {project.video && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handlePlayVideo(project.name);
+                      }}
+                      className="absolute inset-0 z-10 flex items-center justify-center bg-black/0 transition-all duration-300 hover:bg-black/40 group/play"
+                      aria-label={`Play ${project.name} demo video`}
+                    >
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-2xl transition-all duration-300 group-hover/play:scale-110 group-hover/play:bg-purple-500/80 group-hover/play:border-purple-400/50 group-hover/play:shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+                        <Play className="h-6 w-6 fill-current ml-0.5" />
+                      </div>
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* Content Area */}
               <div className="flex flex-1 flex-col justify-between p-5 md:p-6 relative z-10">
@@ -312,7 +360,75 @@ export function ProjectsSection() {
           ))}
         </div>
 
-      </div>
+      </SectionReveal>
+
+      {/* ====== FULLSCREEN VIDEO MODAL ====== */}
+      <AnimatePresence>
+        {activeVideo && activeProject?.video && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center"
+            onClick={handleCloseVideo}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
+
+            {/* Modal Content */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="relative z-10 w-[92vw] max-w-5xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="mb-4 flex items-center justify-between px-1">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/20 border border-purple-500/30">
+                    <Play className="h-4 w-4 fill-purple-400 text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white">{activeProject.name}</h3>
+                    <p className="text-xs text-slate-400">{activeProject.tag}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCloseVideo}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/60 transition-all hover:bg-white/10 hover:text-white hover:scale-105 hover:border-white/20"
+                  aria-label="Close video"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Video Container */}
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-purple-500/5">
+                {/* Subtle purple glow behind video */}
+                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10 blur-xl" />
+
+                <video
+                  ref={videoRef}
+                  src={`/${activeProject.video}`}
+                  controls
+                  playsInline
+                  className="relative z-10 w-full aspect-video object-contain bg-black"
+                  onEnded={handleCloseVideo}
+                />
+              </div>
+
+              {/* Footer hint */}
+              <p className="mt-3 text-center text-xs text-slate-500">
+                Press <kbd className="mx-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-white/5">Esc</kbd> or click outside to close
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </section>
   );
 }
