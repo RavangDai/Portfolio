@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Github, ExternalLink, Play, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ const projects: Project[] = [
     year: 2026,
     status: "Completed",
     image: "KaryaAI.png",
-    video: "karyaai.mp4",
+    video: "https://youtu.be/sQ7IdpM0jQg",
   },
   {
     name: "WatchThis!AI",
@@ -101,12 +101,24 @@ const cardVariants = {
   }),
 };
 
+// --- HELPERS ---
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    // Handle youtu.be/ID format
+    const shortMatch = url.match(/youtu\.be\/([\w-]+)/);
+    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1&rel=0`;
+    // Handle youtube.com/watch?v=ID format
+    const longMatch = url.match(/[?&]v=([\w-]+)/);
+    if (longMatch) return `https://www.youtube.com/embed/${longMatch[1]}?autoplay=1&rel=0`;
+  } catch { /* ignore */ }
+  return null;
+}
+
 // --- COMPONENT ---
 export function ProjectsSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [statusFilter, setStatusFilter] = useState<"All" | ProjectStatus>("All");
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const activeProject = useMemo(
     () => projects.find((p) => p.name === activeVideo),
@@ -115,19 +127,9 @@ export function ProjectsSection() {
 
   const handlePlayVideo = useCallback((projectName: string) => {
     setActiveVideo(projectName);
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.play();
-      }
-    }, 150);
   }, []);
 
   const handleCloseVideo = useCallback(() => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
     setActiveVideo(null);
   }, []);
 
@@ -410,13 +412,12 @@ export function ProjectsSection() {
                 {/* Subtle purple glow behind video */}
                 <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10 blur-xl" />
 
-                <video
-                  ref={videoRef}
-                  src={`/${activeProject.video}`}
-                  controls
-                  playsInline
-                  className="relative z-10 w-full aspect-video object-contain bg-black"
-                  onEnded={handleCloseVideo}
+                <iframe
+                  src={getYouTubeEmbedUrl(activeProject.video!) || activeProject.video}
+                  title={`${activeProject.name} demo video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="relative z-10 w-full aspect-video bg-black"
                 />
               </div>
 
