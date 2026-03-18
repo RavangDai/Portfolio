@@ -2,8 +2,18 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { LayoutGrid, FileText, Code2, Database, Terminal, Cpu, Globe, LayoutTemplate } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  LayoutGrid,
+  FileText,
+  Code2,
+  Database,
+  Terminal,
+  Cpu,
+  Globe,
+  LayoutTemplate,
+  ArrowDown,
+} from "lucide-react";
+import { FlowLink } from "@/components/ui/flow-button";
 
 // --- CONFIGURATION ---
 const TECH_STACK = [
@@ -20,66 +30,83 @@ const TECH_STACK = [
   { name: "Git", icon: Terminal },
 ];
 
+// Particle positions — deterministic so no hydration mismatch
+const PARTICLES = [
+  { left: "8%",  top: "22%", size: 3, duration: 4.2, delay: 0 },
+  { left: "18%", top: "68%", size: 2, duration: 5.5, delay: 0.8 },
+  { left: "82%", top: "18%", size: 2, duration: 3.8, delay: 1.4 },
+  { left: "88%", top: "55%", size: 3, duration: 6.1, delay: 0.3 },
+  { left: "50%", top: "88%", size: 2, duration: 4.7, delay: 1.9 },
+  { left: "35%", top: "12%", size: 1.5, duration: 5.0, delay: 2.4 },
+];
+
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const fade = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, delay: 0.1 * i, ease },
-  }),
-};
+// --- AVATAR ---
+function Avatar() {
+  return (
+    <div className="relative inline-flex items-center justify-center">
+      {/* Pulse rings */}
+      <span
+        className="absolute inset-0 rounded-full border border-emerald-400/30 pointer-events-none"
+        style={{ animation: "pulse-out 3s ease-out infinite" }}
+      />
+      <span
+        className="absolute inset-0 rounded-full border border-cyan-400/20 pointer-events-none"
+        style={{ animation: "pulse-out 3s ease-out infinite", animationDelay: "1s" }}
+      />
 
-const lineVariants = {
-  hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.9, delay: 0.2 + i * 0.15, ease },
-  }),
-};
+      {/* Animated glow halo */}
+      <motion.div
+        className="absolute inset-0 rounded-full pointer-events-none"
+        animate={{
+          boxShadow: [
+            "0 0 18px 5px rgba(16,185,129,0.18)",
+            "0 0 32px 10px rgba(34,211,238,0.26)",
+            "0 0 18px 5px rgba(16,185,129,0.18)",
+          ],
+        }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-const wordWrap = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.04, delayChildren: 0.3 } },
-};
+      {/* Photo */}
+      <div className="group relative h-[78px] w-[78px] sm:h-[90px] sm:w-[90px] overflow-hidden rounded-full border border-white/[0.08]">
+        <div className="absolute -inset-1 rounded-full bg-emerald-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <Image
+          src="/hero-me.png"
+          alt="Bibek Pathak"
+          fill
+          priority
+          className="relative object-cover object-[50%_20%] grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-110"
+        />
+      </div>
 
-const word = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
-};
+    </div>
+  );
+}
 
-// --- MARQUEE COMPONENT ---
+// --- MARQUEE ---
 function TechMarquee() {
   return (
     <div className="relative flex w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
       <motion.div
-        className="flex gap-3 pr-3"
-        animate={{
-          x: ["0%", "-50%"],
-        }}
+        className="flex gap-0 pr-0"
+        animate={{ x: ["0%", "-50%"] }}
         transition={{
-          x: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 40,
-            ease: "linear",
-          },
+          x: { repeat: Infinity, repeatType: "loop", duration: 40, ease: "linear" },
         }}
-        whileHover={{ animationPlayState: "paused" }}
       >
-        {/* Doubled list for seamless loop */}
         {[...TECH_STACK, ...TECH_STACK].map((tech, index) => {
           const Icon = tech.icon;
           return (
             <div
               key={`${tech.name}-${index}`}
-              className="group relative flex shrink-0 items-center gap-2 rounded-full border border-white/[0.05] bg-white/[0.03] px-3 py-1.5 transition-colors hover:bg-white/[0.08] hover:border-white/10"
+              className="group flex shrink-0 items-center gap-2 border-r border-white/[0.04] px-5 py-1 transition-all hover:bg-white/[0.02]"
             >
-              <Icon className="h-3 w-3 text-indigo-400/70 transition-colors group-hover:text-indigo-400" />
-              <span className="text-xs font-medium text-slate-300">{tech.name}</span>
+              <Icon className="h-3 w-3 text-slate-700 group-hover:text-emerald-400 transition-colors duration-300" />
+              <span className="text-[0.6rem] font-medium uppercase tracking-[0.22em] text-slate-700 group-hover:text-slate-400 transition-colors duration-300">
+                {tech.name}
+              </span>
             </div>
           );
         })}
@@ -88,186 +115,162 @@ function TechMarquee() {
   );
 }
 
-function AnimatedHeroHeadline() {
-  return (
-    <div className="relative z-10">
-      <div className="pointer-events-none absolute -inset-x-10 -top-20 h-32 bg-indigo-500/10 blur-3xl" />
-      <motion.h1
-        initial="hidden"
-        animate="visible"
-        className="mt-6 text-3xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl leading-[1.1]"
-      >
-        <motion.span custom={0} variants={lineVariants} className="block">
-          <motion.span variants={wordWrap} className="inline-block">
-            {"Building across design, data &".split(" ").map((w, i) => (
-              <motion.span key={`${w}-${i}`} variants={word} className="inline-block">
-                {w}&nbsp;
-              </motion.span>
-            ))}
-          </motion.span>
-        </motion.span>
-        <motion.span custom={1} variants={lineVariants} className="block text-indigo-100">
-          <motion.span variants={wordWrap} className="inline-block">
-            {"full-stack engineering.".split(" ").map((w, i) => (
-              <motion.span key={`${w}-${i}`} variants={word} className="inline-block">
-                {w}&nbsp;
-              </motion.span>
-            ))}
-          </motion.span>
-        </motion.span>
-      </motion.h1>
-    </div>
-  );
-}
-
-// --- MAIN HERO COMPONENT ---
+// --- MAIN HERO ---
 export function NewHero() {
   return (
     <section
       id="home"
-      className={cn(
-        "relative overflow-hidden border-b border-white/[0.08]",
-        "bg-[#030308]"
-      )}
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#020A06] pb-0"
     >
+      {/* ══════════════════════════════════════
+          BACKGROUND LAYER
+      ══════════════════════════════════════ */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(129,140,248,0.08),transparent_60%)]" />
-        <div className="absolute -left-56 top-20 h-[720px] w-[720px] rounded-full bg-indigo-600/10 blur-[120px]" />
-        <div className="absolute -right-64 top-16 h-[760px] w-[760px] rounded-full bg-violet-600/10 blur-[120px]" />
+        <div className="absolute top-[8%] left-[10%] h-[520px] w-[520px] rounded-full bg-emerald-600 blur-[100px] animate-aurora-1" />
+        <div className="absolute bottom-[10%] right-[8%] h-[460px] w-[460px] rounded-full bg-cyan-600 blur-[90px] animate-aurora-2" />
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.022]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
+              "linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#030308]/60 to-[#030308]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_100%,transparent_50%,#020A06_100%)]" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#020A06] to-transparent" />
       </div>
 
-      {/* RESPONSIVE PADDING */}
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-12 pt-24 md:px-6 md:pb-20 md:pt-32">
-
-        {/* RESPONSIVE GRID */}
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-
-          {/* LEFT COLUMN (Photo) */}
-          {/* UPDATED: Changed alignment logic. The column aligns to 'end' (right), but the inner content is centered relative to itself. */}
+      {/* ══════════════════════════════════════
+          FLOATING PARTICLES
+      ══════════════════════════════════════ */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {PARTICLES.map((p, i) => (
           <motion.div
-            variants={fade}
-            initial="hidden"
-            animate="visible"
-            custom={0}
-            className="relative flex flex-col items-center justify-center lg:items-end"
+            key={i}
+            className="absolute rounded-full bg-emerald-400"
+            style={{ left: p.left, top: p.top, width: p.size, height: p.size }}
+            animate={{ y: [-10, 10, -10], opacity: [0.15, 0.55, 0.15] }}
+            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
+          />
+        ))}
+      </div>
+
+      {/* ══════════════════════════════════════
+          TOP STRIP
+      ══════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, delay: 0.2, ease }}
+        className="relative z-10 flex items-center justify-between px-6 pt-8 md:px-10"
+      >
+        <div className="flex items-center gap-2 text-[0.58rem] font-medium uppercase tracking-[0.28em] text-slate-700">
+          <span>Scroll</span>
+          <motion.div
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            {/* WRAPPER DIV: Keeps Image and Quote centered together */}
-            <div className="flex flex-col items-center">
+            <ArrowDown className="h-3 w-3" />
+          </motion.div>
+        </div>
+      </motion.div>
 
-              {/* IMAGE CONTAINER */}
-              <div className="group relative h-56 w-56 sm:h-72 sm:w-72">
-                <div className="pointer-events-none absolute -inset-6 rounded-full bg-indigo-500/20 blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-                <motion.div
-                  initial={{ rotate: 0 }}
-                  whileHover={{ rotate: 5 }}
-                  className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-500"
-                >
-                  <div className="h-full w-full rounded-full bg-[#050509] p-1" />
-                </motion.div>
-                <div className="absolute inset-[6px] overflow-hidden rounded-full border border-white/5 bg-white/[0.02]">
-                  <Image
-                    src="/hero-me.png"
-                    alt="Bibek Pathak"
-                    fill
-                    priority
-                    className="object-cover object-[50%_20%] grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                </div>
-              </div>
+      {/* ══════════════════════════════════════
+          CENTER CONTENT
+      ══════════════════════════════════════ */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 text-center pt-20 pb-10">
 
-              {/* QUOTE CONTAINER */}
-              {/* Added min-w to prevent text wrapping too early if container shrinks */}
-              <div className="relative -mt-8 w-full max-w-[260px] sm:-mt-10 sm:max-w-xs text-center z-20">
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 sm:px-5 sm:py-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-                  <p className="text-xs sm:text-sm italic leading-relaxed text-indigo-100/90">
-                    "Synthesizing code, design, and data{" "}
-                    <span className="text-white italic font-semibold">into a unified, intelligent system."</span>
-                  </p>
-                </div>
-              </div>
+        {/* Avatar */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.75 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.38, ease }}
+        >
+          <Avatar />
+        </motion.div>
 
-            </div>
+        {/* ── PRIMARY NAME ── */}
+        <div className="mt-5 sm:mt-6 select-none">
+
+          {/* BIBEK */}
+          <motion.div
+            initial={{ opacity: 0, y: 50, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1, delay: 0.55, ease }}
+          >
+            <span
+              className="block font-black leading-[0.82] tracking-tighter shimmer-text"
+              style={{ fontSize: "clamp(4.5rem, 18vw, 15rem)" }}
+            >
+              BIBEK
+            </span>
           </motion.div>
 
-          {/* RIGHT COLUMN (Content + Marquee) */}
-          <div className="relative flex flex-col items-center text-center lg:items-start lg:text-left">
-            <motion.div
-              variants={fade}
-              initial="hidden"
-              animate="visible"
-              custom={1}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.6rem] sm:text-[0.7rem] uppercase tracking-[0.28em] text-white/60"
+          {/* PATHAK */}
+          <motion.div
+            initial={{ opacity: 0, y: 50, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1, delay: 0.7, ease }}
+          >
+            <span
+              className="block font-thin leading-[0.82] tracking-[0.18em] text-white/20"
+              style={{ fontSize: "clamp(3rem, 13.5vw, 11rem)" }}
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-              Bibek · Full-stack · Data / AI
-            </motion.div>
-
-            <AnimatedHeroHeadline />
-
-            <motion.p
-              variants={fade}
-              initial="hidden"
-              animate="visible"
-              custom={3}
-              className="mt-4 sm:mt-6 max-w-xl text-base sm:text-lg text-slate-400 leading-relaxed"
-            >
-              I blend clean UX, solid engineering, and practical problem-solving to ship modern web
-              experiences. From frontend systems to data workflows and cloud-ready builds.
-            </motion.p>
-
-            <motion.div
-              variants={fade}
-              initial="hidden"
-              animate="visible"
-              custom={4}
-              className="mt-8 sm:mt-10 flex flex-wrap justify-center gap-4 lg:justify-start"
-            >
-              <a
-                href="#projects"
-                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-indigo-600 px-8 py-3 text-sm font-semibold text-white transition-all hover:bg-indigo-500 hover:ring-2 hover:ring-indigo-500/50 hover:ring-offset-2 hover:ring-offset-slate-950"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  View Projects
-                  <LayoutGrid className="h-4 w-4 transition-transform group-hover:rotate-12" />
-                </span>
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-100 transition-opacity group-hover:opacity-90" />
-              </a>
-
-              <a
-                href="/resumebibekjan26.pdf"
-                className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-8 py-3 text-sm font-medium text-white transition-all hover:bg-white/[0.08] hover:border-white/20"
-              >
-                Download Resume
-                <FileText className="h-4 w-4 text-white/70 transition-transform group-hover:-translate-y-0.5" />
-              </a>
-            </motion.div>
-
-            {/* --- TECH STACK (MARQUEE) --- */}
-            <motion.div
-              variants={fade}
-              initial="hidden"
-              animate="visible"
-              custom={5}
-              className="mt-10 sm:mt-12 w-full max-w-[90vw] sm:max-w-2xl"
-            >
-              <div className="mb-4 text-center text-[10px] sm:text-xs font-medium uppercase tracking-widest text-slate-500 lg:text-left">
-                Tech Stack Focus
-              </div>
-
-              <TechMarquee />
-            </motion.div>
-          </div>
+              PATHAK
+            </span>
+          </motion.div>
         </div>
+
+        {/* Divider */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ duration: 1, delay: 1.1, ease }}
+          className="mt-7 h-px w-24 origin-center"
+          style={{
+            background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.6) 40%, rgba(34,211,238,0.6) 60%, transparent)",
+          }}
+        />
+
+        {/* Description */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.18, ease }}
+          className="mt-6 max-w-[360px] text-sm sm:text-base text-slate-400 leading-relaxed"
+        >
+          Synthesizing code, design, and data into scalable, user-centric applications.
+        </motion.p>
+
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.32, ease }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+        >
+          <FlowLink href="#projects" variant="primary">
+            View Projects
+            <LayoutGrid className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" />
+          </FlowLink>
+          <FlowLink href="/resumebibekjan26.pdf" variant="ghost">
+            Download Resume
+            <FileText className="h-3.5 w-3.5" />
+          </FlowLink>
+        </motion.div>
       </div>
+
+      {/* ══════════════════════════════════════
+          BOTTOM — MARQUEE
+      ══════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.5, ease }}
+        className="relative z-10 pb-7 pt-5"
+      >
+        <TechMarquee />
+      </motion.div>
     </section>
   );
 }

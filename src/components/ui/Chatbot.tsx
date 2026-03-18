@@ -14,22 +14,22 @@ interface ChatMessage {
     timestamp: number;
 }
 
-type IntentColor = "blue" | "violet" | "gold" | "warm" | "neutral";
+type IntentColor = "emerald" | "cyan" | "gold" | "warm" | "neutral";
 
 /* ─── Intent Detection ─── */
 const INTENT_MAP: { keywords: string[]; color: IntentColor }[] = [
-    { keywords: ["project", "built", "shipped", "karya", "watch", "grid", "tick"], color: "blue" },
-    { keywords: ["architecture", "stack", "system", "design", "infra", "scale"], color: "violet" },
+    { keywords: ["project", "built", "shipped", "karya", "watch", "grid", "tick"], color: "emerald" },
+    { keywords: ["architecture", "stack", "system", "design", "infra", "scale"], color: "cyan" },
     { keywords: ["hire", "hiring", "impact", "resume", "role", "position", "recruiter", "team"], color: "gold" },
     { keywords: ["story", "journey", "why", "personal", "background", "who"], color: "warm" },
 ];
 
 const ACCENT_COLORS: Record<IntentColor, { primary: string; glow: string; bg: string }> = {
-    blue: { primary: "rgb(96, 165, 250)", glow: "rgba(96, 165, 250, 0.3)", bg: "rgba(96, 165, 250, 0.06)" },
-    violet: { primary: "rgb(167, 139, 250)", glow: "rgba(167, 139, 250, 0.3)", bg: "rgba(167, 139, 250, 0.06)" },
+    emerald: { primary: "rgb(52, 211, 153)", glow: "rgba(52, 211, 153, 0.3)", bg: "rgba(52, 211, 153, 0.06)" },
+    cyan: { primary: "rgb(34, 211, 238)", glow: "rgba(34, 211, 238, 0.3)", bg: "rgba(34, 211, 238, 0.06)" },
     gold: { primary: "rgb(251, 191, 36)", glow: "rgba(251, 191, 36, 0.25)", bg: "rgba(251, 191, 36, 0.05)" },
     warm: { primary: "rgb(251, 146, 60)", glow: "rgba(251, 146, 60, 0.25)", bg: "rgba(251, 146, 60, 0.05)" },
-    neutral: { primary: "rgb(148, 163, 184)", glow: "rgba(148, 163, 184, 0.2)", bg: "rgba(148, 163, 184, 0.04)" },
+    neutral: { primary: "rgb(52, 211, 153)", glow: "rgba(52, 211, 153, 0.2)", bg: "rgba(52, 211, 153, 0.04)" },
 };
 
 function detectIntent(text: string): IntentColor {
@@ -477,11 +477,11 @@ export function Chatbot() {
                                cursor-pointer focus:outline-none group overflow-hidden"
                     style={{
                         borderRadius: "18px 12px 14px 20px",
-                        background: "rgba(8, 8, 16, 0.88)",
+                        background: "rgba(2, 10, 6, 0.88)",
                         backdropFilter: "blur(24px)",
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                        border: "1px solid rgba(16, 185, 129, 0.15)",
                         boxShadow: `
-                            0 0 40px rgba(99, 102, 241, 0.25),
+                            0 0 40px rgba(16, 185, 129, 0.2),
                             0 8px 32px rgba(0, 0, 0, 0.5),
                             inset 0 1px 0 rgba(255, 255, 255, 0.06)
                         `,
@@ -492,12 +492,12 @@ export function Chatbot() {
                 >
                     {/* Pulsing orb */}
                     <motion.div
-                        className="relative h-3 w-3 rounded-full bg-indigo-400"
+                        className="relative h-3 w-3 rounded-full bg-emerald-400"
                         animate={{ opacity: [0.6, 1, 0.6], scale: [0.9, 1.1, 0.9] }}
                         transition={{ duration: 2.5, repeat: Infinity }}
                     >
                         <motion.div
-                            className="absolute inset-0 rounded-full bg-indigo-400"
+                            className="absolute inset-0 rounded-full bg-emerald-400"
                             animate={{ scale: [1, 2, 1], opacity: [0.3, 0, 0.3] }}
                             transition={{ duration: 2.5, repeat: Infinity }}
                         />
@@ -512,7 +512,7 @@ export function Chatbot() {
                         className="absolute inset-0 pointer-events-none"
                         style={{
                             borderRadius: "inherit",
-                            background: "radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.15), transparent 70%)",
+                            background: "radial-gradient(ellipse at 20% 50%, rgba(16, 185, 129, 0.15), transparent 70%)",
                         }}
                         animate={{ opacity: [0, 0.6, 0] }}
                         transition={{ duration: 4, repeat: Infinity }}
@@ -544,7 +544,7 @@ export function Chatbot() {
                                 ? "min(80vh, calc(100dvh - 2rem))"
                                 : "min(520px, calc(100dvh - 2rem))",
                             borderRadius: "20px 14px 16px 24px",
-                            background: "rgba(8, 8, 16, 0.94)",
+                            background: "rgba(2, 10, 6, 0.94)",
                             backdropFilter: "blur(40px) saturate(1.2)",
                             WebkitBackdropFilter: "blur(40px) saturate(1.2)",
                             border: `1px solid rgba(255, 255, 255, 0.06)`,
@@ -602,10 +602,10 @@ export function Chatbot() {
                                         <div
                                             className="max-w-[92%] relative"
                                             style={{
-                                                background: "rgba(12, 12, 28, 0.85)",
+                                                background: "rgba(3, 12, 8, 0.85)",
                                                 borderRadius: "14px 10px 12px 16px",
                                                 padding: "14px 16px",
-                                                border: "1px solid rgba(255, 255, 255, 0.07)",
+                                                border: "1px solid rgba(16, 185, 129, 0.08)",
                                                 boxShadow: `inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 0 20px -8px ${accent.glow}`,
                                             }}
                                         >
@@ -651,9 +651,9 @@ export function Chatbot() {
                                     <div
                                         className="px-3.5 py-2.5"
                                         style={{
-                                            background: "rgba(12, 12, 28, 0.85)",
+                                            background: "rgba(3, 12, 8, 0.85)",
                                             borderRadius: "14px 10px 12px 16px",
-                                            border: "1px solid rgba(255, 255, 255, 0.06)",
+                                            border: "1px solid rgba(16, 185, 129, 0.08)",
                                         }}
                                     >
                                         <motion.div
@@ -681,7 +681,7 @@ export function Chatbot() {
                                             "border rounded-lg",
                                             "focus:outline-none",
                                             p.primary
-                                                ? "text-indigo-300/80 border-indigo-500/25 bg-indigo-500/[0.08] hover:text-indigo-200 hover:border-indigo-400/40 hover:bg-indigo-500/[0.14]"
+                                                ? "text-emerald-300/80 border-emerald-500/25 bg-emerald-500/[0.08] hover:text-emerald-200 hover:border-emerald-400/40 hover:bg-emerald-500/[0.14]"
                                                 : "text-white/35 border-white/[0.07] bg-white/[0.02] hover:text-white/65 hover:border-white/[0.15] hover:bg-white/[0.05]"
                                         )}
                                     >

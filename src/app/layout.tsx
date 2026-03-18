@@ -4,12 +4,14 @@ import "./globals.css";
 import { MainNavbar } from "@/components/ui/main-navbar";
 import { Footer } from "@/components/ui/footer";
 import { Chatbot } from "@/components/ui/Chatbot";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 });
+
 
 export const metadata: Metadata = {
   title: "Bibek · Portfolio",
@@ -25,6 +27,7 @@ export default function RootLayout({
     <html lang="en" className={`dark scroll-smooth ${inter.variable}`} suppressHydrationWarning>
 
       <body className="font-sans bg-[#050509] text-white antialiased min-h-screen" suppressHydrationWarning>
+        <ScrollProgress />
         <MainNavbar />
         {children}
         <Footer />

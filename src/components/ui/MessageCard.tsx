@@ -41,7 +41,7 @@ function Tag({ label, variant = "default" }: { label: string; variant?: "default
         <span
             className={cn(
                 "inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-                variant === "ai" && "bg-violet-500/15 text-violet-300 border border-violet-500/20",
+                variant === "ai" && "bg-cyan-500/15 text-cyan-300 border border-cyan-500/20",
                 variant === "production" && "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20",
                 variant === "default" && "bg-white/[0.06] text-white/60 border border-white/[0.08]"
             )}
@@ -61,7 +61,7 @@ function CountUpMetric({ value, unit }: { value: number; unit: string }) {
             className="flex items-baseline gap-1"
         >
             <motion.span
-                className="text-2xl font-semibold text-indigo-300"
+                className="text-2xl font-semibold text-emerald-300"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
@@ -132,7 +132,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 
             {/* Prompt for more info */}
             {data.prompt && (
-                <div className="flex items-center gap-1.5 text-[12px] text-indigo-400 pt-1">
+                <div className="flex items-center gap-1.5 text-[12px] text-emerald-400 pt-1">
                     <ArrowRight className="h-3 w-3" />
                     <span>{data.prompt}</span>
                 </div>
@@ -149,7 +149,7 @@ function MetricCard({ data }: { data: MetricCardData }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
             className={cn(
-                "rounded-lg border border-white/[0.1] bg-gradient-to-br from-indigo-500/10 to-violet-500/5",
+                "rounded-lg border border-emerald-500/[0.15] bg-gradient-to-br from-emerald-500/10 to-cyan-500/5",
                 "p-4 space-y-2"
             )}
         >

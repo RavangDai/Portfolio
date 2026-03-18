@@ -2,36 +2,14 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { SendHorizonal, Mail, MapPin, Target, Copy, Check } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SectionReveal } from "@/components/ui/section-reveal";
-
-/* -------------------------------------------------------------------------- */
-/* ANIMATIONS                                 */
-/* -------------------------------------------------------------------------- */
+import { FlowButton } from "@/components/ui/flow-button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const container = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease },
-  },
-};
-
-const item = (delay: number) => ({
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay, ease },
-  },
-});
-
 /* -------------------------------------------------------------------------- */
-/* MAIN COMPONENT                             */
+/* MAIN COMPONENT                                                              */
 /* -------------------------------------------------------------------------- */
 
 export function ContactSection() {
@@ -42,7 +20,7 @@ export function ContactSection() {
   const handleCopy = () => {
     navigator.clipboard.writeText("bibekg2029@gmail.com");
     setCopied(true);
-    setFeedback("Email copied to clipboard.");
+    setFeedback("Copied to clipboard.");
     setTimeout(() => {
       setCopied(false);
       setFeedback(null);
@@ -52,226 +30,254 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="section-divider relative w-full bg-[#040410] py-24 md:py-32"
+      className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden"
     >
-      {/* Background Ambience */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.03),_transparent_50%)]" />
+      {/* ── Sonar / radar background ── */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
 
-      <SectionReveal className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="space-y-16"
-        >
+        {/* Sonar rings expanding from bottom-left */}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="absolute rounded-full border border-emerald-400/[0.12]"
+            style={{
+              width:  `${(i + 1) * 220}px`,
+              height: `${(i + 1) * 220}px`,
+              left:   "-40px",
+              bottom: "-40px",
+              animation: `sonar-pulse 5s ease-out ${i * 1}s infinite`,
+            }}
+          />
+        ))}
 
-          {/* HEADER */}
-          <motion.div variants={item(0)} className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Contact
-              </div>
 
-              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
-                Let’s build something <br />
-                <span className="text-indigo-100">together.</span>
+        {/* Faint grid lines */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: "linear-gradient(rgba(16,185,129,1) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,1) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+
+        {/* Top-right aurora */}
+        <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-cyan-600/[0.05] blur-[90px] animate-aurora-3" />
+
+        {/* Edge vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_30%_60%,transparent_40%,#030C08_90%)]" />
+      </div>
+
+
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
+        <div className="grid gap-16 lg:gap-20 xl:gap-32 lg:grid-cols-[1fr_1.3fr]">
+
+          {/* ── LEFT: Editorial info ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, ease }}
+            className="flex flex-col gap-12"
+          >
+            <div>
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400/70 mb-5">
+                Get In Touch
+              </p>
+              <h2
+                className="font-bold tracking-tighter leading-[0.9]"
+                style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)" }}
+              >
+                <span className="shimmer-text">Let&apos;s build</span><br />
+                <span className="text-white/20">something.</span>
               </h2>
-
-              <p className="max-w-xl text-lg text-slate-400 leading-relaxed">
-                Whether it's a data project, full-stack app, or something experimental,
-                you can reach me quickly with a short message.
+              <p className="mt-6 text-slate-500 leading-relaxed max-w-xs text-base">
+                Whether it&apos;s a data project, full-stack app, or something
+                experimental — reach out.
               </p>
             </div>
 
-            <motion.div
-              variants={item(0.05)}
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-xs font-medium uppercase tracking-widest text-emerald-300"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-              </span>
-              Open to Internships
-            </motion.div>
-          </motion.div>
+            {/* Contact details — flowing text style */}
+            <div className="space-y-8">
 
-          {/* CONTENT GRID */}
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
-
-            {/* LEFT COLUMN: CARDS */}
-            <motion.div variants={item(0.1)} className="flex flex-col gap-4">
-              <ContactCard
-                icon={Mail}
-                label="Email"
-                value="bibekg2029@gmail.com"
-                onCopy={handleCopy}
-                copied={copied}
-              />
-              <ContactCard
-                icon={MapPin}
-                label="Based in"
-                value="Southeastern Louisiana University"
-                subtitle="Open to remote & hybrid"
-              />
-              <ContactCard
-                icon={Target}
-                label="Focus"
-                value="Full-stack · Data / AI"
-
-              />
-            </motion.div>
-
-            {/* RIGHT COLUMN: FORM */}
-            <motion.form
-              variants={item(0.15)}
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const formData = new FormData(form);
-                const name = (formData.get("name") as string)?.trim() || "";
-                const subject = (formData.get("subject") as string)?.trim() || "New message";
-                const message = (formData.get("message") as string)?.trim() || "";
-
-                const mailto = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
-
-                window.location.href = mailto;
-                setIsSent(true);
-                setTimeout(() => setIsSent(false), 2500);
-                form.reset();
-              }}
-              className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-sm sm:p-10"
-            >
-              <div className="grid gap-6 sm:grid-cols-2">
-                <FormField label="Name" htmlFor="name">
-                  <input id="name" name="name" type="text" placeholder="Your name" className={inputClass} required />
-                </FormField>
-                <FormField label="Email" htmlFor="email">
-                  <input id="email" name="email" type="email" placeholder="you@example.com" className={inputClass} required />
-                </FormField>
-              </div>
-
-              <div className="mt-6 space-y-6">
-                <FormField label="Subject" htmlFor="subject">
-                  <input id="subject" name="subject" type="text" placeholder="What are we working on?" className={inputClass} required />
-                </FormField>
-
-                <FormField label="Message" htmlFor="message">
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    placeholder="Tell me a bit about your idea, timeline, and how I can help."
-                    className={cn(inputClass, "resize-none min-h-[140px]")}
-                    required
-                  />
-                </FormField>
-              </div>
-
-              <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-                <motion.button
-                  type="submit"
-                  whileTap={{ scale: 0.98 }}
-                  disabled={isSent}
-                  className={cn(
-                    "group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg bg-indigo-600 px-8 py-3 text-sm font-semibold text-white transition-all",
-                    "hover:bg-indigo-500 hover:ring-2 hover:ring-indigo-500/50 hover:ring-offset-2 hover:ring-offset-slate-950",
-                    "disabled:opacity-70 disabled:cursor-not-allowed sm:w-auto"
-                  )}
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {isSent ? "Opening Mail App..." : "Send Message"}
-                    <SendHorizonal className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-0.5" />
+              {/* Email */}
+              <div>
+                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-2">
+                  Email
+                </p>
+                <div className="flex items-center gap-3">
+                  <span className="text-base font-medium text-white/60 hover:text-white transition-colors select-all">
+                    bibekg2029@gmail.com
                   </span>
-                  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-600 to-violet-600 opacity-100 transition-opacity group-hover:opacity-90" />
-                </motion.button>
-
+                  <button
+                    onClick={handleCopy}
+                    className={cn(
+                      "btn-icon h-7 w-7 transition-all duration-300",
+                      copied && "!border-emerald-500/30 !bg-emerald-500/10 !text-emerald-400 !shadow-[0_0_12px_rgba(52,211,153,0.2)]"
+                    )}
+                    aria-label="Copy email"
+                  >
+                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  </button>
+                </div>
                 {feedback && (
                   <motion.p
-                    initial={{ opacity: 0, y: 5 }}
+                    initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-xs text-emerald-400"
+                    className="mt-1.5 text-xs text-emerald-400/70"
                   >
                     {feedback}
                   </motion.p>
                 )}
               </div>
-            </motion.form>
-          </div>
-        </motion.div>
-      </SectionReveal>
+
+              {/* Location */}
+              <div>
+                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-2">
+                  Based at
+                </p>
+                <p className="text-base text-white/50">
+                  Southeastern Louisiana University
+                </p>
+                <p className="text-xs text-slate-700 mt-1">
+                  Open to remote &amp; hybrid
+                </p>
+              </div>
+
+              {/* Focus */}
+              <div>
+                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-2">
+                  Focus
+                </p>
+                <p className="text-base text-white/50">Full-stack · Data / AI</p>
+              </div>
+
+              {/* Status */}
+              <div className="inline-flex items-center gap-2 text-[0.65rem] font-medium uppercase tracking-widest text-emerald-400/70">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                </span>
+                Open to Internships
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ── RIGHT: Minimal form ── */}
+          <motion.form
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.15, ease }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const formData = new FormData(form);
+              const name = (formData.get("name") as string)?.trim() || "";
+              const subject =
+                (formData.get("subject") as string)?.trim() || "New message";
+              const message = (formData.get("message") as string)?.trim() || "";
+
+              const mailto = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
+
+              window.location.href = mailto;
+              setIsSent(true);
+              setTimeout(() => setIsSent(false), 2500);
+              form.reset();
+            }}
+            className="flex flex-col gap-8"
+          >
+            <div className="grid gap-8 sm:grid-cols-2">
+              <MinimalField label="Name" htmlFor="f-name">
+                <input
+                  id="f-name"
+                  name="name"
+                  type="text"
+                  placeholder="Your name"
+                  className={minimalInput}
+                  required
+                />
+              </MinimalField>
+              <MinimalField label="Email" htmlFor="f-email">
+                <input
+                  id="f-email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className={minimalInput}
+                  required
+                />
+              </MinimalField>
+            </div>
+
+            <MinimalField label="Subject" htmlFor="f-subject">
+              <input
+                id="f-subject"
+                name="subject"
+                type="text"
+                placeholder="What are we working on?"
+                className={minimalInput}
+                required
+              />
+            </MinimalField>
+
+            <MinimalField label="Message" htmlFor="f-message">
+              <textarea
+                id="f-message"
+                name="message"
+                rows={5}
+                placeholder="Tell me about your idea, timeline, and how I can help."
+                className={cn(minimalInput, "resize-none min-h-[120px]")}
+                required
+              />
+            </MinimalField>
+
+            <div className="flex items-center gap-4 pt-2">
+              <FlowButton
+                type="submit"
+                variant="primary"
+                disabled={isSent}
+                className="disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+              >
+                {isSent ? "Opening Mail App..." : "Send Message"}
+              </FlowButton>
+            </div>
+          </motion.form>
+        </div>
+      </div>
     </section>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* SUBCOMPONENTS                              */
+/* SUBCOMPONENTS                                                               */
 /* -------------------------------------------------------------------------- */
 
-// Input Styling - Darker background for better contrast
-const inputClass = cn(
-  "w-full rounded-lg border border-white/10 bg-[#050509] px-4 py-3",
-  "text-sm text-slate-200 placeholder-white/20",
+const minimalInput = cn(
+  "w-full bg-transparent border-0 border-b border-white/[0.07] py-3 px-0",
+  "text-sm text-slate-200 placeholder-white/[0.1]",
   "transition-all duration-300",
-  "focus:border-indigo-500/50 focus:bg-indigo-500/[0.02] focus:outline-none focus:ring-1 focus:ring-indigo-500/50",
-  "hover:border-white/20"
+  "focus:border-emerald-400/50 focus:outline-none",
+  "hover:border-white/[0.14]"
 );
 
-function FormField({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
+function MinimalField({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="space-y-2">
-      <label htmlFor={htmlFor} className="text-xs font-medium uppercase tracking-wider text-slate-500">
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="block text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-1"
+      >
         {label}
       </label>
       {children}
-    </div>
-  );
-}
-
-function ContactCard({
-  icon: Icon,
-  label,
-  value,
-  subtitle,
-  onCopy,
-  copied,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  subtitle?: string;
-  onCopy?: () => void;
-  copied?: boolean;
-}) {
-  return (
-    <div
-      onClick={onCopy}
-      className={cn(
-        "group relative flex items-center gap-4 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 transition-all duration-500",
-        onCopy && "cursor-pointer active:scale-[0.98]",
-        "hover:border-indigo-500/30 hover:bg-white/[0.04]"
-      )}
-    >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-white/[0.03] text-slate-400 transition-colors group-hover:border-indigo-500/20 group-hover:bg-indigo-500/10 group-hover:text-indigo-300">
-        <Icon className="h-5 w-5" />
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <div className="text-xs font-medium uppercase tracking-wider text-slate-500">
-          {label}
-        </div>
-        <div className="mt-0.5 font-medium text-slate-200 group-hover:text-white transition-colors">
-          {value}
-        </div>
-        {subtitle && <div className="text-xs text-slate-500 mt-0.5">{subtitle}</div>}
-      </div>
-
-      {onCopy && (
-        <div className="mr-2 text-slate-600 transition-colors group-hover:text-white">
-          {copied ? <Check className="h-5 w-5 text-emerald-400" /> : <Copy className="h-5 w-5" />}
-        </div>
-      )}
     </div>
   );
 }

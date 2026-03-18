@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Users\\\\bibek\\\\Personal Projects\\\\Protfolio\\\\portfolio-next\" && npx tsc --noEmit 2>&1 | head -60)",
+      "Bash(cd \"C:\\\\Users\\\\bibek\\\\Personal Projects\\\\Protfolio\\\\portfolio-next\" && npx tsc --noEmit 2>&1)",
+      "Bash(echo:*)"
+    ]
+  }
+}

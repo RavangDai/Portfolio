@@ -1,10 +1,39 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, ExternalLink, Play, X } from "lucide-react";
+
+const sortVariants = {
+  enter: (d: number) => ({
+    opacity: 0,
+    y: d * -40,
+    filter: "blur(6px)",
+  }),
+  center: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as const,
+      staggerChildren: 0.06,
+    },
+  },
+  exit: (d: number) => ({
+    opacity: 0,
+    y: d * 40,
+    filter: "blur(6px)",
+    transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const },
+  }),
+};
+
+const rowVariants = {
+  enter: { opacity: 0, y: 10 },
+  center: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
+  exit:   { opacity: 0, y: -6, transition: { duration: 0.2 } },
+};
+import { Github, Play, X, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SectionReveal } from "@/components/ui/section-reveal";
 
 // --- TYPES ---
 type ProjectStatus = "Completed" | "In progress";
@@ -33,7 +62,7 @@ const projects: Project[] = [
     live: "https://karyaai.vercel.app/",
     year: 2026,
     status: "Completed",
-    image: "KaryaAI.png",
+    image: "/KaryaAI.png",
     video: "https://youtu.be/sQ7IdpM0jQg",
   },
   {
@@ -44,7 +73,7 @@ const projects: Project[] = [
     github: "https://github.com/RavangDai/WatchThisAI",
     year: 2026,
     status: "In progress",
-    image: "watchthisai.png",
+    image: "/watchthisai.png",
   },
   {
     name: "GridNavigator",
@@ -55,7 +84,7 @@ const projects: Project[] = [
     live: "https://grid-navigator-mu.vercel.app/",
     year: 2025,
     status: "Completed",
-    image: "gridnav.png",
+    image: "/gridnav.png",
   },
   {
     name: "TickTickFocus",
@@ -66,7 +95,7 @@ const projects: Project[] = [
     live: "https://tick-tick-focus.vercel.app/",
     year: 2025,
     status: "Completed",
-    image: "Ticktick.png",
+    image: "/Ticktick.png",
   },
   {
     name: "Quotex",
@@ -77,37 +106,15 @@ const projects: Project[] = [
     live: "https://quotex-five.vercel.app/",
     year: 2024,
     status: "Completed",
-    image: "quotex.png",
-  }
-];
-
-// --- ANIMATIONS ---
-const sectionVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
+    image: "/quotex.png",
   },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.98 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.6, delay: 0.1 + i * 0.1, ease: [0.22, 1, 0.36, 1] as const },
-  }),
-};
+];
 
 // --- HELPERS ---
 function getYouTubeEmbedUrl(url: string): string | null {
   try {
-    // Handle youtu.be/ID format
     const shortMatch = url.match(/youtu\.be\/([\w-]+)/);
     if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1&rel=0`;
-    // Handle youtube.com/watch?v=ID format
     const longMatch = url.match(/[?&]v=([\w-]+)/);
     if (longMatch) return `https://www.youtube.com/embed/${longMatch[1]}?autoplay=1&rel=0`;
   } catch { /* ignore */ }
@@ -117,7 +124,13 @@ function getYouTubeEmbedUrl(url: string): string | null {
 // --- COMPONENT ---
 export function ProjectsSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
-  const [statusFilter, setStatusFilter] = useState<"All" | ProjectStatus>("All");
+  const dirRef = useRef(0);
+
+  const handleSort = (option: "newest" | "oldest") => {
+    if (option === sort) return;
+    dirRef.current = option === "oldest" ? 1 : -1;
+    setSort(option);
+  };
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   const activeProject = useMemo(
@@ -133,7 +146,6 @@ export function ProjectsSection() {
     setActiveVideo(null);
   }, []);
 
-  // Close modal on Escape key
   useEffect(() => {
     if (!activeVideo) return;
     const onKey = (e: KeyboardEvent) => {
@@ -144,227 +156,274 @@ export function ProjectsSection() {
   }, [activeVideo, handleCloseVideo]);
 
   const filteredProjects = useMemo(() => {
-    let list = [...projects];
-    if (statusFilter !== "All") {
-      list = list.filter((p) => p.status === statusFilter);
-    }
-    list.sort((a, b) => (sort === "newest" ? b.year - a.year : a.year - b.year));
-    return list;
-  }, [sort, statusFilter]);
+    return [...projects].sort((a, b) =>
+      sort === "newest" ? b.year - a.year : a.year - b.year
+    );
+  }, [sort]);
 
   return (
-    <section id="projects" className="section-divider relative w-full bg-[#040410] py-16 md:py-24 lg:py-32 overflow-hidden">
+    <section id="projects" className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden">
 
-      {/* 1. BACKGROUND GRID PATTERN */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+      {/* ── Circuit board background ── */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
 
-      {/* Background Ambience (Subtle Purple) */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_center,_rgba(168,85,247,0.04),_transparent_60%)]" />
-
-      <SectionReveal className="relative z-10 mx-auto w-full max-w-7xl px-4 md:px-6">
-
-        {/* HEADER SECTION */}
-        <motion.div
-          variants={sectionVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="mb-12 md:mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end"
+        {/* PCB trace SVG pattern — slowly breathes */}
+        <motion.svg
+          className="absolute inset-0 w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+          animate={{ opacity: [0.07, 0.12, 0.07] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
-          {/* Left Side: Title & Subtitle */}
-          <div className="max-w-3xl space-y-4 md:space-y-6">
+          <defs>
+            <pattern id="pcb" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="48" x2="96" y2="48" stroke="#10b981" strokeWidth="0.6"/>
+              <line x1="48" y1="0" x2="48" y2="96" stroke="#10b981" strokeWidth="0.6"/>
+              <line x1="0" y1="18" x2="28" y2="18" stroke="#10b981" strokeWidth="0.5"/>
+              <line x1="28" y1="18" x2="28" y2="0" stroke="#10b981" strokeWidth="0.5"/>
+              <line x1="96" y1="76" x2="68" y2="76" stroke="#10b981" strokeWidth="0.5"/>
+              <line x1="68" y1="76" x2="68" y2="96" stroke="#10b981" strokeWidth="0.5"/>
+              <line x1="18" y1="48" x2="18" y2="72" stroke="#10b981" strokeWidth="0.4"/>
+              <line x1="0" y1="72" x2="36" y2="72" stroke="#10b981" strokeWidth="0.4"/>
+              <circle cx="48" cy="48" r="2.5" fill="none" stroke="#34d399" strokeWidth="0.8"/>
+              <circle cx="28" cy="18" r="1.5" fill="#34d399"/>
+              <circle cx="68" cy="76" r="1.5" fill="#34d399"/>
+              <circle cx="18" cy="72" r="1" fill="#34d399"/>
+              <circle cx="48" cy="18" r="1" fill="#34d399" opacity="0.5"/>
+              <circle cx="78" cy="48" r="1" fill="#34d399" opacity="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#pcb)"/>
+        </motion.svg>
 
-            {/* Green Dot Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-              Selected Projects
-            </div>
+        {/* 3 data-pulse dots on different horizontal traces */}
+        {[
+          { top: "22%", delay: "0s",    duration: "3.8s", width: "55%" },
+          { top: "50%", delay: "1.4s",  duration: "5.2s", width: "70%" },
+          { top: "74%", delay: "2.8s",  duration: "4.4s", width: "45%" },
+        ].map((p, i) => (
+          <div key={i} className="absolute h-[1px]" style={{ top: p.top, left: "-4px", width: p.width }}>
+            <div
+              className="absolute h-[3px] w-[3px] rounded-full bg-emerald-400 top-1/2 -translate-y-1/2"
+              style={{
+                animation: `data-pulse ${p.duration} ease-in-out ${p.delay} infinite`,
+                boxShadow: "0 0 6px 2px rgba(52,211,153,0.55)",
+              }}
+            />
+          </div>
+        ))}
 
-            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
-              Stuff I&apos;ve <br className="hidden sm:block" />
-              <span className="text-indigo-100">built & shipped.</span>
-            </h2>
+        {/* Soft corner glows */}
+        <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-cyan-600/[0.06] blur-[100px] animate-aurora-2" />
+        <div className="absolute -bottom-20 -left-20 h-[350px] w-[350px] rounded-full bg-emerald-600/[0.05] blur-[90px] animate-aurora-3" />
 
-            <p className="max-w-xl text-base md:text-lg text-slate-400 leading-relaxed">
-              Real projects, real problems. From full-stack apps to algorithm visualizers.
+        {/* Edge vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_50%,#030C08_100%)]" />
+      </div>
+
+
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
+
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-14 md:mb-20 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
+        >
+          <div>
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400/70 mb-5">
+              Selected Work
             </p>
+            <h2
+              className="font-bold tracking-tighter leading-[0.9]"
+              style={{ fontSize: "clamp(2.8rem,7vw,5rem)" }}
+            >
+              <span className="shimmer-text">Built &amp;</span><br />
+              <span className="text-white/20">Shipped.</span>
+            </h2>
           </div>
 
-          {/* Right Side: Sort Toggle */}
-          <div className="flex shrink-0 self-start md:self-auto gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] p-1 backdrop-blur-md">
+          {/* Sort — underline tabs */}
+          <div className="flex shrink-0 self-start sm:self-auto">
             {(["newest", "oldest"] as const).map((option) => (
               <button
                 key={option}
-                onClick={() => setSort(option)}
+                onClick={() => handleSort(option)}
                 className={cn(
-                  "relative px-4 py-2 md:px-6 text-xs font-semibold rounded-full transition-all duration-300 z-10 tracking-wide",
-                  sort === option
-                    ? "text-white"
-                    : "text-slate-500 hover:text-white"
+                  "relative px-4 pb-3 pt-1 text-[0.65rem] font-semibold tracking-[0.2em] uppercase transition-colors duration-300",
+                  sort === option ? "text-white" : "text-slate-600 hover:text-slate-400"
                 )}
               >
-                {sort === option && (
-                  <motion.span
-                    layoutId="filter-pill-v5"
-                    className="absolute inset-0 rounded-full bg-white/[0.08] border border-white/[0.08] -z-10 shadow-sm"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
                 {option.charAt(0).toUpperCase() + option.slice(1)}
+                {/* Animated gradient underline */}
+                <span className={cn(
+                  "absolute bottom-0 left-0 h-[1.5px] w-full origin-left transition-all duration-400",
+                  sort === option
+                    ? "scale-x-100 opacity-100"
+                    : "scale-x-0 opacity-0"
+                )}
+                  style={{ background: "linear-gradient(90deg, #10b981, #22d3ee)" }}
+                />
               </button>
             ))}
           </div>
         </motion.div>
 
-        {/* PROJECTS GRID */}
-        <div className="grid gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
+        {/* PROJECTS LIST */}
+        <div className="relative">
+
+          {/* Top rule */}
+          <div className="h-px w-full bg-white/[0.05]" />
+
+          <AnimatePresence mode="wait" custom={dirRef.current}>
+          <motion.div
+            key={sort}
+            custom={dirRef.current}
+            variants={sortVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
           {filteredProjects.map((project, index) => (
             <motion.article
               key={project.name}
-              custom={index}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              viewport={{ once: true, amount: 0.1 }}
-              className={cn(
-                "group relative flex flex-col overflow-hidden",
-                "rounded-2xl md:rounded-[2rem]",
-                // Main Background is here on the parent
-                "bg-[#08080a]",
-                // Default Border
-                "border border-white/[0.08]",
-                "transition-all duration-500 ease-out",
-              )}
+              variants={rowVariants}
+              className="group relative border-b border-white/[0.06] py-8 md:py-10"
             >
+              {/* Hover wash */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/[0.03] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg" />
 
-              {/* --- GLOW EFFECTS --- */}
+              {/* Left accent bar */}
+              <motion.div
+                className="absolute left-0 top-4 bottom-4 w-[2px] rounded-full bg-gradient-to-b from-emerald-400 to-cyan-400"
+                initial={{ scaleY: 0, opacity: 0 }}
+                whileHover={{ scaleY: 1, opacity: 1 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                style={{ originY: 0 }}
+              />
 
-              {/* 1. Border Glow (Top Layer) */}
-              <div className="pointer-events-none absolute -inset-px z-30 rounded-[inherit] border border-transparent opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:border-purple-500/50" />
+              <div className="relative flex items-start gap-5 md:gap-8 pl-1">
 
-              {/* 2. Background Gradient Glow (Bottom Layer) */}
-              <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-purple-500/[0.08] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                {/* Index number */}
+                <span
+                  className="shrink-0 select-none font-black text-white tracking-tighter leading-none mt-0.5 font-mono hidden sm:block w-8 text-right"
+                  style={{ fontSize: "clamp(1.1rem,1.8vw,1.4rem)", opacity: 0.12 }}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
 
-              {/* 3. Corner Accents (Top Layer) */}
-              <div className="absolute top-4 right-4 h-2 w-2 border-t border-r border-white/10 transition-colors group-hover:border-purple-500/50 z-20" />
-              <div className="absolute bottom-4 left-4 h-2 w-2 border-b border-l border-white/10 transition-colors group-hover:border-purple-500/50 z-20" />
+                {/* Main content */}
+                <div className="flex-1 min-w-0 flex flex-col md:flex-row gap-6 md:gap-10">
 
+                  {/* Text content */}
+                  <div className="flex-1 min-w-0 space-y-3">
 
-              {/* --- CONTENT --- */}
-
-              {/* Visual Area */}
-              <div className="relative aspect-video overflow-hidden bg-[#030305] p-2 z-10">
-                <div className="relative h-full w-full overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] shadow-lg">
-
-                  {/* Thumbnail Image */}
-                  {project.live ? (
-                    <a href={project.live} target="_blank" className="block h-full w-full">
-                      <img
-                        src={project.image}
-                        alt={project.name}
-                        className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
-                      />
-                    </a>
-                  ) : (
-                    <img
-                      src={project.image}
-                      alt={project.name}
-                      className="h-full w-full object-cover object-top transition-transform duration-700 ease-in-out group-hover:scale-105"
-                    />
-                  )}
-
-                  {/* Image Glint */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.07] to-white/0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-                  {/* Play Button Overlay (only for projects with video) */}
-                  {project.video && (
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handlePlayVideo(project.name);
-                      }}
-                      className="absolute inset-0 z-10 flex items-center justify-center bg-black/0 transition-all duration-300 hover:bg-black/40 group/play"
-                      aria-label={`Play ${project.name} demo video`}
-                    >
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-2xl transition-all duration-300 group-hover/play:scale-110 group-hover/play:bg-purple-500/80 group-hover/play:border-purple-400/50 group-hover/play:shadow-[0_0_30px_rgba(168,85,247,0.4)]">
-                        <Play className="h-6 w-6 fill-current ml-0.5" />
+                    {/* Top row: name + status + year */}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <div className="flex items-center gap-2.5">
+                        <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors duration-200">
+                          {project.name}
+                        </h3>
+                        {project.video && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handlePlayVideo(project.name); }}
+                            className="flex items-center justify-center h-6 w-6 rounded-full border border-emerald-500/30 text-emerald-400/60 hover:border-emerald-400/60 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-200"
+                            aria-label={`Play ${project.name} demo`}
+                          >
+                            <Play className="h-2.5 w-2.5 fill-current ml-px" />
+                          </button>
+                        )}
                       </div>
-                    </button>
-                  )}
-                </div>
-              </div>
 
-              {/* Content Area */}
-              <div className="flex flex-1 flex-col justify-between p-5 md:p-6 relative z-10">
-                <div>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-wider mb-2 text-indigo-300">{project.tag}</p>
-                      <h3 className="text-xl md:text-2xl font-bold text-white transition-colors group-hover:text-purple-100">{project.name}</h3>
+                      <span className={cn(
+                        "text-[0.62rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border",
+                        project.status === "Completed"
+                          ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                          : "text-amber-400 border-amber-500/30 bg-amber-500/10"
+                      )}>
+                        {project.status === "Completed" ? "Shipped" : "Building"}
+                      </span>
+
+                      <span className="text-xs font-mono text-white/25 ml-auto">
+                        {project.year}
+                      </span>
                     </div>
 
-                    <span className={cn(
-                      "inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider",
-                      project.status === "Completed"
-                        ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
-                        : "border-amber-500/20 bg-amber-500/10 text-amber-300"
-                    )}>
-                      {project.status}
-                    </span>
-                  </div>
+                    {/* Category tag */}
+                    <p className="text-[0.65rem] font-medium uppercase tracking-[0.2em] text-emerald-400/50">
+                      {project.tag}
+                    </p>
 
-                  <p className="mt-4 text-sm leading-relaxed text-slate-400 line-clamp-2">
-                    {project.description}
-                  </p>
-                </div>
+                    {/* Description — readable by default */}
+                    <p className="text-sm text-white/50 leading-relaxed max-w-xl group-hover:text-white/70 transition-colors duration-300">
+                      {project.description}
+                    </p>
 
-                {/* Footer: Tech & Links */}
-                <div className="mt-6 flex flex-col gap-4 border-t border-white/[0.06] pt-4 group-hover:border-white/[0.1] transition-colors">
-                  <div className="flex flex-wrap gap-2 items-center">
-                    {project.tech.slice(0, 3).map((t) => (
-                      <span key={t} className="text-[0.75rem] font-medium text-slate-500">
-                        {t}
-                      </span>
-                    ))}
-                    {project.tech.length > 3 && (
-                      <span className="text-[0.7rem] text-slate-600">+{project.tech.length - 3}</span>
-                    )}
-                  </div>
+                    {/* Tech pills */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.tech.slice(0, 5).map((t) => (
+                        <span
+                          key={t}
+                          className="text-[0.65rem] font-medium px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.07] text-white/40 group-hover:text-white/60 group-hover:border-white/[0.12] transition-all duration-300"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {project.tech.length > 5 && (
+                        <span className="text-[0.65rem] px-2.5 py-1 rounded-md bg-white/[0.02] border border-white/[0.05] text-white/25">
+                          +{project.tech.length - 5}
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-4 mt-2">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      className="flex items-center gap-2 text-sm font-semibold text-slate-400 transition-colors hover:text-white group/github"
-                    >
-                      <Github className="h-4 w-4 transition-transform group-hover/github:scale-110" />
-                      <span>Code</span>
-                    </a>
-
-                    {project.live && (
+                    {/* Links */}
+                    <div className="flex items-center gap-5 pt-1">
                       <a
-                        href={project.live}
+                        href={project.github}
                         target="_blank"
-                        className="flex items-center gap-2 text-sm font-semibold text-indigo-300 transition-colors hover:text-purple-200 group/live"
+                        rel="noreferrer"
+                        className="flex items-center gap-1.5 text-[0.7rem] font-medium text-white/35 hover:text-white/80 transition-colors duration-200"
                       >
-                        <ExternalLink className="h-4 w-4 transition-transform group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
-                        <span>Live Demo</span>
+                        <Github className="h-3.5 w-3.5" />
+                        Source
                       </a>
-                    )}
+                      {project.live && (
+                        <a
+                          href={project.live}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group/live flex items-center gap-1 text-[0.7rem] font-medium text-emerald-400/70 hover:text-emerald-300 transition-colors duration-200"
+                        >
+                          Live Demo
+                          <ArrowUpRight className="h-3 w-3 transition-transform duration-200 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Thumbnail */}
+                  <div className="shrink-0 w-full md:w-52 lg:w-64">
+                    <div className="relative overflow-hidden rounded-xl aspect-video bg-white/[0.02] border border-white/[0.07] group-hover:border-emerald-500/20 transition-all duration-500 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+                      <img
+                        src={project.image}
+                        alt={`${project.name} screenshot`}
+                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
             </motion.article>
           ))}
+          </motion.div>
+          </AnimatePresence>
         </div>
+      </div>
 
-      </SectionReveal>
-
-      {/* ====== FULLSCREEN VIDEO MODAL ====== */}
+      {/* ====== VIDEO MODAL ====== */}
       <AnimatePresence>
         {activeVideo && activeProject?.video && (
           <motion.div
@@ -375,10 +434,7 @@ export function ProjectsSection() {
             className="fixed inset-0 z-[100] flex items-center justify-center"
             onClick={handleCloseVideo}
           >
-            {/* Backdrop */}
             <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-
-            {/* Modal Content */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -387,11 +443,10 @@ export function ProjectsSection() {
               className="relative z-10 w-[92vw] max-w-5xl"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="mb-4 flex items-center justify-between px-1">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/20 border border-purple-500/30">
-                    <Play className="h-4 w-4 fill-purple-400 text-purple-400" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/30">
+                    <Play className="h-4 w-4 fill-emerald-400 text-emerald-400" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white">{activeProject.name}</h3>
@@ -400,18 +455,15 @@ export function ProjectsSection() {
                 </div>
                 <button
                   onClick={handleCloseVideo}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 border border-white/10 text-white/60 transition-all hover:bg-white/10 hover:text-white hover:scale-105 hover:border-white/20"
+                  className="btn-icon h-10 w-10 !text-white/50 hover:!border-red-400/40 hover:!bg-red-500/10 hover:!text-red-300"
                   aria-label="Close video"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4.5 w-4.5" />
                 </button>
               </div>
 
-              {/* Video Container */}
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-purple-500/5">
-                {/* Subtle purple glow behind video */}
-                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10 blur-xl" />
-
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-emerald-500/5">
+                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/10 blur-xl" />
                 <iframe
                   src={getYouTubeEmbedUrl(activeProject.video!) || activeProject.video}
                   title={`${activeProject.name} demo video`}
@@ -421,15 +473,17 @@ export function ProjectsSection() {
                 />
               </div>
 
-              {/* Footer hint */}
               <p className="mt-3 text-center text-xs text-slate-500">
-                Press <kbd className="mx-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-white/5">Esc</kbd> or click outside to close
+                Press{" "}
+                <kbd className="mx-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-white/5">
+                  Esc
+                </kbd>{" "}
+                or click outside to close
               </p>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </section>
   );
 }

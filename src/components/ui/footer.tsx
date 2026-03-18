@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Linkedin, ArrowUp, Heart } from "lucide-react";
+import { Github, Linkedin, ArrowUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 const NAV_LINKS = [
@@ -31,9 +31,9 @@ export function Footer() {
     };
 
     return (
-        <footer className="section-divider relative w-full bg-[#020206] pt-16 pb-8 overflow-hidden">
+        <footer className="relative w-full bg-[#020A06] pt-16 pb-8 overflow-hidden">
             {/* Background glow */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(99,102,241,0.06),_transparent_60%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.06),_transparent_60%)]" />
 
             <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
                 {/* Top row: Brand + Nav + Socials */}
@@ -44,7 +44,7 @@ export function Footer() {
                             onClick={scrollToTop}
                             className="group text-left"
                         >
-                            <span className="text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-indigo-200">
+                            <span className="text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-emerald-200">
                                 Bibek Pathak
                             </span>
                         </button>
@@ -63,7 +63,7 @@ export function Footer() {
                                         target="_blank"
                                         rel="noreferrer"
                                         aria-label={social.name}
-                                        className="group/s inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.02] text-slate-500 transition-all duration-300 hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-300 hover:scale-110"
+                                        className="btn-icon h-9 w-9"
                                     >
                                         <Icon className="h-4 w-4 transition-transform group-hover/s:scale-110" />
                                     </Link>
@@ -94,25 +94,23 @@ export function Footer() {
                     <div className="flex flex-col items-start lg:items-end justify-between gap-6">
                         <motion.button
                             onClick={scrollToTop}
-                            whileHover={{ y: -3 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="group flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-xs font-medium text-slate-400 transition-all duration-300 hover:border-indigo-500/30 hover:bg-indigo-500/10 hover:text-white"
+                            whileTap={{ scale: 0.97 }}
+                            className="btn-ghost !py-2.5 !px-5 !text-xs !font-medium group"
                         >
                             Back to top
-                            <ArrowUp className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5" />
+                            <motion.span
+                              animate={{ y: [0, -3, 0] }}
+                              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                              <ArrowUp className="h-3.5 w-3.5" />
+                            </motion.span>
                         </motion.button>
                     </div>
                 </div>
 
-                {/* Bottom Row: Copyright */}
-                <div className="pt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-                    <p className="text-xs text-slate-600">
+                <div className="pt-6 text-center">
+                    <p className="text-xs text-slate-700">
                         © {new Date().getFullYear()} Bibek Pathak. All rights reserved.
-                    </p>
-                    <p className="flex items-center gap-1.5 text-xs text-slate-600">
-                        Built with
-                        <Heart className="h-3 w-3 text-rose-500/60" />
-                        using Next.js & Tailwind
                     </p>
                 </div>
             </div>

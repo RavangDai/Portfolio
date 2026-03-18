@@ -43,8 +43,15 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
+    if (!process.env.GEMINI_API_KEY) {
+      return new Response(
+        "AI is not configured. Please contact Bibek directly at bibekg2029@gmail.com",
+        { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } }
+      );
+    }
+
     const google = createGoogleGenerativeAI({
-      apiKey: process.env.GEMINI_API_KEY!,
+      apiKey: process.env.GEMINI_API_KEY,
     });
 
     const result = streamText({

@@ -8,11 +8,8 @@ export function BlogSection() {
   return (
     <section
       id="blog"
-      className="relative w-full section-divider bg-[#030308] py-24 md:py-32 overflow-hidden"
+      className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden"
     >
-      {/* Background Elements */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.03),_transparent_70%)]" />
 
       <SectionReveal className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
 
@@ -24,7 +21,7 @@ export function BlogSection() {
             viewport={{ once: true }}
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60 mb-6 backdrop-blur-md"
           >
-            <BookOpen className="h-3 w-3 text-indigo-400" />
+            <BookOpen className="h-3 w-3 text-emerald-400" />
             Blog
           </motion.div>
 
@@ -35,7 +32,7 @@ export function BlogSection() {
             transition={{ delay: 0.1 }}
             className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
           >
-            What I&apos;ve been <span className="bg-gradient-to-r from-indigo-200 via-white to-indigo-200 bg-clip-text text-transparent">writing about.</span>
+            What I&apos;ve been <span className="bg-gradient-to-r from-emerald-200 via-white to-cyan-200 bg-clip-text text-transparent">writing about.</span>
           </motion.h2>
 
           <motion.p
@@ -59,8 +56,8 @@ export function BlogSection() {
         >
           <div className="group relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/[0.08] bg-white/[0.02] p-10 md:p-14 text-center backdrop-blur-sm">
             {/* Glow */}
-            <div className="pointer-events-none absolute -inset-px rounded-[inherit] border border-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:border-indigo-500/20" />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/[0.04] via-transparent to-purple-500/[0.04] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="pointer-events-none absolute -inset-px rounded-[inherit] border border-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:border-emerald-500/20" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-cyan-500/[0.04] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
             {/* Icon */}
             <motion.div
@@ -70,7 +67,7 @@ export function BlogSection() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] shadow-inner"
             >
-              <PenLine className="h-7 w-7 text-indigo-400/80" />
+              <PenLine className="h-7 w-7 text-emerald-400/80" />
             </motion.div>
 
             <motion.h3

@@ -1,16 +1,43 @@
 "use client";
 
-import { useMemo, useState, } from "react";
-import { motion, Variants } from "framer-motion";
-import { Award, ExternalLink, CheckCircle2, Loader2 } from "lucide-react";
+import { useMemo, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const sortVariants = {
+  enter: (d: number) => ({
+    opacity: 0,
+    y: d * -40,
+    filter: "blur(6px)",
+  }),
+  center: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1] as const,
+      staggerChildren: 0.07,
+    },
+  },
+  exit: (d: number) => ({
+    opacity: 0,
+    y: d * 40,
+    filter: "blur(6px)",
+    transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const },
+  }),
+};
+
+const cardVariants = {
+  enter: { opacity: 0, y: 14, scale: 0.98 },
+  center: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
+  exit:   { opacity: 0, scale: 0.97, transition: { duration: 0.2 } },
+};
+import { ExternalLink, BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SectionReveal } from "@/components/ui/section-reveal";
 
 /* -------------------------------------------------------------------------- */
-/* TYPES                                                                      */
+/* TYPES & DATA                                                                */
 /* -------------------------------------------------------------------------- */
-
-type CertificateStatus = "Completed" | "In progress";
 
 type Certificate = {
   title: string;
@@ -18,7 +45,7 @@ type Certificate = {
   year: number;
   tag: string;
   highlight: string;
-  status: CertificateStatus;
+  skills: string[];
   url?: string;
 };
 
@@ -28,8 +55,8 @@ const certificates: Certificate[] = [
     issuer: "HackerRank",
     year: 2025,
     tag: "Full-stack Engineering",
-    status: "Completed",
     highlight: "Problem-solving, REST APIs, and full-stack architecture.",
+    skills: ["Problem Solving", "REST API Design", "Full-stack Arch", "Data Structures"],
     url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
   },
   {
@@ -37,8 +64,8 @@ const certificates: Certificate[] = [
     issuer: "HackerRank",
     year: 2025,
     tag: "Data / Backend",
-    status: "Completed",
     highlight: "Complex queries, joins, indexing, and performance tuning.",
+    skills: ["Complex Queries", "Joins & Subqueries", "Indexing", "Performance Tuning"],
     url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
   },
   {
@@ -46,41 +73,141 @@ const certificates: Certificate[] = [
     issuer: "Corporate Finance Institute®",
     year: 2024,
     tag: "Finance & Analysis",
-    status: "Completed",
     highlight: "Financial modeling, formulas, and data analysis in Excel.",
+    skills: ["Financial Modeling", "Pivot Tables", "Data Analysis", "Excel Formulas"],
     url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
   },
 ];
 
 /* -------------------------------------------------------------------------- */
-/* ANIMATIONS                                                                 */
+/* FLIP CARD                                                                  */
 /* -------------------------------------------------------------------------- */
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
-  },
-};
+function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: number }) {
+  return (
+    <div className="group h-[300px] [perspective:1200px]">
+      <div
+        className={cn(
+          "relative h-full w-full [transform-style:preserve-3d]",
+          "transition-transform duration-[750ms] ease-[cubic-bezier(0.4,0.2,0.2,1)]",
+          "group-hover:[transform:rotateY(180deg)]"
+        )}
+      >
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, delay: i * 0.1, ease: "easeOut" },
-  }),
-};
+        {/* ════════ FRONT ════════ */}
+        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#08080f] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_40px_-8px_rgba(16,185,129,0.2)]">
+
+          {/* Gradient top accent */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[1.5px]"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.5) 40%, rgba(34,211,238,0.5) 60%, transparent)" }}
+          />
+
+          {/* Issuer + year */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BadgeCheck className="h-3.5 w-3.5 text-emerald-400/50" />
+              <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-slate-600">
+                {cert.issuer}
+              </span>
+            </div>
+            <span className="text-[0.62rem] font-mono text-slate-700">{cert.year}</span>
+          </div>
+
+          {/* Title + description */}
+          <div className="flex-1 flex flex-col justify-center pt-4">
+            <h3 className="text-lg font-bold tracking-tight leading-snug text-white">
+              {cert.title}
+            </h3>
+            <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-2">
+              {cert.highlight}
+            </p>
+          </div>
+
+          {/* Tag + hint */}
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-slate-700">
+              {cert.tag}
+            </span>
+            <span className="text-[0.56rem] uppercase tracking-widest text-slate-800">
+              hover →
+            </span>
+          </div>
+
+          <div className="pointer-events-none absolute -bottom-10 -right-10 h-36 w-36 rounded-full bg-emerald-600/[0.05] blur-3xl" />
+        </div>
+
+        {/* ════════ BACK ════════ */}
+
+        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border border-emerald-500/20 bg-[#07070d] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(16,185,129,0.15)]">
+
+          {/* Gradient top accent — brighter on back */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[1.5px]"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.8) 40%, rgba(34,211,238,0.8) 60%, transparent)" }}
+          />
+
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+              <BadgeCheck className="h-4 w-4 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-emerald-400/70">
+                Skills Verified
+              </p>
+              <p className="text-[0.56rem] text-slate-700 mt-0.5">
+                {cert.issuer} · {cert.year}
+              </p>
+            </div>
+          </div>
+
+          {/* Skills */}
+          <ul className="flex-1 space-y-2.5">
+            {cert.skills.map((skill) => (
+              <li key={skill} className="flex items-center gap-3">
+                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-emerald-400/50" />
+                <span className="text-sm font-medium text-slate-300">{skill}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Verify */}
+          {cert.url && (
+            <a
+              href={cert.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-emerald-400/70 hover:border-emerald-400/40 hover:text-emerald-300 transition-all duration-200"
+            >
+              <ExternalLink className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5" />
+              Verify Credential
+            </a>
+          )}
+
+          <div className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-emerald-500/[0.08] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-cyan-500/[0.06] blur-3xl" />
+        </div>
+
+      </div>
+    </div>
+  );
+}
 
 /* -------------------------------------------------------------------------- */
-/* COMPONENT                                                                  */
+/* SECTION                                                                    */
 /* -------------------------------------------------------------------------- */
 
 export function CertificatesSection() {
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
+  const dirRef = useRef(0);
+
+  const handleSort = (option: "newest" | "oldest") => {
+    if (option === sort) return;
+    dirRef.current = option === "oldest" ? 1 : -1;
+    setSort(option);
+  };
 
   const sortedCertificates = useMemo(() => {
     return [...certificates].sort((a, b) =>
@@ -89,158 +216,78 @@ export function CertificatesSection() {
   }, [sort]);
 
   return (
-    <section id="certificates" className="section-divider relative w-full bg-[#030308] py-16 md:py-24 lg:py-32 overflow-hidden">
+    <section
+      id="certificates"
+      className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden"
+    >
 
-      {/* 1. BACKGROUND GRID PATTERN */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
-      {/* Background Ambience (Subtle Indigo) */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(99,102,241,0.05),_transparent_50%)]" />
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-6 md:px-8">
 
-      <SectionReveal className="relative z-10 mx-auto w-full max-w-7xl px-4 md:px-6">
-
-        {/* HEADER SECTION */}
+        {/* HEADER */}
         <motion.div
-          variants={sectionVariants}
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          className="mb-12 md:mb-20 flex flex-col justify-between gap-8 md:flex-row md:items-end"
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-14 md:mb-18 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
         >
-          {/* Left Side */}
-          <div className="max-w-3xl space-y-4 md:space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-[0.7rem] uppercase tracking-[0.28em] text-white/60">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+          <div>
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400/70 mb-5">
               Certifications
-            </div>
-
-            <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
-              Certs I&apos;ve picked up <br className="hidden sm:block" />
-              <span className="text-indigo-100">along the way.</span>
-            </h2>
-
-            <p className="max-w-xl text-base md:text-lg text-slate-400 leading-relaxed">
-              Courses and exams I&apos;ve completed to sharpen specific skills.
             </p>
+            <h2
+              className="font-bold tracking-tighter leading-[0.9]"
+              style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)" }}
+            >
+              <span className="shimmer-text">Skills I&apos;ve</span><br />
+              <span className="text-white/20">proven.</span>
+            </h2>
           </div>
 
-          {/* Right Side: Sort Toggle */}
-          <div className="flex shrink-0 self-start md:self-auto gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] p-1 backdrop-blur-md">
+          <div className="flex shrink-0 self-start sm:self-auto">
             {(["newest", "oldest"] as const).map((option) => (
               <button
                 key={option}
-                onClick={() => setSort(option)}
+                onClick={() => handleSort(option)}
                 className={cn(
-                  "relative px-4 py-2 md:px-6 text-xs font-semibold rounded-full transition-all duration-300 z-10 tracking-wide",
-                  sort === option
-                    ? "text-white"
-                    : "text-slate-500 hover:text-white"
+                  "relative px-4 pb-3 pt-1 text-[0.65rem] font-semibold tracking-[0.2em] uppercase transition-colors duration-300",
+                  sort === option ? "text-white" : "text-slate-600 hover:text-slate-400"
                 )}
               >
-                {sort === option && (
-                  <motion.span
-                    layoutId="cert-sort-pill"
-                    className="absolute inset-0 rounded-full bg-white/[0.08] border border-white/[0.08] -z-10 shadow-sm"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
                 {option.charAt(0).toUpperCase() + option.slice(1)}
+                <span
+                  className={cn(
+                    "absolute bottom-0 left-0 h-[1.5px] w-full origin-left transition-all duration-300",
+                    sort === option ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+                  )}
+                  style={{ background: "linear-gradient(90deg, #10b981, #22d3ee)" }}
+                />
               </button>
             ))}
           </div>
         </motion.div>
 
-        {/* CERTIFICATES GRID — 2 columns max for 3 items */}
-        <div className="grid gap-6 sm:grid-cols-2 md:gap-8 max-w-4xl mx-auto">
-          {sortedCertificates.map((cert, index) => (
-            <motion.article
-              key={cert.title}
-              custom={index}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              viewport={{ once: true, amount: 0.1 }}
-              className={cn(
-                "group relative flex flex-col justify-between overflow-hidden",
-                "rounded-2xl md:rounded-[2rem]",
-                "border border-white/[0.08] bg-[#08080a]",
-                "p-6 md:p-8",
-                "transition-all duration-500 ease-out",
-                // Hover Effects
-                "hover:border-indigo-500/30 hover:bg-[#0a0a0c]",
-                // Center the last (odd) card
-                index === sortedCertificates.length - 1 && sortedCertificates.length % 2 !== 0 && "sm:col-span-2 sm:max-w-md sm:mx-auto"
-              )}
-            >
-              {/* TECH CORNER ACCENTS */}
-              <div className="absolute top-4 right-4 h-2 w-2 border-t border-r border-white/10 transition-colors group-hover:border-indigo-500/50" />
-              <div className="absolute bottom-4 left-4 h-2 w-2 border-b border-l border-white/10 transition-colors group-hover:border-indigo-500/50" />
+        {/* GRID */}
+        <AnimatePresence mode="wait" custom={dirRef.current}>
+          <motion.div
+            key={sort}
+            custom={dirRef.current}
+            variants={sortVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {sortedCertificates.map((cert, index) => (
+              <motion.div key={cert.title} variants={cardVariants}>
+                <CertFlipCard cert={cert} index={index} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
-              <div>
-                {/* Header: Icon & Status */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] shadow-inner transition-all duration-500 group-hover:bg-indigo-500/10 group-hover:border-indigo-500/30 group-hover:shadow-[0_0_15px_-3px_rgba(99,102,241,0.3)]">
-                    <Award className="h-6 w-6 text-slate-400 transition-colors duration-500 group-hover:text-indigo-300" />
-                  </div>
-
-                  <span className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-wider",
-                    cert.status === "Completed"
-                      ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
-                      : "border-amber-500/20 bg-amber-500/5 text-amber-400"
-                  )}>
-                    {cert.status === "Completed" ? <CheckCircle2 className="h-3 w-3" /> : <Loader2 className="h-3 w-3 animate-spin" />}
-                    {cert.status}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-white transition-all duration-300 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-indigo-200">
-                    {cert.title}
-                  </h3>
-
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    <span className="text-indigo-400/80">{cert.issuer}</span>
-                    <span className="text-slate-700">•</span>
-                    <span>{cert.year}</span>
-                  </div>
-
-                  <p className="text-sm leading-relaxed text-slate-400 mt-3 border-t border-white/[0.06] pt-3 group-hover:border-white/[0.1] transition-colors">
-                    {cert.highlight}
-                  </p>
-                </div>
-              </div>
-
-              {/* Footer / Actions */}
-              <div className="mt-8 flex items-center justify-between">
-                <span className="inline-flex items-center rounded-md bg-white/[0.03] border border-white/[0.05] px-3 py-1.5 text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-colors">
-                  {cert.tag}
-                </span>
-
-                {cert.url && (
-                  <a
-                    href={cert.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:text-white hover:translate-x-1 group/link"
-                  >
-                    <span>Verify</span>
-                    <ExternalLink className="h-3.5 w-3.5 opacity-70 transition-transform group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
-                  </a>
-                )}
-              </div>
-
-              {/* HOVER GLOW GRADIENT */}
-              <div className="pointer-events-none absolute -inset-px rounded-[inherit] border border-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-hover:border-indigo-500/10" />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-            </motion.article>
-          ))}
-        </div>
-      </SectionReveal>
+      </div>
     </section>
   );
 }

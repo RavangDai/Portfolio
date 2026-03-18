@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,27 +7,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Github, Linkedin, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type GlowState = {
-  x: number;
-  y: number;
-  active: boolean;
-};
-
 export function MainNavbar() {
   const pathname = usePathname();
-  const [glow, setGlow] = useState<GlowState>({ x: 0, y: 0, active: false });
   const [activeSection, setActiveSection] = useState("home");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Track active section based on scroll
   useEffect(() => {
     const sections = ["home", "projects", "certificates", "contact", "blog"];
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id || "home");
-          }
+          if (entry.isIntersecting) setActiveSection(entry.target.id || "home");
         });
       },
       { threshold: 0.3, rootMargin: "-100px 0px" }
@@ -41,6 +31,7 @@ export function MainNavbar() {
 
     const handleScroll = () => {
       if (window.scrollY < 100) setActiveSection("home");
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
 
@@ -51,215 +42,187 @@ export function MainNavbar() {
   }, []);
 
   const links = [
-    { name: "Home", href: "/", id: "home" },
-    { name: "Projects", href: "#projects", id: "projects" },
+    { name: "Projects",     href: "#projects",     id: "projects"     },
     { name: "Certificates", href: "#certificates", id: "certificates" },
-    { name: "Contact", href: "#contact", id: "contact" },
-    { name: "Blog", href: "#blog", id: "blog" },
+    { name: "Contact",      href: "#contact",      id: "contact"      },
+    { name: "Blog",         href: "#blog",         id: "blog"         },
   ];
 
   const handleLinkClick = (href: string) => {
-    setMobileMenuOpen(false);
-    if (href === "/") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    setMobileOpen(false);
+    if (href === "/") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setGlow({ x: e.clientX - rect.left, y: e.clientY - rect.top, active: true });
-  };
+  const isActive = (link: { href: string; id: string }) =>
+    (link.href === "/" && pathname === "/" && activeSection === "home") ||
+    (link.href.startsWith("#") && activeSection === link.id);
 
   return (
-    <header className="fixed top-4 z-50 flex w-full justify-center px-4 sm:top-6 sm:px-6">
-      <nav
-        className={cn(
-          "relative flex w-full max-w-6xl items-center justify-between gap-8",
-          // UPDATED: Darker background (black/20) for better visibility on dark modes
-          "rounded-[2.5rem] border border-white/10 bg-black/20",
-          "backdrop-blur-xl shadow-[0_12px_45px_rgba(0,0,0,0.65)]",
-          "px-5 py-3 sm:px-8 sm:py-3.5",
-          "transition-all duration-500",
-          "hover:border-white/20 hover:bg-black/30",
-          "hover:shadow-[0_20px_60px_rgba(0,0,0,0.75)]"
-        )}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setGlow((prev) => ({ ...prev, active: false }))}
-      >
-        {/* Magnetic glow */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.5rem]">
-          <div
-            className={cn(
-              "absolute h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full",
-              "bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.25),transparent_65%)]", // Slightly softer glow
-              "blur-2xl transition-all duration-500",
-              glow.active ? "opacity-100 scale-100" : "opacity-0 scale-75"
-            )}
-            style={{ left: glow.x, top: glow.y }}
-          />
-        </div>
+    <header className="fixed top-0 z-50 w-full">
+      <div className={cn(
+        "mx-auto max-w-6xl px-4 sm:px-8 transition-all duration-500",
+        scrolled ? "pt-3" : "pt-5"
+      )}>
+        <nav className={cn(
+          "relative flex items-center justify-between rounded-2xl border px-5 py-3 transition-all duration-500",
+          scrolled
+            ? "border-white/[0.07] bg-[#020A06]/85 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.04)]"
+            : "border-white/[0.04] bg-white/[0.01] backdrop-blur-md"
+        )}>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-1 items-center justify-between gap-6">
+          {/* Top inner accent line */}
+          <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
 
-          {/* Brand / Logo */}
+          {/* ── Brand ── */}
           <button
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-              setMobileMenuOpen(false);
-            }}
-            className="group flex items-center gap-2.5 transition-transform duration-300 hover:scale-105"
+            onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setMobileOpen(false); }}
+            className="group flex items-center gap-2 shrink-0"
           >
-            <div className={cn(
-              "relative h-9 w-9 overflow-hidden rounded-full",
-              "border border-white/25 bg-white/5",
-              "ring-1 ring-white/5",
-              "transition-all duration-300",
-              "group-hover:ring-indigo-300/70 group-hover:border-indigo-200/70",
-              "group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)]"
-            )}>
-              <Image
-                src="/hero-me.png" // Ensure this path matches your hero image
-                alt="Bibek Pathak"
-                fill
-                sizes="36px"
-                className="object-cover transition-transform duration-300 group-hover:scale-110"
-                priority
-              />
-            </div>
-            <span className="hidden text-[11px] font-medium tracking-[0.24em] text-white/60 transition-colors duration-300 group-hover:text-white/80 sm:inline">
-              BIBEK · PATHAK
+            {/* Availability pulse */}
+            <span className="relative flex h-[7px] w-[7px] shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-emerald-500" />
+            </span>
+
+            <span className="text-[0.82rem] font-semibold tracking-tight text-white/85 group-hover:text-white transition-colors duration-200">
+              Bibek Pathak
             </span>
           </button>
 
-          {/* Desktop Links */}
-          <div className="hidden items-center gap-1 sm:flex">
-            {links.map((link) => {
-              const isActive =
-                (link.href === "/" && pathname === "/" && activeSection === "home") ||
-                (link.href.startsWith("#") && activeSection === link.id);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => handleLinkClick(link.href)}
+          {/* ── Desktop nav ── */}
+          <div className="hidden md:flex items-center gap-0.5">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => handleLinkClick(link.href)}
+                className={cn(
+                  "group relative px-3.5 py-2 text-[0.65rem] uppercase tracking-[0.18em] font-semibold transition-colors duration-300",
+                  isActive(link) ? "text-white" : "text-white/30 hover:text-white/65"
+                )}
+              >
+                {link.name}
+
+                {/* Animated underline — hover + active */}
+                <span
                   className={cn(
-                    "group relative px-3 py-2 text-xs font-medium tracking-wide",
-                    "text-white/70 transition-all duration-300",
-                    "hover:text-white hover:translate-y-[-1px]",
-                    isActive && "text-white"
+                    "absolute bottom-1 left-3.5 right-3.5 h-px origin-left transition-all duration-300",
+                    isActive(link)
+                      ? "scale-x-100 opacity-100"
+                      : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-50"
                   )}
-                >
-                  <span className="relative z-10">{link.name}</span>
-                  <span
-                    className={cn(
-                      "pointer-events-none absolute left-1/2 -bottom-0.5 h-[2px]",
-                      "bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400",
-                      "transition-all duration-300 origin-center",
-                      isActive ? "w-full -translate-x-1/2 opacity-100" : "w-0 -translate-x-1/2 opacity-0",
-                      "group-hover:w-full group-hover:opacity-100"
-                    )}
+                  style={{ background: "linear-gradient(90deg, #10b981, #22d3ee)" }}
+                />
+
+                {/* Active top dot */}
+                {isActive(link) && (
+                  <motion.span
+                    layoutId="nav-dot"
+                    className="absolute -top-0.5 left-1/2 -translate-x-1/2 h-[3px] w-[3px] rounded-full bg-emerald-400"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
-                </Link>
-              );
-            })}
+                )}
+              </Link>
+            ))}
           </div>
 
-          {/* Right Side: Socials + Mobile Toggle */}
-          <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2.5 sm:flex">
+          {/* ── Right: socials + mobile toggle ── */}
+          <div className="flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-0.5 pl-4 ml-1 border-l border-white/[0.06]">
               <Link
                 href="https://github.com/RavangDai"
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 shadow-sm transition-all hover:border-indigo-400/60 hover:bg-indigo-500/20 hover:text-white hover:scale-110"
+                aria-label="GitHub"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/30 hover:text-white/80 hover:bg-white/[0.05] transition-all duration-200"
               >
-                <Github className="h-4 w-4 transition-transform group-hover:scale-110" />
+                <Github className="h-[14px] w-[14px]" />
               </Link>
               <Link
                 href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 shadow-sm transition-all hover:border-indigo-400/60 hover:bg-indigo-500/20 hover:text-white hover:scale-110"
+                aria-label="LinkedIn"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/30 hover:text-white/80 hover:bg-white/[0.05] transition-all duration-200"
               >
-                <Linkedin className="h-4 w-4 transition-transform group-hover:scale-110" />
+                <Linkedin className="h-[14px] w-[14px]" />
               </Link>
             </div>
 
-            {/* Mobile Toggle Button */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-full",
-                "border border-white/15 bg-white/[0.03] text-white/80",
-                "transition-all duration-300 sm:hidden",
-                "hover:border-indigo-400/60 hover:bg-indigo-500/20 hover:text-white",
-                mobileMenuOpen && "bg-white/10 text-white border-white/30"
-              )}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
+              aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <AnimatePresence mode="wait" initial={false}>
+                {mobileOpen ? (
+                  <motion.span key="x" initial={{ rotate: -45, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 45, opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <X className="h-4 w-4" />
+                  </motion.span>
+                ) : (
+                  <motion.span key="menu" initial={{ rotate: 45, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -45, opacity: 0 }} transition={{ duration: 0.15 }}>
+                    <Menu className="h-4 w-4" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
-        </div>
+        </nav>
 
-        {/* Mobile Dropdown */}
+        {/* ── Mobile dropdown ── */}
         <AnimatePresence>
-          {mobileMenuOpen && (
+          {mobileOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              initial={{ opacity: 0, y: -10, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className={cn(
-                "absolute left-0 right-0 top-[120%] rounded-2xl",
-                // UPDATED: Much darker background to cover content behind it
-                "border border-white/10 bg-[#030308]/95 backdrop-blur-2xl",
-                "shadow-[0_20px_60px_rgba(0,0,0,0.9)]",
-                "p-4 sm:hidden z-50"
-              )}
+              exit={{ opacity: 0, y: -8, scale: 0.97 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="md:hidden mt-2 rounded-2xl border border-white/[0.07] bg-[#020A06]/92 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.7)] overflow-hidden"
             >
-              <div className="flex flex-col gap-2">
-                {links.map((link) => {
-                  const isActive =
-                    (link.href === "/" && pathname === "/" && activeSection === "home") ||
-                    (link.href.startsWith("#") && activeSection === link.id);
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => handleLinkClick(link.href)}
-                      className={cn(
-                        "rounded-xl px-4 py-3 text-sm font-medium",
-                        "text-white/70 transition-all duration-300",
-                        "hover:bg-white/[0.08] hover:text-white",
-                        isActive && "bg-indigo-500/20 text-indigo-200 border border-indigo-500/30"
-                      )}
-                    >
-                      {link.name}
-                    </Link>
-                  );
-                })}
-                <div className="mt-2 flex items-center justify-center gap-4 border-t border-white/10 pt-4">
+              {/* Top accent */}
+              <div className="h-px bg-gradient-to-r from-transparent via-emerald-400/25 to-transparent" />
+
+              <div className="flex flex-col p-3 gap-0.5">
+                {links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => handleLinkClick(link.href)}
+                    className={cn(
+                      "flex items-center justify-between px-4 py-3 rounded-xl text-[0.75rem] uppercase tracking-[0.15em] font-semibold transition-all duration-200",
+                      isActive(link)
+                        ? "text-white bg-emerald-500/[0.07] border border-emerald-500/[0.12]"
+                        : "text-white/35 hover:text-white/70 hover:bg-white/[0.04]"
+                    )}
+                  >
+                    {link.name}
+                    {isActive(link) && (
+                      <span className="h-[5px] w-[5px] rounded-full bg-emerald-400" />
+                    )}
+                  </Link>
+                ))}
+
+                <div className="flex items-center gap-1 px-3 pt-3 mt-1 border-t border-white/[0.05]">
                   <Link
                     href="https://github.com/RavangDai"
                     target="_blank"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all hover:bg-indigo-500/20"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 hover:text-white hover:bg-white/[0.06] transition-all"
                   >
-                    <Github className="h-5 w-5" />
+                    <Github className="h-3.5 w-3.5" />
                   </Link>
                   <Link
                     href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
                     target="_blank"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.03] text-white/80 transition-all hover:bg-indigo-500/20"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 hover:text-white hover:bg-white/[0.06] transition-all"
                   >
-                    <Linkedin className="h-5 w-5" />
+                    <Linkedin className="h-3.5 w-3.5" />
                   </Link>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </nav>
+      </div>
     </header>
   );
 }
