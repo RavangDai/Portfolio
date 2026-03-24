@@ -84,13 +84,18 @@ const certificates: Certificate[] = [
 /* -------------------------------------------------------------------------- */
 
 function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: number }) {
+  const [flipped, setFlipped] = useState(false);
+
   return (
-    <div className="group h-[300px] [perspective:1200px]">
+    <div
+      className="group h-[300px] [perspective:1200px] cursor-pointer"
+      onClick={() => setFlipped((f) => !f)}
+    >
       <div
         className={cn(
           "relative h-full w-full [transform-style:preserve-3d]",
           "transition-transform duration-[750ms] ease-[cubic-bezier(0.4,0.2,0.2,1)]",
-          "group-hover:[transform:rotateY(180deg)]"
+          flipped ? "[transform:rotateY(180deg)]" : "group-hover:[transform:rotateY(180deg)]"
         )}
       >
 
@@ -124,13 +129,10 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
             </p>
           </div>
 
-          {/* Tag + hint */}
-          <div className="flex items-center justify-between pt-2">
+          {/* Tag */}
+          <div className="flex items-center pt-2">
             <span className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-slate-700">
               {cert.tag}
-            </span>
-            <span className="text-[0.56rem] uppercase tracking-widest text-slate-800">
-              hover →
             </span>
           </div>
 
@@ -179,9 +181,9 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-emerald-400/70 hover:border-emerald-400/40 hover:text-emerald-300 transition-all duration-200"
+              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-emerald-400/70 hover:border-emerald-400/40 hover:text-emerald-300 active:border-emerald-400/40 active:text-emerald-300 transition-all duration-200"
             >
-              <ExternalLink className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5" />
+              <ExternalLink className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5 group-active/v:-translate-y-0.5 group-active/v:translate-x-0.5" />
               Verify Credential
             </a>
           )}

@@ -411,6 +411,19 @@ export function ProjectsSection() {
                         className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+
+                      {/* Video play overlay */}
+                      {project.video && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handlePlayVideo(project.name); }}
+                          aria-label={`Play ${project.name} demo`}
+                          className="absolute inset-0 flex items-center justify-center group/play"
+                        >
+                          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm text-white transition-all duration-200 group-hover/play:bg-emerald-500/80 group-hover/play:border-emerald-400/60 group-hover/play:scale-110 active:scale-95">
+                            <Play className="h-4 w-4 fill-current ml-0.5" />
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
 
