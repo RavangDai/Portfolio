@@ -97,8 +97,8 @@ export function MainNavbar() {
                 href={link.href}
                 onClick={() => handleLinkClick(link.href)}
                 className={cn(
-                  "group relative px-3.5 py-2 text-[0.65rem] uppercase tracking-[0.18em] font-semibold transition-colors duration-300",
-                  isActive(link) ? "text-white" : "text-white/30 hover:text-white/65"
+                  "group relative px-3.5 py-2 text-xs uppercase tracking-[0.12em] font-semibold transition-colors duration-300",
+                  isActive(link) ? "text-white" : "text-white/50 hover:text-white/80 active:text-white/80"
                 )}
               >
                 {link.name}
@@ -109,7 +109,7 @@ export function MainNavbar() {
                     "absolute bottom-1 left-3.5 right-3.5 h-px origin-left transition-all duration-300",
                     isActive(link)
                       ? "scale-x-100 opacity-100"
-                      : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-50"
+                      : "scale-x-0 opacity-0 group-hover:scale-x-100 group-hover:opacity-50 group-active:scale-x-100 group-active:opacity-50"
                   )}
                   style={{ background: "linear-gradient(90deg, #10b981, #22d3ee)" }}
                 />
@@ -134,7 +134,7 @@ export function MainNavbar() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/30 hover:text-white/80 hover:bg-white/[0.05] transition-all duration-200"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.05] active:text-white active:bg-white/[0.05] transition-all duration-200"
               >
                 <Github className="h-[14px] w-[14px]" />
               </Link>
@@ -143,7 +143,7 @@ export function MainNavbar() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/30 hover:text-white/80 hover:bg-white/[0.05] transition-all duration-200"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.05] active:text-white active:bg-white/[0.05] transition-all duration-200"
               >
                 <Linkedin className="h-[14px] w-[14px]" />
               </Link>
@@ -151,7 +151,7 @@ export function MainNavbar() {
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.06] transition-all duration-200"
+              className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.06] active:text-white active:bg-white/[0.06] transition-all duration-200"
               aria-label="Toggle menu"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -189,10 +189,10 @@ export function MainNavbar() {
                     href={link.href}
                     onClick={() => handleLinkClick(link.href)}
                     className={cn(
-                      "flex items-center justify-between px-4 py-3 rounded-xl text-[0.75rem] uppercase tracking-[0.15em] font-semibold transition-all duration-200",
+                      "flex items-center justify-between px-4 py-3 rounded-xl text-[0.8rem] uppercase tracking-[0.1em] font-semibold transition-all duration-200",
                       isActive(link)
                         ? "text-white bg-emerald-500/[0.07] border border-emerald-500/[0.12]"
-                        : "text-white/35 hover:text-white/70 hover:bg-white/[0.04]"
+                        : "text-white/50 hover:text-white/80 hover:bg-white/[0.04] active:text-white/80 active:bg-white/[0.04]"
                     )}
                   >
                     {link.name}
@@ -206,14 +206,14 @@ export function MainNavbar() {
                   <Link
                     href="https://github.com/RavangDai"
                     target="_blank"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 hover:text-white hover:bg-white/[0.06] transition-all"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.06] active:text-white active:bg-white/[0.06] transition-all"
                   >
                     <Github className="h-3.5 w-3.5" />
                   </Link>
                   <Link
                     href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
                     target="_blank"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 hover:text-white hover:bg-white/[0.06] transition-all"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white/45 hover:text-white hover:bg-white/[0.06] active:text-white active:bg-white/[0.06] transition-all"
                   >
                     <Linkedin className="h-3.5 w-3.5" />
                   </Link>
