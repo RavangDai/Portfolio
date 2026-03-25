@@ -66,6 +66,17 @@ const projects: Project[] = [
     video: "https://youtu.be/sQ7IdpM0jQg",
   },
   {
+    name: "CrumbCraft",
+    tag: "Full-stack · AI · Productivity",
+    description: "Two AI-powered dev tools in one: Crumb compresses messy conversations into structured docs, Craft helps engineer precise AI prompts with guided templates.",
+    tech: ["Next.js", "React", "Tailwind CSS", "Gemini 2.5", "Framer Motion"],
+    github: "https://github.com/RavangDai/crumb",
+    live: "https://crumbcrraft.vercel.app/",
+    year: 2026,
+    status: "Completed",
+    image: "/crumbcraft.png",
+  },
+  {
     name: "WatchThis!AI",
     tag: "Full-stack · AI",
     description: "Movie/show recommender powered by AI. Still cooking.",
