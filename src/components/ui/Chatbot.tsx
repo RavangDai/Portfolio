@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, ArrowRight, X, Minus } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parseMessageToCards, MessageCard } from "./MessageCard";
 
@@ -434,7 +434,7 @@ export function Chatbot() {
 
     return (
         <>
-            {/* ─── COLLAPSED DOT (resting state) ─── */}
+            {/* ─── COLLAPSED (resume pill) ─── */}
             <AnimatePresence>
                 {isCollapsed && !isOpen && (
                     <motion.button
@@ -442,208 +442,186 @@ export function Chatbot() {
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5
-                                   cursor-pointer focus:outline-none group"
+                        whileHover={{ scale: 1.04, y: -1 }}
+                        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 cursor-pointer focus:outline-none"
                         style={{
-                            borderRadius: "14px 10px 12px 16px",
-                            background: "rgba(8, 8, 16, 0.85)",
-                            backdropFilter: "blur(20px)",
-                            border: `1px solid rgba(255, 255, 255, 0.08)`,
-                            boxShadow: `0 0 30px ${accent.glow}, 0 8px 24px rgba(0,0,0,0.4)`,
+                            borderRadius: "14px",
+                            background: "rgba(7, 10, 9, 0.95)",
+                            backdropFilter: "blur(28px)",
+                            border: `1px solid ${accent.primary}30`,
+                            boxShadow: `0 0 24px ${accent.glow}, 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)`,
                         }}
-                        whileHover={{ scale: 1.04 }}
                         aria-label="Reopen chat"
                     >
                         <motion.div
-                            className="h-2 w-2 rounded-full"
+                            className="h-1.5 w-1.5 rounded-full shrink-0"
                             style={{ background: accent.primary }}
-                            animate={{ opacity: [0.5, 1, 0.5] }}
-                            transition={{ duration: 2.5, repeat: Infinity }}
+                            animate={{ opacity: [0.4, 1, 0.4] }}
+                            transition={{ duration: 2, repeat: Infinity }}
                         />
-                        <span className="text-[11px] text-white/50 group-hover:text-white/80 transition-colors tracking-wide">
-                            resume
-                        </span>
+                        <span className="text-[11px] font-medium text-white/55 tracking-wide">resume chat</span>
                     </motion.button>
                 )}
             </AnimatePresence>
 
-            {/* ─── TRIGGER (first load — impossible to miss) ─── */}
+            {/* ─── TRIGGER BUTTON ─── */}
             {!isCollapsed && !isOpen && (
                 <motion.button
                     onClick={handleOpen}
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 24, delay: 1.5 }}
-                    className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3
-                               cursor-pointer focus:outline-none group overflow-hidden"
+                    transition={{ type: "spring", stiffness: 280, damping: 22, delay: 1.5 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="fixed bottom-6 right-6 z-50 flex items-center gap-3.5 px-5 py-3.5 cursor-pointer focus:outline-none overflow-hidden"
                     style={{
-                        borderRadius: "18px 12px 14px 20px",
-                        background: "rgba(2, 10, 6, 0.88)",
-                        backdropFilter: "blur(24px)",
-                        border: "1px solid rgba(16, 185, 129, 0.15)",
+                        borderRadius: "16px",
+                        background: "rgba(7, 10, 9, 0.96)",
+                        backdropFilter: "blur(32px)",
+                        border: "1px solid rgba(52, 211, 153, 0.2)",
                         boxShadow: `
-                            0 0 40px rgba(16, 185, 129, 0.2),
-                            0 8px 32px rgba(0, 0, 0, 0.5),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.06)
+                            0 0 0 1px rgba(52,211,153,0.06),
+                            0 0 32px rgba(52,211,153,0.14),
+                            0 20px 48px rgba(0,0,0,0.55),
+                            inset 0 1px 0 rgba(255,255,255,0.05)
                         `,
                     }}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
                     aria-label="Open AI chat"
                 >
-                    {/* Pulsing orb */}
-                    <motion.div
-                        className="relative h-3 w-3 rounded-full bg-emerald-400"
-                        animate={{ opacity: [0.6, 1, 0.6], scale: [0.9, 1.1, 0.9] }}
-                        transition={{ duration: 2.5, repeat: Infinity }}
-                    >
-                        <motion.div
+                    {/* Live orb */}
+                    <div className="relative h-2.5 w-2.5 shrink-0">
+                        <motion.span
                             className="absolute inset-0 rounded-full bg-emerald-400"
-                            animate={{ scale: [1, 2, 1], opacity: [0.3, 0, 0.3] }}
+                            animate={{ scale: [1, 2.2, 1], opacity: [0.5, 0, 0.5] }}
                             transition={{ duration: 2.5, repeat: Infinity }}
                         />
-                    </motion.div>
-
-                    <span className="text-[13px] font-medium text-white/70 group-hover:text-white/95 transition-colors">
-                        Ask Bibek&apos;s AI
-                    </span>
-
-                    {/* Background breathing glow */}
+                        <span className="relative flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                        <span className="text-[13px] font-semibold text-white/82 tracking-tight leading-none">Ask Bibek&apos;s AI</span>
+                        <span className="text-[9px] font-medium tracking-[0.16em] uppercase text-emerald-400/50 leading-none">6 projects · live</span>
+                    </div>
+                    {/* Shimmer sweep */}
                     <motion.div
                         className="absolute inset-0 pointer-events-none"
-                        style={{
-                            borderRadius: "inherit",
-                            background: "radial-gradient(ellipse at 20% 50%, rgba(16, 185, 129, 0.15), transparent 70%)",
-                        }}
-                        animate={{ opacity: [0, 0.6, 0] }}
-                        transition={{ duration: 4, repeat: Infinity }}
+                        style={{ background: "linear-gradient(105deg, transparent 30%, rgba(52,211,153,0.07) 50%, transparent 70%)" }}
+                        animate={{ x: ["-100%", "200%"] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 1.5 }}
                     />
                 </motion.button>
             )}
 
-            {/* ─── THE SHARD (chat panel) ─── */}
+            {/* ─── CHAT PANEL ─── */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         ref={containerRef}
-                        initial={{ opacity: 0, scale: 0.92, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.92, y: 20, transition: { duration: 0.2 } }}
-                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                        initial={{ opacity: 0, y: 18, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 12, scale: 0.98, transition: { duration: 0.16 } }}
+                        transition={{ type: "spring", stiffness: 360, damping: 30 }}
                         className={cn(
-                            "fixed z-50 flex flex-col overflow-hidden",
-                            // Mobile: full width
+                            "fixed z-50 flex flex-col",
                             "bottom-0 left-0 right-0",
-                            // Desktop: positioned bottom-right
-                            "sm:bottom-6 sm:left-auto sm:right-6",
-                            // Width: expands after interaction
-                            hasInteracted ? "sm:w-[420px]" : "sm:w-[360px]"
+                            "sm:bottom-6 sm:left-auto sm:right-6 sm:w-[400px]",
+                            "rounded-t-[22px] sm:rounded-[20px]"
                         )}
                         style={{
-                            // Height expands after first interaction
-                            maxHeight: hasInteracted
-                                ? "min(80vh, calc(100dvh - 2rem))"
-                                : "min(520px, calc(100dvh - 2rem))",
-                            borderRadius: "20px 14px 16px 24px",
-                            background: "rgba(2, 10, 6, 0.94)",
-                            backdropFilter: "blur(40px) saturate(1.2)",
-                            WebkitBackdropFilter: "blur(40px) saturate(1.2)",
-                            border: `1px solid rgba(255, 255, 255, 0.06)`,
+                            maxHeight: "min(84vh, calc(100dvh - 1rem))",
+                            background: "rgba(7, 10, 9, 0.97)",
+                            backdropFilter: "blur(64px) saturate(1.5)",
+                            WebkitBackdropFilter: "blur(64px) saturate(1.5)",
+                            border: "1px solid rgba(255,255,255,0.075)",
+                            borderBottom: "none",
                             boxShadow: `
-                                0 0 0 1px rgba(255, 255, 255, 0.03),
-                                0 24px 48px -12px rgba(0, 0, 0, 0.6),
-                                0 0 60px -20px ${accent.glow}
+                                0 0 0 1px rgba(255,255,255,0.03),
+                                0 40px 80px -20px rgba(0,0,0,0.75),
+                                0 0 100px -32px ${accent.glow},
+                                inset 0 1px 0 rgba(255,255,255,0.06)
                             `,
-                            transform: "perspective(800px) rotateY(-0.3deg)",
-                            transition: "max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1), width 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
+                            overflow: "hidden",
                         }}
                     >
+                        {/* Top accent line */}
+                        <motion.div
+                            className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none z-10"
+                            style={{ background: `linear-gradient(90deg, transparent 0%, ${accent.primary}80 50%, transparent 100%)` }}
+                            animate={{ opacity: [0.4, 1, 0.4] }}
+                            transition={{ duration: 3.5, repeat: Infinity }}
+                        />
+
                         {/* ─── Header ─── */}
-                        <div className={cn(
-                            "flex items-center justify-between border-b border-white/[0.04] transition-all duration-500",
-                            hasInteracted ? "px-4 py-1.5" : "px-4 py-2.5"
-                        )}>
-                            <div className="flex items-center gap-2">
-                                <motion.div
-                                    className="h-1.5 w-1.5 rounded-full"
-                                    style={{ background: accent.primary }}
-                                    animate={{ opacity: [0.5, 1, 0.5] }}
-                                    transition={{ duration: 3, repeat: Infinity }}
-                                />
-                                <span className={cn(
-                                    "font-medium text-white/40 tracking-widest uppercase transition-all duration-500",
-                                    hasInteracted ? "text-[10px]" : "text-[11px]"
-                                )}>
-                                    signal
-                                </span>
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05] shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="relative flex h-2 w-2 shrink-0">
+                                    <motion.span
+                                        className="absolute inset-0 rounded-full"
+                                        style={{ background: accent.primary }}
+                                        animate={{ scale: [1, 2.5, 1], opacity: [0.6, 0, 0.6] }}
+                                        transition={{ duration: 2.8, repeat: Infinity }}
+                                    />
+                                    <span className="relative flex h-2 w-2 rounded-full" style={{ background: accent.primary }} />
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[12px] font-bold tracking-widest text-white/78 leading-none">
+                                        BIBEK<span style={{ color: accent.primary }}>.AI</span>
+                                    </span>
+                                    <span className="text-[9px] tracking-[0.22em] uppercase text-white/25 leading-none">
+                                        online · ready
+                                    </span>
+                                </div>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="text-[10px] text-white/20 hover:text-white/50 transition-colors tracking-wider uppercase"
+                                className="flex h-7 w-7 items-center justify-center rounded-lg text-white/28 hover:text-white/75 hover:bg-white/[0.07] transition-all duration-200"
+                                aria-label="Close"
                             >
-                                rest
+                                <X className="h-3.5 w-3.5" />
                             </button>
                         </div>
 
                         {/* ─── Messages ─── */}
-                        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 scroll-smooth chat-scroll">
+                        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 chat-scroll">
                             {visibleMessages.map((message) => (
                                 <motion.div
                                     key={message.id}
-                                    initial={{ opacity: 0, y: 8 }}
+                                    initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: message.opacity, y: 0 }}
-                                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                                    className={cn(
-                                        "transition-opacity duration-1000",
-                                        message.role === "user" ? "flex justify-end" : "flex justify-start"
-                                    )}
+                                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                                    className={cn(message.role === "user" ? "flex justify-end" : "flex justify-start")}
                                 >
                                     {message.role === "assistant" ? (
-                                        /* ─── Assistant bubble: darker panel with border glow ─── */
                                         <div
-                                            className="max-w-[92%] relative"
+                                            className="max-w-[95%] text-[13px] leading-[1.8] text-white/75"
                                             style={{
-                                                background: "rgba(3, 12, 8, 0.85)",
-                                                borderRadius: "14px 10px 12px 16px",
-                                                padding: "14px 16px",
-                                                border: "1px solid rgba(16, 185, 129, 0.08)",
-                                                boxShadow: `inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 0 20px -8px ${accent.glow}`,
+                                                borderLeft: `2px solid ${accent.primary}48`,
+                                                paddingLeft: "13px",
+                                                letterSpacing: "0.012em",
                                             }}
                                         >
-                                            {/* Subtle top-left shine */}
-                                            <div
-                                                className="absolute inset-0 rounded-[inherit] pointer-events-none"
-                                                style={{
-                                                    background: `linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%)`,
-                                                    borderRadius: "inherit",
-                                                }}
-                                            />
-                                            <div className="relative text-[13px] leading-[1.75] text-white/[0.85]" style={{ letterSpacing: "0.015em" }}>
-                                                {message.content ? (() => {
-                                                    const cards = parseMessageToCards(message.content);
-                                                    const hasCards = cards.some(c => c.type !== "text");
-                                                    if (hasCards) {
-                                                        return (
-                                                            <div className="space-y-2">
-                                                                {cards.map((card, i) => (
-                                                                    <MessageCard key={i} data={card} />
-                                                                ))}
-                                                            </div>
-                                                        );
-                                                    }
-                                                    return <FormattedMessage text={message.content} />;
-                                                })() : null}
-                                            </div>
+                                            {message.content ? (() => {
+                                                const cards = parseMessageToCards(message.content);
+                                                const hasCards = cards.some(c => c.type !== "text");
+                                                if (hasCards) {
+                                                    return (
+                                                        <div className="space-y-2">
+                                                            {cards.map((card, i) => (
+                                                                <MessageCard key={i} data={card} />
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                }
+                                                return <FormattedMessage text={message.content} />;
+                                            })() : null}
                                         </div>
                                     ) : (
-                                        /* ─── User bubble: lighter bg, proper bubble ─── */
                                         <div
-                                            className="max-w-[80%] text-[13px] leading-[1.6] text-white/[0.92]"
+                                            className="max-w-[76%] text-[13px] leading-[1.65] text-white/88"
                                             style={{
-                                                background: "rgba(255, 255, 255, 0.08)",
-                                                borderRadius: "14px 16px 4px 14px",
+                                                background: "rgba(255,255,255,0.075)",
+                                                border: "1px solid rgba(255,255,255,0.09)",
+                                                borderRadius: "16px 16px 4px 16px",
                                                 padding: "10px 14px",
-                                                border: "1px solid rgba(255, 255, 255, 0.08)",
                                                 letterSpacing: "-0.01em",
                                             }}
                                         >
@@ -653,27 +631,30 @@ export function Chatbot() {
                                 </motion.div>
                             ))}
 
-                            {/* Loading indicator */}
+                            {/* Loading — 3 bouncing dots */}
                             {isLoading && (
                                 <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     className="flex justify-start"
                                 >
                                     <div
-                                        className="px-3.5 py-2.5"
+                                        className="flex items-center gap-[5px] py-0.5"
                                         style={{
-                                            background: "rgba(3, 12, 8, 0.85)",
-                                            borderRadius: "14px 10px 12px 16px",
-                                            border: "1px solid rgba(16, 185, 129, 0.08)",
+                                            borderLeft: `2px solid ${accent.primary}48`,
+                                            paddingLeft: "13px",
+                                            minHeight: "28px",
                                         }}
                                     >
-                                        <motion.div
-                                            className="h-[2px] w-4 rounded-full"
-                                            style={{ background: accent.primary }}
-                                            animate={{ opacity: [0.2, 0.6, 0.2], width: ["16px", "24px", "16px"] }}
-                                            transition={{ duration: 2, repeat: Infinity }}
-                                        />
+                                        {[0, 1, 2].map((i) => (
+                                            <motion.div
+                                                key={i}
+                                                className="h-[5px] w-[5px] rounded-full"
+                                                style={{ background: accent.primary }}
+                                                animate={{ y: [0, -5, 0], opacity: [0.3, 1, 0.3] }}
+                                                transition={{ duration: 0.72, repeat: Infinity, delay: i * 0.12, ease: "easeInOut" }}
+                                            />
+                                        ))}
                                     </div>
                                 </motion.div>
                             )}
@@ -681,95 +662,88 @@ export function Chatbot() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* ─── Smart prompts (first load — lively buttons) ─── */}
+                        {/* ─── Prompts (first load only) ─── */}
                         {messages.length <= 1 && (
-                            <div className="px-4 pb-2 flex flex-wrap gap-2">
+                            <div className="px-5 pb-3 flex flex-wrap gap-1.5">
                                 {PROMPTS.map((p) => (
                                     <button
                                         key={p.label}
-                                        onClick={() => { setInput(p.label); inputRef.current?.focus(); }}
+                                        onClick={() => { setInput(p.label); setTimeout(() => inputRef.current?.focus(), 0); }}
                                         className={cn(
-                                            "chat-prompt-btn text-[11px] px-3 py-1.5 flex items-center gap-1.5",
-                                            "border rounded-lg",
-                                            "focus:outline-none",
+                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium",
+                                            "border transition-all duration-200 focus:outline-none",
                                             p.primary
-                                                ? "text-emerald-300/80 border-emerald-500/25 bg-emerald-500/[0.08] hover:text-emerald-200 hover:border-emerald-400/40 hover:bg-emerald-500/[0.14]"
-                                                : "text-white/35 border-white/[0.07] bg-white/[0.02] hover:text-white/65 hover:border-white/[0.15] hover:bg-white/[0.05]"
+                                                ? "border-emerald-500/22 bg-emerald-500/[0.07] text-emerald-300/75 hover:bg-emerald-500/[0.13] hover:border-emerald-400/38 hover:text-emerald-200"
+                                                : "border-white/[0.07] bg-transparent text-white/32 hover:bg-white/[0.05] hover:border-white/[0.13] hover:text-white/62"
                                         )}
                                     >
-                                        <span className="text-[13px]">{p.icon}</span>
+                                        <span className="text-[12px]">{p.icon}</span>
                                         <span>{p.label}</span>
                                     </button>
                                 ))}
                             </div>
                         )}
 
-                        {/* ─── Input ─── */}
-                        <form onSubmit={handleSubmit} className="px-4 pb-3 pt-2">
-                            <div className="relative flex items-center gap-2">
-                                <div className="flex-1 relative">
-                                    <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={input}
-                                        onChange={(e) => setInput(e.target.value)}
-                                        placeholder="think..."
-                                        disabled={isLoading}
-                                        className="w-full bg-transparent text-[13px] text-white/80
-                               placeholder:text-white/15 focus:outline-none py-1.5
-                               caret-transparent"
-                                        style={{ letterSpacing: "-0.01em" }}
-                                    />
-                                    {/* The glowing line */}
-                                    <motion.div
-                                        className="absolute bottom-0 left-0 h-[1px] rounded-full"
-                                        style={{ background: accent.primary }}
-                                        animate={{
-                                            width: input.length > 0 ? "100%" : "32px",
-                                            opacity: input.length > 0 ? 0.6 : 0.2,
-                                        }}
-                                        transition={{ duration: 0.3, ease: "easeOut" }}
-                                    />
-                                    {/* Floating cursor indicator */}
-                                    {input.length > 0 && (
-                                        <motion.div
-                                            className="absolute right-0 bottom-[3px] h-[14px] w-[1.5px] rounded-full"
-                                            style={{ background: accent.primary }}
-                                            animate={{ opacity: [0.8, 0.2, 0.8] }}
-                                            transition={{ duration: 1, repeat: Infinity }}
-                                        />
-                                    )}
-                                </div>
+                        {/* ─── Separator ─── */}
+                        <div className="h-px mx-5 bg-white/[0.045]" />
 
+                        {/* ─── Input ─── */}
+                        <form onSubmit={handleSubmit} className="px-4 py-3.5">
+                            <motion.div
+                                className="flex items-center gap-2.5 rounded-[13px] px-4 py-2.5"
+                                animate={{
+                                    borderColor: input.length > 0 ? `${accent.primary}45` : "rgba(255,255,255,0.065)",
+                                    boxShadow: input.length > 0 ? `0 0 20px -6px ${accent.glow}` : "none",
+                                }}
+                                transition={{ duration: 0.2 }}
+                                style={{
+                                    background: "rgba(255,255,255,0.03)",
+                                    border: "1px solid rgba(255,255,255,0.065)",
+                                }}
+                            >
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    placeholder="ask anything about Bibek..."
+                                    disabled={isLoading}
+                                    className="flex-1 min-w-0 bg-transparent text-[13px] text-white/78 placeholder:text-white/22 focus:outline-none caret-transparent"
+                                    style={{ letterSpacing: "-0.01em" }}
+                                />
+                                {input.length > 0 && !isLoading && (
+                                    <motion.div
+                                        className="h-[13px] w-[1.5px] rounded-full shrink-0"
+                                        style={{ background: accent.primary }}
+                                        animate={{ opacity: [1, 0, 1] }}
+                                        transition={{ duration: 0.85, repeat: Infinity }}
+                                    />
+                                )}
                                 <motion.button
                                     type="submit"
                                     disabled={isLoading || !input.trim()}
-                                    className="flex items-center justify-center h-7 w-7 rounded-lg
-                             disabled:opacity-10 disabled:cursor-default transition-all"
-                                    style={{ color: accent.primary }}
-                                    animate={{
-                                        rotate: isSending ? 15 : 0,
-                                        scale: isSending ? 0.85 : 1,
+                                    className="flex items-center justify-center h-7 w-7 rounded-[10px] shrink-0 disabled:opacity-15 disabled:cursor-default"
+                                    style={{
+                                        background: input.trim() ? `${accent.primary}22` : "transparent",
+                                        color: input.trim() ? accent.primary : "rgba(255,255,255,0.2)",
+                                        transition: "background 0.2s, color 0.2s",
                                     }}
+                                    animate={{ rotate: isSending ? 18 : 0, scale: isSending ? 0.84 : 1 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                                    whileHover={{ scale: 1.1 }}
+                                    whileHover={input.trim() ? { scale: 1.08 } : {}}
                                 >
-                                    <ArrowRight className="h-4 w-4" />
+                                    <ArrowRight className="h-3.5 w-3.5" />
                                 </motion.button>
-                            </div>
+                            </motion.div>
                         </form>
 
-                        {/* ─── Breathing overlay (when idle) ─── */}
-                        {!isLoading && messages.length > 1 && (
-                            <motion.div
-                                className="absolute inset-0 pointer-events-none rounded-[inherit]"
-                                style={{
-                                    background: `radial-gradient(ellipse at 30% 80%, ${accent.glow}, transparent 60%)`,
-                                }}
-                                animate={{ opacity: [0, 0.04, 0] }}
-                                transition={{ duration: 6, repeat: Infinity }}
-                            />
-                        )}
+                        {/* Ambient floor glow */}
+                        <motion.div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{ background: `radial-gradient(ellipse at 50% 110%, ${accent.glow}, transparent 65%)` }}
+                            animate={{ opacity: [0, 0.08, 0] }}
+                            transition={{ duration: 5, repeat: Infinity }}
+                        />
                     </motion.div>
                 )}
             </AnimatePresence>
