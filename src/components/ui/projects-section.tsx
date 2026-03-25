@@ -74,7 +74,7 @@ const projects: Project[] = [
     live: "https://crumbcrraft.vercel.app/",
     year: 2026,
     status: "Completed",
-    image: "/crumbcraft.png",
+    image: "/CrumbCraft.png",
   },
   {
     name: "WatchThis!AI",
