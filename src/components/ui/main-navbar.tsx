@@ -11,7 +11,7 @@ function BlinkingCursor() {
   return (
     <motion.span
       animate={{ opacity: [1, 0, 1] }}
-      transition={{ duration: 1, repeat: Infinity, ease: "steps(1)" }}
+      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
       className="ml-[2px] inline-block w-[2px] h-[0.72em] bg-emerald-400 align-middle"
     />
   );
@@ -331,7 +331,7 @@ export function MainNavbar() {
                     {isActive(link) && (
                       <motion.span
                         animate={{ opacity: [1, 0, 1] }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "steps(1)" }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         className="ml-auto font-mono text-emerald-400 text-xs"
                       >
                         ▸
