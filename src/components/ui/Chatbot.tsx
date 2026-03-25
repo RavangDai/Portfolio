@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Bot, ArrowRight, X, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { parseMessageToCards, MessageCard } from "./MessageCard";
 
 /* ─── Types ─── */
 interface ChatMessage {
@@ -276,10 +277,10 @@ function CountUpInline({ text }: { text: string }) {
 
 /* ─── Smart Prompts (with icons + primary) ─── */
 const PROMPTS: { icon: string; label: string; primary?: boolean }[] = [
-    { icon: "📊", label: "show impact", primary: true },
+    { icon: "⚡", label: "show impact", primary: true },
+    { icon: "💼", label: "best project for hiring" },
+    { icon: "🛠️", label: "what can Bibek build" },
     { icon: "📖", label: "show story" },
-    { icon: "⚖️", label: "compare projects" },
-    { icon: "🧠", label: "explain like CTO" },
 ];
 
 /* ─── Main Component ─── */
@@ -618,9 +619,20 @@ export function Chatbot() {
                                                 }}
                                             />
                                             <div className="relative text-[13px] leading-[1.75] text-white/[0.85]" style={{ letterSpacing: "0.015em" }}>
-                                                {message.content ? (
-                                                    <FormattedMessage text={message.content} />
-                                                ) : null}
+                                                {message.content ? (() => {
+                                                    const cards = parseMessageToCards(message.content);
+                                                    const hasCards = cards.some(c => c.type !== "text");
+                                                    if (hasCards) {
+                                                        return (
+                                                            <div className="space-y-2">
+                                                                {cards.map((card, i) => (
+                                                                    <MessageCard key={i} data={card} />
+                                                                ))}
+                                                            </div>
+                                                        );
+                                                    }
+                                                    return <FormattedMessage text={message.content} />;
+                                                })() : null}
                                             </div>
                                         </div>
                                     ) : (
