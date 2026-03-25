@@ -253,7 +253,7 @@ export function NewHero() {
             View Projects
             <LayoutGrid className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-12" />
           </FlowLink>
-          <FlowLink href="/resumebibekjan26.pdf" variant="ghost">
+          <FlowLink href="/Bibek_Pathak_Resume_Mar26.pdf" variant="ghost">
             Download Resume
             <FileText className="h-3.5 w-3.5" />
           </FlowLink>
