@@ -348,19 +348,19 @@ html {
   0%,
   100% {
     transform: translate(0px, 0px) scale(1);
-    opacity: 0.07;
+    opacity: 0.13;
   }
   25% {
     transform: translate(80px, -60px) scale(1.15);
-    opacity: 0.1;
+    opacity: 0.19;
   }
   50% {
     transform: translate(-50px, 90px) scale(0.88);
-    opacity: 0.06;
+    opacity: 0.11;
   }
   75% {
     transform: translate(60px, 40px) scale(1.08);
-    opacity: 0.09;
+    opacity: 0.16;
   }
 }
 
@@ -368,15 +368,15 @@ html {
   0%,
   100% {
     transform: translate(0px, 0px) scale(1.05);
-    opacity: 0.06;
+    opacity: 0.11;
   }
   33% {
     transform: translate(-80px, 55px) scale(0.9);
-    opacity: 0.09;
+    opacity: 0.17;
   }
   66% {
     transform: translate(100px, -45px) scale(1.2);
-    opacity: 0.05;
+    opacity: 0.09;
   }
 }
 
@@ -384,15 +384,15 @@ html {
   0%,
   100% {
     transform: translate(0px, 0px) scale(1);
-    opacity: 0.04;
+    opacity: 0.08;
   }
   40% {
     transform: translate(60px, 70px) scale(1.12);
-    opacity: 0.07;
+    opacity: 0.13;
   }
   70% {
     transform: translate(-70px, -40px) scale(0.85);
-    opacity: 0.03;
+    opacity: 0.06;
   }
 }
 
@@ -617,4 +617,70 @@ html {
   transition: width 0.28s ease;
 }
 .link-animate:hover::after { width: 100%; }
+
+/* ===== Grain / Film-noise Texture ===== */
+@keyframes grain-shift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-1px, 1px); }
+  40%  { transform: translate(1px, -1px); }
+  60%  { transform: translate(-1px, -1px); }
+  80%  { transform: translate(1px, 0px); }
+  100% { transform: translate(0, 1px); }
+}
+
+.grain-layer {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.028;
+  pointer-events: none;
+  animation: grain-shift 0.45s steps(1) infinite;
+  z-index: 2;
+  mix-blend-mode: screen;
+}
+
+/* ===== Glass Card ===== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.022);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1.25rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 48px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Role Badge ===== */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.07);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(110, 231, 183, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+/* ===== Section gradient separator ===== */
+.section-sep {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(16, 185, 129, 0.25) 30%,
+    rgba(34, 211, 238, 0.25) 70%,
+    transparent
+  );
+}
+
+/* ===== Input glow focus ===== */
+.input-glow:focus {
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 2px 16px rgba(16, 185, 129, 0.12), 0 1px 0 rgba(16, 185, 129, 0.2);
+}
 

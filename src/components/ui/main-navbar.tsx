@@ -193,8 +193,8 @@ export function MainNavbar() {
         <nav className={cn(
           "relative flex items-center justify-between rounded-2xl border px-5 py-3 transition-all duration-500",
           scrolled
-            ? "border-white/[0.07] bg-[#020A06]/90 backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.04)]"
-            : "border-white/[0.03] bg-transparent"
+            ? "border-white/[0.08] bg-[#020A06]/80 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]"
+            : "border-white/[0.05] bg-[#020A06]/30 backdrop-blur-2xl"
         )}>
 
           {/* Inner top accent line */}

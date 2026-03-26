@@ -277,10 +277,10 @@ function CountUpInline({ text }: { text: string }) {
 
 /* ─── Smart Prompts (with icons + primary) ─── */
 const PROMPTS: { icon: string; label: string; primary?: boolean }[] = [
-    { icon: "⚡", label: "show impact", primary: true },
+    { icon: "⚡", label: "what have you shipped", primary: true },
     { icon: "💼", label: "best project for hiring" },
-    { icon: "🛠️", label: "what can Bibek build" },
-    { icon: "📖", label: "show story" },
+    { icon: "🛠️", label: "what can you build" },
+    { icon: "📖", label: "tell me your story" },
 ];
 
 /* ─── Main Component ─── */
@@ -293,7 +293,7 @@ export function Chatbot() {
             id: "welcome",
             role: "assistant",
             content:
-                "You're looking at Bibek's work. I surface what matters. Say \"show impact\" or \"show story\".",
+                "Hey — I'm Bibek. Ask me anything about what I've built, my stack, or what I'm working on.",
             important: true,
             timestamp: Date.now(),
         },
@@ -567,7 +567,7 @@ export function Chatbot() {
                                         BIBEK<span style={{ color: accent.primary }}>.AI</span>
                                     </span>
                                     <span className="text-[9px] tracking-[0.22em] uppercase text-white/25 leading-none">
-                                        online · ready
+                                        available · let&apos;s talk
                                     </span>
                                 </div>
                             </div>

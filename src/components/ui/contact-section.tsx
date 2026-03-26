@@ -88,11 +88,11 @@ export function ContactSection() {
                 style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)" }}
               >
                 <span className="shimmer-text">Let&apos;s build</span><br />
-                <span className="text-white/20">something.</span>
+                <span className="text-white/25">something.</span>
               </h2>
               <p className="mt-6 text-slate-500 leading-relaxed max-w-xs text-base">
                 Whether it&apos;s a data project, full-stack app, or something
-                experimental — reach out.
+                experimental  reach out.
               </p>
             </div>
 
@@ -101,7 +101,7 @@ export function ContactSection() {
 
               {/* Email */}
               <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-2">
+                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
                   Email
                 </p>
                 <div className="flex items-center gap-3">
@@ -132,20 +132,20 @@ export function ContactSection() {
 
               {/* Location */}
               <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-2">
+                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
                   Based at
                 </p>
                 <p className="text-base text-white/50">
-                  Southeastern Louisiana University
+                  Hammond, Louisiana, USA 
                 </p>
-                <p className="text-xs text-slate-700 mt-1">
+                <p className="text-xs text-white/35 mt-1">
                   Open to remote &amp; hybrid
                 </p>
               </div>
 
               {/* Focus */}
               <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-2">
+                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
                   Focus
                 </p>
                 <p className="text-base text-white/50">Full-stack · Data / AI</p>
@@ -184,7 +184,7 @@ export function ContactSection() {
               setTimeout(() => setIsSent(false), 2500);
               form.reset();
             }}
-            className="flex flex-col gap-8"
+            className="flex flex-col gap-8 glass-card p-7 md:p-10"
           >
             <div className="grid gap-8 sm:grid-cols-2">
               <MinimalField label="Name" htmlFor="f-name">
@@ -273,7 +273,7 @@ function MinimalField({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-[0.58rem] font-bold uppercase tracking-[0.28em] text-slate-700 mb-1"
+        className="block text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-1"
       >
         {label}
       </label>

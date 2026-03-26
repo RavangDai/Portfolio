@@ -111,12 +111,12 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
           {/* Issuer + year */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BadgeCheck className="h-3.5 w-3.5 text-emerald-400/50" />
-              <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-slate-600">
+              <BadgeCheck className="h-3.5 w-3.5 text-emerald-400/60" />
+              <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-white/40">
                 {cert.issuer}
               </span>
             </div>
-            <span className="text-[0.62rem] font-mono text-slate-700">{cert.year}</span>
+            <span className="text-[0.62rem] font-mono text-white/25">{cert.year}</span>
           </div>
 
           {/* Title + description */}
@@ -124,14 +124,14 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
             <h3 className="text-lg font-bold tracking-tight leading-snug text-white">
               {cert.title}
             </h3>
-            <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-2">
+            <p className="mt-2 text-sm text-slate-400/70 leading-relaxed line-clamp-2">
               {cert.highlight}
             </p>
           </div>
 
           {/* Tag */}
           <div className="flex items-center pt-2">
-            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-slate-700">
+            <span className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-white/30">
               {cert.tag}
             </span>
           </div>
@@ -158,7 +158,7 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
               <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-emerald-400/70">
                 Skills Verified
               </p>
-              <p className="text-[0.56rem] text-slate-700 mt-0.5">
+              <p className="text-[0.56rem] text-white/30 mt-0.5">
                 {cert.issuer} · {cert.year}
               </p>
             </div>
