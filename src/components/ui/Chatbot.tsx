@@ -293,7 +293,7 @@ export function Chatbot() {
             id: "welcome",
             role: "assistant",
             content:
-                "Hey — I'm Bibek. Ask me anything about what I've built, my stack, or what I'm working on.",
+                "Hey. I'm Bibek, Ask me anything about what I've built, my stack, or what I'm working on.",
             important: true,
             timestamp: Date.now(),
         },
