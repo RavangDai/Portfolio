@@ -240,7 +240,7 @@ export function ProjectsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-14 md:mb-20 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
+          className="mb-14 md:mb-18 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
         >
           <div>
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400/70 mb-5">
@@ -267,12 +267,9 @@ export function ProjectsSection() {
                 )}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
-                {/* Animated gradient underline */}
                 <span className={cn(
-                  "absolute bottom-0 left-0 h-[1.5px] w-full origin-left transition-all duration-400",
-                  sort === option
-                    ? "scale-x-100 opacity-100"
-                    : "scale-x-0 opacity-0"
+                  "absolute bottom-0 left-0 h-[1.5px] w-full origin-left transition-all duration-300",
+                  sort === option ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
                 )}
                   style={{ background: "linear-gradient(90deg, #10b981, #22d3ee)" }}
                 />
@@ -280,8 +277,6 @@ export function ProjectsSection() {
             ))}
           </div>
         </motion.div>
-
-        {/* PROJECTS LIST */}
         <div className="relative">
 
           {/* Top rule */}

@@ -618,6 +618,50 @@ html {
 }
 .link-animate:hover::after { width: 100%; }
 
+/* ===== Blog — Thinking dots (loading indicator) ===== */
+
+@keyframes thinking-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+  40%            { transform: translateY(-4px); opacity: 1; }
+}
+
+.thinking-dots .dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: thinking-bounce 1.2s ease-in-out infinite;
+}
+.thinking-dots .dot:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dots .dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ===== Blog — AI ring border spin ===== */
+/*
+  Oversized conic-gradient div rotates in place via translate+rotate combo.
+  Clipped by a parent with overflow:hidden, creating a spinning gradient border.
+*/
+@keyframes ai-ring-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.ai-ring-spin {
+  animation: ai-ring-spin 3.5s linear infinite;
+  will-change: transform;
+}
+
+/* ===== Blog — Enhance button shimmer sweep ===== */
+@keyframes btn-shimmer {
+  0%   { transform: translateX(-180%); }
+  100% { transform: translateX(180%); }
+}
+
+.btn-shimmer {
+  animation: btn-shimmer 1.4s ease-in-out infinite;
+  will-change: transform;
+}
+
 /* ===== Grain / Film-noise Texture ===== */
 @keyframes grain-shift {
   0%   { transform: translate(0, 0); }
