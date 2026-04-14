@@ -128,7 +128,7 @@ export function MainNavbar() {
   const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
 
   useEffect(() => {
-    const sections = ["home", "projects", "certificates", "contact", "blog"];
+    const sections = ["home", "projects", "certificates", "contact"];
 
     // Middle-of-viewport detection — reliable for tall sections like projects
     const observer = new IntersectionObserver(
@@ -167,7 +167,6 @@ export function MainNavbar() {
     { name: "Projects",     href: "#projects",     id: "projects"     },
     { name: "Certificates", href: "#certificates", id: "certificates" },
     { name: "Contact",      href: "#contact",      id: "contact"      },
-    { name: "Blog",         href: "#blog",         id: "blog"         },
   ];
 
   const handleLinkClick = (href: string) => {

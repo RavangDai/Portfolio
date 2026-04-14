@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,70 +8,113 @@ import { FlowButton } from "@/components/ui/flow-button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/* -------------------------------------------------------------------------- */
-/* MAIN COMPONENT                                                              */
-/* -------------------------------------------------------------------------- */
-
 export function ContactSection() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSent, setIsSent] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Pixel hover refs — direct DOM update, zero re-renders
+  const sectionRef = useRef<HTMLElement>(null);
+  const pixelGlowRef = useRef<HTMLDivElement>(null);
+  const pixelCyanRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (pixelGlowRef.current) {
+      pixelGlowRef.current.style.maskImage = `radial-gradient(ellipse 260px 260px at ${x}px ${y}px, black 0%, transparent 100%)`;
+    }
+    if (pixelCyanRef.current) {
+      pixelCyanRef.current.style.maskImage = `radial-gradient(ellipse 420px 420px at ${x}px ${y}px, black 30%, transparent 100%)`;
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const offscreen = "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)";
+    if (pixelGlowRef.current) pixelGlowRef.current.style.maskImage = offscreen;
+    if (pixelCyanRef.current) pixelCyanRef.current.style.maskImage = offscreen;
+  }, []);
+
   const handleCopy = () => {
     navigator.clipboard.writeText("bibekg2029@gmail.com");
     setCopied(true);
     setFeedback("Copied to clipboard.");
-    setTimeout(() => {
-      setCopied(false);
-      setFeedback(null);
-    }, 2000);
+    setTimeout(() => { setCopied(false); setFeedback(null); }, 2000);
   };
 
   return (
     <section
+      ref={sectionRef}
       id="contact"
       className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* ── Sonar / radar background ── */}
+      {/* ── Background layers ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
 
-        {/* Sonar rings expanding from bottom-left */}
-        {[0, 1, 2, 3, 4].map((i) => (
+        {/* Always-dim base dot grid */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(16,185,129,0.09) 1.5px, transparent 1.5px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+
+        {/* Cursor-revealed emerald pixel glow — inner ring */}
+        <div
+          ref={pixelGlowRef}
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(52,211,153,1) 1.5px, transparent 1.5px)",
+            backgroundSize: "28px 28px",
+            maskImage: "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)",
+          }}
+        />
+
+        {/* Cursor-revealed cyan glow — outer ring (softer) */}
+        <div
+          ref={pixelCyanRef}
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(34,211,238,0.45) 1.5px, transparent 1.5px)",
+            backgroundSize: "28px 28px",
+            maskImage: "radial-gradient(ellipse 420px 420px at -999px -999px, black 30%, transparent 100%)",
+          }}
+        />
+
+        {/* Sonar rings */}
+        {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="absolute rounded-full border border-emerald-400/[0.12]"
+            className="absolute rounded-full border border-emerald-400/[0.07]"
             style={{
               width:  `${(i + 1) * 220}px`,
               height: `${(i + 1) * 220}px`,
-              left:   "-40px",
+              left: "-40px",
               bottom: "-40px",
-              animation: `sonar-pulse 5s ease-out ${i * 1}s infinite`,
+              animation: `sonar-pulse 5s ease-out ${i * 1.1}s infinite`,
             }}
           />
         ))}
 
-
-        {/* Faint grid lines */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: "linear-gradient(rgba(16,185,129,1) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,1) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-
-        {/* Top-right aurora */}
+        {/* Ambient aurora */}
         <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-cyan-600/[0.05] blur-[90px] animate-aurora-3" />
 
-        {/* Edge vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_30%_60%,transparent_40%,#030C08_90%)]" />
+        {/* Edge vignette — keeps pixels from bleeding into edges */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_50%_50%,transparent_50%,#030C08_100%)]" />
       </div>
 
-
+      {/* ── Content ── */}
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
-        <div className="grid gap-16 lg:gap-20 xl:gap-32 lg:grid-cols-[1fr_1.3fr]">
+        <div className="grid gap-16 lg:gap-20 xl:gap-28 lg:grid-cols-[1fr_1.3fr]">
 
-          {/* ── LEFT: Editorial info ── */}
+          {/* Left: info */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -92,13 +135,11 @@ export function ContactSection() {
               </h2>
               <p className="mt-6 text-slate-500 leading-relaxed max-w-xs text-base">
                 Whether it&apos;s a data project, full-stack app, or something
-                experimental  reach out.
+                experimental — reach out.
               </p>
             </div>
 
-            {/* Contact details — flowing text style */}
             <div className="space-y-8">
-
               {/* Email */}
               <div>
                 <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
@@ -135,12 +176,8 @@ export function ContactSection() {
                 <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
                   Based at
                 </p>
-                <p className="text-base text-white/50">
-                  Hammond, Louisiana, USA 
-                </p>
-                <p className="text-xs text-white/35 mt-1">
-                  Open to remote &amp; hybrid
-                </p>
+                <p className="text-base text-white/50">Hammond, Louisiana, USA</p>
+                <p className="text-xs text-white/35 mt-1">Open to remote &amp; hybrid</p>
               </div>
 
               {/* Focus */}
@@ -162,7 +199,7 @@ export function ContactSection() {
             </div>
           </motion.div>
 
-          {/* ── RIGHT: Minimal form ── */}
+          {/* Right: form — no card wrapper */}
           <motion.form
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -172,20 +209,19 @@ export function ContactSection() {
               e.preventDefault();
               const form = e.currentTarget;
               const formData = new FormData(form);
-              const name = (formData.get("name") as string)?.trim() || "";
-              const subject =
-                (formData.get("subject") as string)?.trim() || "New message";
+              const name    = (formData.get("name")    as string)?.trim() || "";
+              const subject = (formData.get("subject") as string)?.trim() || "New message";
               const message = (formData.get("message") as string)?.trim() || "";
-
-              const mailto = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
-
+              const mailto  = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
               window.location.href = mailto;
               setIsSent(true);
               setTimeout(() => setIsSent(false), 2500);
               form.reset();
             }}
-            className="flex flex-col gap-8 glass-card p-7 md:p-10"
+            className="relative flex flex-col gap-8"
           >
+            {/* Soft blur behind inputs — takes the edge off pixel dots */}
+            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-3xl bg-[#030C08]/15 backdrop-blur-[3px]" />
             <div className="grid gap-8 sm:grid-cols-2">
               <MinimalField label="Name" htmlFor="f-name">
                 <input
@@ -242,15 +278,14 @@ export function ContactSection() {
               </FlowButton>
             </div>
           </motion.form>
+
         </div>
       </div>
     </section>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* SUBCOMPONENTS                                                               */
-/* -------------------------------------------------------------------------- */
+/* ── Subcomponents ── */
 
 const minimalInput = cn(
   "w-full bg-transparent border-0 border-b border-white/[0.07] py-3 px-0",
