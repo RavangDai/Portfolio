@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Linkedin, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const NAV_LINKS = [
@@ -9,19 +10,18 @@ const NAV_LINKS = [
     { name: "Projects", href: "#projects" },
     { name: "Certificates", href: "#certificates" },
     { name: "Contact", href: "#contact" },
-    { name: "Blog", href: "#blog" },
 ];
 
 const SOCIALS = [
     {
         name: "GitHub",
         href: "https://github.com/RavangDai",
-        icon: Github,
+        icon: FaGithub,
     },
     {
         name: "LinkedIn",
         href: "https://www.linkedin.com/in/bibek-pathak-10398a301/",
-        icon: Linkedin,
+        icon: FaLinkedinIn,
     },
 ];
 
@@ -31,9 +31,9 @@ export function Footer() {
     };
 
     return (
-        <footer className="relative w-full bg-[#020A06] pt-16 pb-8 overflow-hidden">
+        <footer className="relative w-full bg-[#050B1A] pt-16 pb-8 overflow-hidden">
             {/* Background glow */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.06),_transparent_60%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(255,83,115,0.06),_transparent_60%)]" />
 
             <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
                 {/* Top row: Brand + Nav + Socials */}
@@ -44,7 +44,7 @@ export function Footer() {
                             onClick={scrollToTop}
                             className="group text-left"
                         >
-                            <span className="text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-emerald-200">
+                            <span className="text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-[#17E7FF]">
                                 Bibek Pathak
                             </span>
                         </button>
@@ -65,7 +65,7 @@ export function Footer() {
                                         aria-label={social.name}
                                         className="btn-icon h-9 w-9"
                                     >
-                                        <Icon className="h-4 w-4 transition-transform group-hover/s:scale-110" />
+                                        <Icon className="h-4 w-4" />
                                     </Link>
                                 );
                             })}

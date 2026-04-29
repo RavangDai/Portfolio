@@ -100,18 +100,18 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
       >
 
         {/* ════════ FRONT ════════ */}
-        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#08080f] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_40px_-8px_rgba(16,185,129,0.2)]">
+        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#070D1F] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_40px_-8px_rgba(255,83,115,0.2)]">
 
           {/* Gradient top accent */}
           <div
             className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.5) 40%, rgba(34,211,238,0.5) 60%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, transparent, rgba(255,83,115,0.5) 40%, rgba(23,231,255,0.5) 60%, transparent)" }}
           />
 
           {/* Issuer + year */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BadgeCheck className="h-3.5 w-3.5 text-emerald-400/60" />
+              <BadgeCheck className="h-3.5 w-3.5 text-[#FF5373]/60" />
               <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-white/40">
                 {cert.issuer}
               </span>
@@ -136,26 +136,26 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
             </span>
           </div>
 
-          <div className="pointer-events-none absolute -bottom-10 -right-10 h-36 w-36 rounded-full bg-emerald-600/[0.05] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 -right-10 h-36 w-36 rounded-full bg-[#FF5373]/[0.05] blur-3xl" />
         </div>
 
         {/* ════════ BACK ════════ */}
 
-        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border border-emerald-500/20 bg-[#07070d] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(16,185,129,0.15)]">
+        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border border-[#FF5373]/20 bg-[#060A1A] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(255,83,115,0.15)]">
 
           {/* Gradient top accent — brighter on back */}
           <div
             className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.8) 40%, rgba(34,211,238,0.8) 60%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, transparent, rgba(255,83,115,0.8) 40%, rgba(23,231,255,0.8) 60%, transparent)" }}
           />
 
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-              <BadgeCheck className="h-4 w-4 text-emerald-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6D3BFF]/10 border border-[#6D3BFF]/20">
+              <BadgeCheck className="h-4 w-4 text-[#FF5373]" />
             </div>
             <div>
-              <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-emerald-400/70">
+              <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#FF5373]/70">
                 Skills Verified
               </p>
               <p className="text-[0.56rem] text-white/30 mt-0.5">
@@ -168,7 +168,7 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
           <ul className="flex-1 space-y-2.5">
             {cert.skills.map((skill) => (
               <li key={skill} className="flex items-center gap-3">
-                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-emerald-400/50" />
+                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-[#FF5373]/50" />
                 <span className="text-sm font-medium text-slate-300">{skill}</span>
               </li>
             ))}
@@ -181,15 +181,15 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-emerald-400/70 hover:border-emerald-400/40 hover:text-emerald-300 active:border-emerald-400/40 active:text-emerald-300 transition-all duration-200"
+              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-[#FF5373]/20 bg-[#FF5373]/10 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-[#FF5373]/70 hover:border-[#FF5373]/40 hover:text-[#FF5373] active:border-[#FF5373]/40 active:text-[#FF5373] transition-all duration-200"
             >
               <ExternalLink className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5 group-active/v:-translate-y-0.5 group-active/v:translate-x-0.5" />
               Verify Credential
             </a>
           )}
 
-          <div className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-emerald-500/[0.08] blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-cyan-500/[0.06] blur-3xl" />
+          <div className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[#FF5373]/[0.08] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#17E7FF]/[0.06] blur-3xl" />
         </div>
 
       </div>
@@ -220,9 +220,8 @@ export function CertificatesSection() {
   return (
     <section
       id="certificates"
-      className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden"
+      className="relative w-full bg-[#060916] py-20 md:py-28 overflow-hidden"
     >
-
 
       <div className="relative z-10 mx-auto w-full max-w-5xl px-6 md:px-8">
 
@@ -235,7 +234,7 @@ export function CertificatesSection() {
           className="mb-14 md:mb-18 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
         >
           <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400/70 mb-5">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#FF5373]/70 mb-5">
               Certifications
             </p>
             <h2
@@ -263,7 +262,7 @@ export function CertificatesSection() {
                     "absolute bottom-0 left-0 h-[1.5px] w-full origin-left transition-all duration-300",
                     sort === option ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
                   )}
-                  style={{ background: "linear-gradient(90deg, #10b981, #22d3ee)" }}
+                  style={{ background: "linear-gradient(90deg, #FF5373, #17E7FF)" }}
                 />
               </button>
             ))}

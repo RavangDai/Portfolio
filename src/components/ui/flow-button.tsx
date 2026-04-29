@@ -13,11 +13,11 @@ function FlowInner({
   children: React.ReactNode;
   variant: "primary" | "ghost";
 }) {
-  const fillColor = variant === "primary" ? "bg-pink-500" : "bg-rose-900/[0.08]";
+  const fillColor = variant === "primary" ? "bg-[#FF5373]" : "bg-white/[0.08]";
   const arrowColor =
     variant === "primary"
       ? "stroke-white/80 group-hover:stroke-white"
-      : "stroke-rose-900/40 group-hover:stroke-rose-900";
+      : "stroke-white/40 group-hover:stroke-white";
 
   return (
     <>
@@ -69,12 +69,12 @@ function buttonClass(variant: "primary" | "ghost", className?: string) {
     "active:scale-[0.96]",
     variant === "primary"
       ? [
-          "border border-pink-400/40 bg-pink-500/10 text-rose-900",
-          "hover:border-pink-400/70 hover:text-white hover:shadow-[0_0_28px_rgba(236,72,153,0.35)]",
+          "border border-[#FF5373]/40 bg-[#FF5373]/10 text-white",
+          "hover:border-[#FF5373]/70 hover:text-white hover:shadow-[0_0_28px_rgba(255,83,115,0.35)]",
         ]
       : [
-          "border border-rose-900/15 bg-rose-900/[0.03] text-rose-900/50",
-          "hover:border-rose-900/30 hover:text-rose-900",
+          "border border-white/[0.15] bg-white/[0.03] text-white/50",
+          "hover:border-white/30 hover:text-white",
         ],
     className
   );

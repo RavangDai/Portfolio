@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark scroll-smooth ${inter.variable} ${lora.variable}`} suppressHydrationWarning>
 
-      <body className="font-sans bg-[#050509] text-white antialiased min-h-screen" suppressHydrationWarning>
+      <body className="font-sans bg-[#060916] text-white antialiased min-h-screen" suppressHydrationWarning>
         <ScrollProgress />
         <MainNavbar />
         {children}

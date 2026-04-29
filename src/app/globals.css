@@ -130,12 +130,12 @@ html {
 
 /* Brand-colored text selection */
 ::selection {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(255, 83, 115, 0.4);
   color: #fff;
 }
 
 ::-moz-selection {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(255, 83, 115, 0.4);
   color: #fff;
 }
 
@@ -150,25 +150,23 @@ html {
 }
 
 .social-icon:hover {
-  border-color: rgba(110, 231, 183, 0.9);
-  /* emerald-300 */
-  background-color: rgba(16, 185, 129, 0.18);
-  /* emerald-500/18 */
-  box-shadow: 0 0 18px rgba(52, 211, 153, 0.7);
+  border-color: rgba(23, 231, 255, 0.9);
+  background-color: rgba(255, 83, 115, 0.18);
+  box-shadow: 0 0 18px rgba(255, 83, 115, 0.7);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
 /* ===== Portfolio Theme Tokens (no tailwind.config needed) ===== */
 :root {
-  --bg-0: #020A06;
-  --bg-1: #030C08;
+  --bg-0: #030B18;
+  --bg-1: #060916;
 
   /* primary accents */
-  --accent-1: 16 185 129;
-  /* emerald-500 */
-  --accent-2: 34 211 238;
-  /* cyan-400 */
+  --accent-1: 255 83 115;
+  /* coral #FF5373 */
+  --accent-2: 23 231 255;
+  /* cyan #17E7FF */
 
   /* “steel” highlight for text gradients */
   --steel-1: 255 255 255;
@@ -285,8 +283,7 @@ html {
   border: 1px solid rgba(255, 255, 255, 0.06);
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
   font-size: 0.85em;
-  color: rgba(110, 231, 183, 0.9);
-  /* emerald-300 */
+  color: rgba(23, 231, 255, 0.9);
 }
 
 /* Heading lines inside chat messages */
@@ -326,7 +323,7 @@ html {
   display: block;
   padding-left: 12px;
   margin: 3px 0;
-  border-left: 2px solid rgba(16, 185, 129, 0.35);
+  border-left: 2px solid rgba(255, 83, 115, 0.35);
   color: rgba(255, 255, 255, 0.82);
   font-size: 0.92em;
   line-height: 1.65;
@@ -339,7 +336,7 @@ html {
 
 .chat-prompt-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 16px rgba(255, 83, 115, 0.2);
 }
 
 /* ===== Flow / Aurora / Shimmer Animations ===== */
@@ -485,13 +482,13 @@ html {
 .shimmer-text {
   background: linear-gradient(
     105deg,
-    #4a1530 0%,
-    #831843 18%,
-    #be185d 36%,
-    #93c5fd 50%,
-    #be185d 64%,
-    #831843 82%,
-    #4a1530 100%
+    #ffffff 0%,
+    #FF5373 18%,
+    #FFC858 36%,
+    #17E7FF 50%,
+    #FFC858 64%,
+    #FF5373 82%,
+    #ffffff 100%
   );
   background-size: 250% auto;
   -webkit-background-clip: text;
@@ -512,7 +509,7 @@ html {
 
 /* ===== Button System ===== */
 
-/* Primary — emerald gradient, glow on hover, inner shimmer sweep */
+/* Primary — coral gradient, glow on hover, inner shimmer sweep */
 .btn-primary {
   position: relative;
   display: inline-flex;
@@ -523,8 +520,8 @@ html {
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, #10b981 0%, #0891b2 100%);
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, #FF5373 0%, #6D3BFF 100%);
+  border: 1px solid rgba(255, 83, 115, 0.35);
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
@@ -533,7 +530,7 @@ html {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #34d399 0%, #22d3ee 100%);
+  background: linear-gradient(135deg, #FF5373 0%, #17E7FF 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -546,9 +543,9 @@ html {
   transition: transform 0.55s ease;
 }
 .btn-primary:hover {
-  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4), 0 0 28px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 83, 115, 0.4), 0 0 28px rgba(255, 83, 115, 0.45);
   transform: translateY(-1.5px);
-  border-color: rgba(52, 211, 153, 0.5);
+  border-color: rgba(255, 83, 115, 0.5);
 }
 .btn-primary:hover::before { opacity: 1; }
 .btn-primary:hover::after  { transform: translateX(100%); }
@@ -592,11 +589,11 @@ html {
   transition: all 0.25s ease;
 }
 .btn-icon:hover {
-  border-color: rgba(16, 185, 129, 0.45);
-  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(23, 231, 255, 0.45);
+  background: rgba(23, 231, 255, 0.1);
   color: #fff;
   transform: scale(1.1);
-  box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 18px rgba(23, 231, 255, 0.25);
 }
 .btn-icon:active { transform: scale(0.96); }
 
@@ -700,13 +697,13 @@ html {
   gap: 7px;
   padding: 6px 16px;
   border-radius: 9999px;
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(255, 83, 115, 0.25);
+  background: rgba(255, 83, 115, 0.07);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(110, 231, 183, 0.85);
+  color: rgba(255, 83, 115, 0.85);
   backdrop-filter: blur(8px);
 }
 
@@ -716,15 +713,15 @@ html {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(16, 185, 129, 0.25) 30%,
-    rgba(34, 211, 238, 0.25) 70%,
+    rgba(255, 83, 115, 0.25) 30%,
+    rgba(23, 231, 255, 0.25) 70%,
     transparent
   );
 }
 
 /* ===== Input glow focus ===== */
 .input-glow:focus {
-  border-color: rgba(16, 185, 129, 0.5) !important;
-  box-shadow: 0 2px 16px rgba(16, 185, 129, 0.12), 0 1px 0 rgba(16, 185, 129, 0.2);
+  border-color: rgba(23, 231, 255, 0.5) !important;
+  box-shadow: 0 2px 16px rgba(23, 231, 255, 0.12), 0 1px 0 rgba(23, 231, 255, 0.2);
 }
 

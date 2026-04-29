@@ -196,7 +196,7 @@ function ScreenshotCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
             {/* Corner glow */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/10 opacity-0 transition-opacity duration-500 group-hover/img:opacity-100" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#FF5373]/10 via-transparent to-[#17E7FF]/10 opacity-0 transition-opacity duration-500 group-hover/img:opacity-100" />
 
             {/* Bottom label */}
             <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -211,7 +211,7 @@ function ScreenshotCard({
                 aria-label={`Play ${project.name} demo`}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-all duration-300 hover:bg-emerald-500/80 hover:border-emerald-400/60 hover:scale-110 active:scale-95">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-all duration-300 hover:bg-[#FF5373]/80 hover:border-[#FF5373]/60 hover:scale-110 active:scale-95">
                   <Play className="h-4 w-4 fill-current ml-0.5" />
                 </span>
               </button>
@@ -250,9 +250,7 @@ function ProjectCard({
       className="w-full max-w-[400px]"
     >
       {/* Index */}
-      <span
-        className="block font-mono text-[0.6rem] font-bold tracking-[0.25em] text-emerald-400/40 mb-3 uppercase"
-      >
+      <span className="block font-mono text-[0.6rem] font-bold tracking-[0.25em] text-[#FF5373]/40 mb-3 uppercase">
         {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
       </span>
 
@@ -267,7 +265,7 @@ function ProjectCard({
         {project.video && (
           <button
             onClick={(e) => { e.stopPropagation(); onPlay(project.name); }}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-emerald-500/30 text-emerald-400/60 hover:border-emerald-400/60 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-200 flex-shrink-0"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-[#FF5373]/30 text-[#FF5373]/60 hover:border-[#FF5373]/60 hover:text-[#FF5373] hover:bg-[#FF5373]/10 transition-all duration-200 flex-shrink-0"
             aria-label={`Play ${project.name} demo`}
           >
             <Play className="h-2.5 w-2.5 fill-current ml-px" />
@@ -277,13 +275,13 @@ function ProjectCard({
 
       {/* Tag + status */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-emerald-400/50">
+        <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-[#FF5373]/50">
           {project.tag}
         </p>
         <span className={cn(
           "text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border",
           project.status === "Completed"
-            ? "text-emerald-400 border-emerald-500/25 bg-emerald-500/8"
+            ? "text-[#FF5373] border-[#FF5373]/25 bg-[#FF5373]/8"
             : "text-amber-400 border-amber-500/25 bg-amber-500/8"
         )}>
           {project.status === "Completed" ? "Shipped" : "Building"}
@@ -329,7 +327,7 @@ function ProjectCard({
             href={project.live}
             target="_blank"
             rel="noreferrer"
-            className="group/live flex items-center gap-1 text-[0.7rem] font-medium text-emerald-400/70 hover:text-emerald-300 transition-colors duration-200"
+            className="group/live flex items-center gap-1 text-[0.7rem] font-medium text-[#17E7FF]/70 hover:text-[#17E7FF] transition-colors duration-200"
           >
             Live Demo
             <ArrowUpRight className="h-3 w-3 transition-transform duration-200 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
@@ -351,7 +349,7 @@ function ProjectRow({
   index: number;
   onPlay: (name: string) => void;
 }) {
-  const isLeft = index % 2 === 0; // card on left → screenshot on right
+  const isLeft = index % 2 === 0;
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -373,7 +371,6 @@ function ProjectRow({
         {isLeft ? (
           <ProjectCard project={project} index={index} hovered={hovered} onPlay={onPlay} />
         ) : (
-          /* Screenshot appears on the left when card is on the right */
           <div className="flex justify-end w-full">
             <ScreenshotCard project={project} visible={hovered} onPlay={onPlay} side="left" />
           </div>
@@ -390,7 +387,7 @@ function ProjectRow({
           style={{
             width: 40,
             right: "50%",
-            background: "linear-gradient(to left, rgba(16,185,129,0.6), transparent)",
+            background: "linear-gradient(to left, rgba(255,83,115,0.6), transparent)",
             display: isLeft ? undefined : "none",
             translateY: "-50%",
           }}
@@ -401,11 +398,11 @@ function ProjectRow({
           animate={{
             scale: hovered ? 1.6 : 1,
             boxShadow: hovered
-              ? "0 0 0 5px rgba(16,185,129,0.15), 0 0 24px rgba(16,185,129,0.5)"
-              : "0 0 0 3px rgba(16,185,129,0.08)",
+              ? "0 0 0 5px rgba(255,83,115,0.15), 0 0 24px rgba(255,83,115,0.5)"
+              : "0 0 0 3px rgba(255,83,115,0.08)",
           }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="h-3 w-3 rounded-full bg-emerald-500 border border-emerald-400/70 relative z-10"
+          className="h-3 w-3 rounded-full bg-[#FF5373] border border-[#FF5373]/70 relative z-10"
         />
 
         {/* Branch line right */}
@@ -414,7 +411,7 @@ function ProjectRow({
           style={{
             width: 40,
             left: "50%",
-            background: "linear-gradient(to right, rgba(16,185,129,0.6), transparent)",
+            background: "linear-gradient(to right, rgba(255,83,115,0.6), transparent)",
             opacity: hovered ? 1 : 0.3,
             display: !isLeft ? undefined : "none",
           }}
@@ -456,7 +453,7 @@ function MobileProjectCard({
       className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden p-5"
     >
       {/* Hover wash */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FF5373]/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative space-y-4">
         {/* Image */}
@@ -472,7 +469,7 @@ function MobileProjectCard({
               onClick={() => onPlay(project.name)}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm hover:bg-emerald-500/80 hover:border-emerald-400 transition-all duration-200">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm hover:bg-[#FF5373]/80 hover:border-[#FF5373] transition-all duration-200">
                 <Play className="h-3.5 w-3.5 fill-white text-white ml-0.5" />
               </span>
             </button>
@@ -503,7 +500,7 @@ export function ProjectsSection() {
   }, [activeVideo, handleCloseVideo]);
 
   return (
-    <section id="projects" className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden">
+    <section id="projects" className="relative w-full bg-[#060916] py-20 md:py-28 overflow-hidden">
 
       {/* PCB background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -515,18 +512,18 @@ export function ProjectsSection() {
         >
           <defs>
             <pattern id="pcb" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="48" x2="96" y2="48" stroke="#10b981" strokeWidth="0.6" />
-              <line x1="48" y1="0" x2="48" y2="96" stroke="#10b981" strokeWidth="0.6" />
-              <circle cx="48" cy="48" r="2.5" fill="none" stroke="#34d399" strokeWidth="0.8" />
-              <circle cx="28" cy="18" r="1.5" fill="#34d399" />
-              <circle cx="68" cy="76" r="1.5" fill="#34d399" />
+              <line x1="0" y1="48" x2="96" y2="48" stroke="#17E7FF" strokeWidth="0.6" />
+              <line x1="48" y1="0" x2="48" y2="96" stroke="#17E7FF" strokeWidth="0.6" />
+              <circle cx="48" cy="48" r="2.5" fill="none" stroke="#17E7FF" strokeWidth="0.8" />
+              <circle cx="28" cy="18" r="1.5" fill="#FF5373" />
+              <circle cx="68" cy="76" r="1.5" fill="#FF5373" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#pcb)" />
         </motion.svg>
-        <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-cyan-600/[0.06] blur-[100px] animate-aurora-2" />
-        <div className="absolute -bottom-20 -left-20 h-[350px] w-[350px] rounded-full bg-emerald-600/[0.05] blur-[90px] animate-aurora-3" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_50%,#030C08_100%)]" />
+        <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-[#17E7FF]/[0.06] blur-[100px] animate-aurora-2" />
+        <div className="absolute -bottom-20 -left-20 h-[350px] w-[350px] rounded-full bg-[#FF5373]/[0.05] blur-[90px] animate-aurora-3" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_50%,#060916_100%)]" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
@@ -539,7 +536,7 @@ export function ProjectsSection() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="mb-16 md:mb-20"
         >
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400/70 mb-5">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#FF5373]/70 mb-5">
             Selected Work
           </p>
           <h2
@@ -559,9 +556,8 @@ export function ProjectsSection() {
 
           {/* Vertical spine */}
           <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 flex flex-col items-center pointer-events-none">
-            {/* Top cap */}
             <div className="w-px flex-1" style={{
-              background: "linear-gradient(to bottom, transparent, rgba(16,185,129,0.25) 8%, rgba(16,185,129,0.15) 90%, transparent)",
+              background: "linear-gradient(to bottom, transparent, rgba(255,83,115,0.25) 8%, rgba(255,83,115,0.15) 90%, transparent)",
             }} />
           </div>
 
@@ -612,8 +608,8 @@ export function ProjectsSection() {
             >
               <div className="mb-4 flex items-center justify-between px-1">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 border border-emerald-500/30">
-                    <Play className="h-4 w-4 fill-emerald-400 text-emerald-400" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF5373]/20 border border-[#FF5373]/30">
+                    <Play className="h-4 w-4 fill-[#FF5373] text-[#FF5373]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white">{activeProject.name}</h3>
@@ -629,8 +625,8 @@ export function ProjectsSection() {
                 </button>
               </div>
 
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-emerald-500/5">
-                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-transparent to-cyan-500/10 blur-xl" />
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-[#FF5373]/5">
+                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-[#FF5373]/10 via-transparent to-[#17E7FF]/10 blur-xl" />
                 <iframe
                   src={getYouTubeEmbedUrl(activeProject.video!) || activeProject.video}
                   title={`${activeProject.name} demo`}
