@@ -13,6 +13,7 @@
     "@ai-sdk/moonshotai": "^2.0.1",
     "@ai-sdk/openai": "^3.0.25",
     "@ai-sdk/react": "^3.0.75",
+    "@firecms/neat": "^0.8.0",
     "@radix-ui/react-slot": "^1.2.4",
     "ai": "^6.0.38",
     "class-variance-authority": "^0.7.1",

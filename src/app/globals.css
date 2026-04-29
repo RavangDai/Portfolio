@@ -485,13 +485,13 @@ html {
 .shimmer-text {
   background: linear-gradient(
     105deg,
-    #ffffff 0%,
-    #d1fae5 20%,
-    #10b981 38%,
-    #67e8f9 50%,
-    #10b981 62%,
-    #d1fae5 80%,
-    #ffffff 100%
+    #4a1530 0%,
+    #831843 18%,
+    #be185d 36%,
+    #93c5fd 50%,
+    #be185d 64%,
+    #831843 82%,
+    #4a1530 100%
   );
   background-size: 250% auto;
   -webkit-background-clip: text;
