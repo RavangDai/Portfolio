@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { X } from "lucide-react";
-import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%";
@@ -51,7 +50,7 @@ function ScrambleLink({
       onMouseEnter={scramble}
       className={cn(
         "group relative flex items-center gap-1 px-4 py-2 text-[0.72rem] font-semibold tracking-[0.1em] uppercase transition-colors duration-300 select-none",
-        isActive ? "text-white" : "text-white/40 hover:text-white/75"
+        isActive ? "text-white" : "text-white/65 hover:text-white"
       )}
     >
       {display}
@@ -151,7 +150,7 @@ export function MainNavbar() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF5373] opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FF5373]" />
             </span>
-            <span className="text-[0.82rem] font-black tracking-tight text-white group-hover:text-white/80 transition-colors duration-200">
+            <span className="text-[0.82rem] font-black tracking-tight text-white group-hover:text-white/80 transition-colors duration-200 font-display">
               BIBEK.DEV
             </span>
           </button>
@@ -169,30 +168,8 @@ export function MainNavbar() {
             ))}
           </div>
 
-          {/* ── Right: CTA + Socials ── */}
+          {/* ── Right: CTA ── */}
           <div className="flex items-center gap-2">
-            {/* Social icons */}
-            <div className="hidden md:flex items-center gap-1 mr-1">
-              <Link
-                href="https://github.com/RavangDai"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200"
-              >
-                <FaGithub className="h-[15px] w-[15px]" />
-              </Link>
-              <Link
-                href="https://www.linkedin.com/in/bibek-pathak-10398a301/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="LinkedIn"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200"
-              >
-                <FaLinkedinIn className="h-[15px] w-[15px]" />
-              </Link>
-            </div>
-
             {/* CTA button */}
             <a
               href="#contact"
@@ -270,14 +247,6 @@ export function MainNavbar() {
                 ))}
 
                 <div className="flex items-center gap-2 px-3 pt-3 mt-1 border-t border-white/[0.06]">
-                  <Link href="https://github.com/RavangDai" target="_blank"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.10] border border-white/[0.10] text-white transition-all hover:bg-[#FF5373] hover:border-[#FF5373]/50 hover:scale-110">
-                    <FaGithub className="h-4 w-4" />
-                  </Link>
-                  <Link href="https://www.linkedin.com/in/bibek-pathak-10398a301/" target="_blank"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500 text-white transition-all hover:scale-110">
-                    <FaLinkedinIn className="h-4 w-4" />
-                  </Link>
                   <a href="#contact"
                     className="ml-auto px-5 py-2 rounded-full bg-[#FF5373] text-white text-[0.72rem] font-bold hover:bg-[#FF5373]/85 transition-all active:scale-95">
                     Hire Me

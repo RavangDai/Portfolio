@@ -478,10 +478,10 @@ export function Chatbot() {
                         borderRadius: "16px",
                         background: "rgba(7, 10, 9, 0.96)",
                         backdropFilter: "blur(32px)",
-                        border: "1px solid rgba(52, 211, 153, 0.2)",
+                        border: "1px solid rgba(52, 211, 153, 0.55)",
                         boxShadow: `
-                            0 0 0 1px rgba(52,211,153,0.06),
-                            0 0 32px rgba(52,211,153,0.14),
+                            0 0 0 1px rgba(52,211,153,0.15),
+                            0 0 28px rgba(52,211,153,0.35),
                             0 20px 48px rgba(0,0,0,0.55),
                             inset 0 1px 0 rgba(255,255,255,0.05)
                         `,

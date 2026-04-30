@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Syne, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { MainNavbar } from "@/components/ui/main-navbar";
 import { Footer } from "@/components/ui/footer";
 import { Chatbot } from "@/components/ui/Chatbot";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 
-const inter = Inter({
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-syne",
   display: "swap",
 });
 
-const lora = Lora({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  variable: "--font-lora",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-space",
   display: "swap",
 });
 
@@ -31,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${inter.variable} ${lora.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`dark scroll-smooth ${syne.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
 
       <body className="font-sans bg-[#060916] text-white antialiased min-h-screen" suppressHydrationWarning>
         <ScrollProgress />

@@ -48,8 +48,8 @@ function TechMarquee() {
               key={`${tech.name}-${i}`}
               className="group flex shrink-0 items-center gap-2 border-r border-white/[0.06] px-6 py-2 transition-all hover:bg-white/[0.06]"
             >
-              <Icon className="h-3 w-3 text-[#17E7FF]/50 group-hover:text-[#FF5373] transition-colors duration-300" />
-              <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-white/30 group-hover:text-white/65 transition-colors duration-300">
+              <Icon className="h-3 w-3 text-[#17E7FF]/65 group-hover:text-[#FF5373] transition-colors duration-300" />
+              <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-white/50 group-hover:text-white/80 transition-colors duration-300">
                 {tech.name}
               </span>
             </div>
@@ -84,7 +84,7 @@ export function NewHero() {
               transition={{ duration: 0.6, delay: 0.15, ease }}
               className="mb-7"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.08] border border-white/[0.12] backdrop-blur-sm shadow-sm">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFC858]/[0.12] border border-[#FFC858]/[0.28] backdrop-blur-sm shadow-sm">
                 <Sparkles className="h-3 w-3 text-[#FF5373]" />
                 <span className="text-[0.65rem] font-bold text-white tracking-[0.2em] uppercase">
                   Available for Work
@@ -100,12 +100,10 @@ export function NewHero() {
               className="mb-6 select-none"
             >
               <h1
-                className="font-black leading-[1.05] tracking-tight text-white"
+                className="font-black leading-[1.0] tracking-tight text-white font-display"
                 style={{ fontSize: "clamp(2.6rem, 5.2vw, 4.8rem)" }}
               >
-                Building Smart
-                <br />
-                &amp;{" "}
+                BIBEK{" "}
                 <span
                   style={{
                     background: "linear-gradient(130deg, #FF5373 0%, #FFC858 45%, #17E7FF 100%)",
@@ -114,31 +112,23 @@ export function NewHero() {
                     backgroundClip: "text",
                   }}
                 >
-                  Scalable
+                  PATHAK
                 </span>
-                <br />
-                Web Solutions
               </h1>
+              <p
+                className="mt-3 font-semibold text-white/45 leading-snug tracking-wide"
+                style={{ fontSize: "clamp(0.85rem, 1.4vw, 1.1rem)" }}
+              >
+                Building Smart &amp; Scalable Web Solutions
+              </p>
             </motion.div>
-
-            {/* Sub-tagline */}
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5, ease }}
-              className="mb-9 text-[0.95rem] text-white/55 leading-relaxed max-w-[420px]"
-            >
-              A full-stack developer &amp; AI engineer passionate about
-              performance, clean code, and exceptional user experience. From
-              concept to clean code.
-            </motion.p>
 
             {/* CTA buttons */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.65, ease }}
-              className="flex items-center gap-4 flex-wrap mb-8"
+              className="flex items-center gap-4 flex-wrap mb-8 mt-9"
             >
               <a
                 href="#projects"
@@ -196,27 +186,64 @@ export function NewHero() {
             <div className="absolute -bottom-10 -left-10 w-56 h-56 rounded-full bg-[#17E7FF]/20 blur-3xl pointer-events-none" />
 
             {/* Photo card */}
-            <div className="relative w-full max-w-[400px]">
-              <div className="relative rounded-[2rem] overflow-hidden aspect-[3/4] max-h-[500px]">
+            <div className="relative w-full max-w-[480px]">
+              {/* Ambient glow */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl opacity-25 pointer-events-none"
+                style={{ background: "radial-gradient(circle, #17E7FF 0%, #FF5373 60%, transparent 80%)" }} />
+
+              {/* Cutout image — no clip */}
+              <div className="group relative mx-auto">
                 <Image
                   src="/bibekdai.png"
                   alt="Bibek Pathak"
-                  fill
+                  width={480}
+                  height={560}
                   priority
-                  className="object-cover object-[50%_15%]"
+                  className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02] drop-shadow-2xl"
                 />
-                {/* Bottom overlay */}
-                <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#003FFF]/60 to-transparent" />
-                {/* Name card */}
-                <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-3">
-                  <div className="px-4 py-2.5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/[0.12] shadow-lg">
-                    <p className="text-xs font-bold text-white tracking-wide">Bibek Pathak</p>
-                    <p className="text-[0.6rem] text-white/55 font-medium mt-0.5">Full-Stack &amp; AI Engineer</p>
-                  </div>
-                  <div className="h-10 w-10 shrink-0 rounded-xl bg-[#FF5373] flex items-center justify-center shadow-lg shadow-[#FF5373]/30">
-                    <Code2 className="h-4.5 w-4.5 text-white" />
-                  </div>
+
+                {/* Hover speech-bubble — top-right, arrow points toward face */}
+                <div className="absolute top-8 -right-4 w-[210px] -translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-350 ease-out pointer-events-none"
+                  style={{
+                    background: "rgba(4, 8, 20, 0.80)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "14px 14px 14px 2px",
+                    padding: "13px 15px",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(23,231,255,0.08)",
+                  }}>
+                  <p className="text-white/85 text-[0.75rem] leading-relaxed font-medium">
+                    A full-stack developer &amp; AI engineer passionate about performance, clean code, and exceptional UX.
+                  </p>
+                  <span className="block mt-2 text-[#17E7FF]/80 text-[0.68rem] tracking-wide font-semibold">
+                    From concept to clean code.
+                  </span>
+                  {/* Arrow tail pointing down-left */}
+                  <span className="absolute -bottom-[9px] left-5 w-0 h-0"
+                    style={{
+                      borderLeft: "9px solid transparent",
+                      borderRight: "9px solid transparent",
+                      borderTop: "9px solid rgba(4,8,20,0.80)",
+                    }} />
                 </div>
+              </div>
+
+              {/* Curved quote SVG */}
+              <div className="relative -mt-10 px-2">
+                <svg viewBox="0 0 460 72" xmlns="http://www.w3.org/2000/svg" className="w-full overflow-visible">
+                  <defs>
+                    <path id="arc" d="M 10,8 Q 230,70 450,8" />
+                  </defs>
+                  {/* the curve line — rotated 180°, thicker */}
+                  <path d="M 10,8 Q 230,70 450,8" fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="2.5" strokeLinecap="round" />
+                  {/* quote along the curve */}
+                  <text fontSize="11.5" fontFamily="ui-sans-serif, system-ui" letterSpacing="0.04em">
+                    <textPath href="#arc" startOffset="50%" textAnchor="middle" fill="rgba(255,255,255,0.55)">
+                      ✦ building smart &amp; scalable solutions, one line at a time ✦
+                    </textPath>
+                  </text>
+                </svg>
               </div>
 
               {/* Floating code card */}
@@ -225,13 +252,13 @@ export function NewHero() {
                 transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -left-12 top-14 px-4 py-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/[0.12] shadow-xl"
               >
-                <p className="text-[0.55rem] font-mono text-white/30 mb-1.5">// stack.ts</p>
-                <p className="text-[0.63rem] font-mono text-white/80">
-                  <span className="text-[#FF5373]">const</span> skills = [
+                <p className="text-[0.55rem] font-mono text-[#17E7FF]/55 mb-1.5">// stack.ts</p>
+                <p className="text-[0.63rem] font-mono text-white/90">
+                  <span className="text-[#FF5373]">const</span> <span className="text-white">skills</span> <span className="text-[#FFC858]">=</span> <span className="text-[#FFC858]">[</span>
                 </p>
-                <p className="text-[0.63rem] font-mono text-[#17E7FF] pl-3">&quot;React&quot;, &quot;Next.js&quot;,</p>
-                <p className="text-[0.63rem] font-mono text-[#17E7FF] pl-3">&quot;Python&quot;, &quot;AI/ML&quot;</p>
-                <p className="text-[0.63rem] font-mono text-white/80">]</p>
+                <p className="text-[0.63rem] font-mono text-[#4ADE80] pl-3">&quot;React&quot;, &quot;Next.js&quot;,</p>
+                <p className="text-[0.63rem] font-mono text-[#4ADE80] pl-3">&quot;Python&quot;, &quot;AI/ML&quot;</p>
+                <p className="text-[0.63rem] font-mono text-[#FFC858]">]</p>
               </motion.div>
 
               {/* Floating stats card */}
