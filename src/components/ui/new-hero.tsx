@@ -197,9 +197,9 @@ export function NewHero() {
 
             {/* Photo card */}
             <div className="relative w-full max-w-[400px]">
-              <div className="relative rounded-[2rem] overflow-hidden border border-white/[0.12] shadow-2xl shadow-[#003FFF]/30 bg-white/[0.06] backdrop-blur-sm aspect-[3/4] max-h-[500px]">
+              <div className="relative rounded-[2rem] overflow-hidden aspect-[3/4] max-h-[500px]">
                 <Image
-                  src="/hero-me.png"
+                  src="/bibekdai.png"
                   alt="Bibek Pathak"
                   fill
                   priority
