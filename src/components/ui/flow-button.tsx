@@ -13,7 +13,7 @@ function FlowInner({
   children: React.ReactNode;
   variant: "primary" | "ghost";
 }) {
-  const fillColor = variant === "primary" ? "bg-[#FF5373]" : "bg-white/[0.08]";
+  const fillColor = variant === "primary" ? "bg-[#FF1144]" : "bg-white/[0.08]";
   const arrowColor =
     variant === "primary"
       ? "stroke-white/80 group-hover:stroke-white"
@@ -69,8 +69,8 @@ function buttonClass(variant: "primary" | "ghost", className?: string) {
     "active:scale-[0.96]",
     variant === "primary"
       ? [
-          "border border-[#FF5373]/40 bg-[#FF5373]/10 text-white",
-          "hover:border-[#FF5373]/70 hover:text-white hover:shadow-[0_0_28px_rgba(255,83,115,0.35)]",
+          "border border-[#FF1144]/40 bg-[#FF1144]/10 text-white",
+          "hover:border-[#FF1144]/70 hover:text-white hover:shadow-[0_0_28px_rgba(119,0,255,0.35)]",
         ]
       : [
           "border border-white/[0.15] bg-white/[0.03] text-white/50",

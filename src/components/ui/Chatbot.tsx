@@ -26,11 +26,11 @@ const INTENT_MAP: { keywords: string[]; color: IntentColor }[] = [
 ];
 
 const ACCENT_COLORS: Record<IntentColor, { primary: string; glow: string; gradient: string }> = {
-    emerald: { primary: "#34d399", glow: "rgba(52,211,153,0.25)", gradient: "from-emerald-400 to-teal-500" },
-    cyan:    { primary: "#22d3ee", glow: "rgba(34,211,238,0.25)",  gradient: "from-cyan-400 to-blue-500" },
-    gold:    { primary: "#fbbf24", glow: "rgba(251,191,36,0.22)",  gradient: "from-yellow-400 to-orange-400" },
-    warm:    { primary: "#fb923c", glow: "rgba(251,146,60,0.22)",  gradient: "from-orange-400 to-pink-500" },
-    neutral: { primary: "#34d399", glow: "rgba(52,211,153,0.18)",  gradient: "from-emerald-400 to-cyan-400" },
+    emerald: { primary: "#ffffff", glow: "rgba(255,255,255,0.10)", gradient: "from-white/20 to-white/8" },
+    cyan:    { primary: "#e0e0e0", glow: "rgba(255,255,255,0.08)", gradient: "from-white/15 to-white/6" },
+    gold:    { primary: "#ffffff", glow: "rgba(255,255,255,0.10)", gradient: "from-white/20 to-white/8" },
+    warm:    { primary: "#d0d0d0", glow: "rgba(255,255,255,0.08)", gradient: "from-white/18 to-white/6" },
+    neutral: { primary: "#ffffff", glow: "rgba(255,255,255,0.09)", gradient: "from-white/20 to-white/8" },
 };
 
 function detectIntent(text: string): IntentColor {
@@ -87,7 +87,7 @@ function InlineFormatted({ text }: { text: string }) {
         <>
             {parts.map((p, i) =>
                 p.type === "bold" ? <span key={i} className="font-semibold text-white/90">{p.text}</span>
-                : p.type === "code" ? <span key={i} className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-white/[0.08] text-emerald-300/90">{p.text}</span>
+                : p.type === "code" ? <span key={i} className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-white/[0.08] text-white/70">{p.text}</span>
                 : <span key={i}>{p.text}</span>
             )}
         </>
@@ -219,28 +219,33 @@ export function Chatbot() {
                     className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden"
                     style={{
                         borderRadius: "999px",
-                        background: "linear-gradient(135deg, #0a0c14 0%, #0d1020 100%)",
-                        border: "1px solid rgba(255,255,255,0.12)",
-                        boxShadow: `0 0 0 1px ${accent.primary}20, 0 0 32px ${accent.glow}, 0 16px 40px rgba(0,0,0,0.6)`,
+                        background: "rgba(8,8,8,0.92)",
+                        border: "1px solid rgba(255,255,255,0.14)",
+                        borderTopColor: "rgba(255,255,255,0.24)",
+                        backdropFilter: "blur(32px) saturate(180%)",
+                        WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.7)",
                     }}
                     aria-label="Open AI chat"
                 >
-                    {/* Gradient left accent */}
-                    <div className={cn("h-8 w-[3px] rounded-full bg-gradient-to-b shrink-0", accent.gradient)} />
+                    {/* White left accent bar */}
+                    <div className="h-7 w-[2px] rounded-full shrink-0 bg-white/40" />
                     <div className="flex flex-col gap-0.5">
-                        <span className="text-[13px] font-bold text-white tracking-tight leading-none font-display">Bibek<span style={{ color: accent.primary }}>.AI</span></span>
-                        <span className="text-[9px] font-medium tracking-[0.18em] uppercase text-white/35 leading-none">ask me anything</span>
+                        <span className="text-[13px] font-bold text-white tracking-tight leading-none" style={{ letterSpacing: "-0.01em" }}>
+                            Bibek<span className="text-white/45 font-light">.AI</span>
+                        </span>
+                        <span className="text-[9px] font-medium tracking-[0.20em] uppercase text-white/30 leading-none">ask me anything</span>
                     </div>
                     {/* Live dot */}
                     <div className="relative h-2 w-2 shrink-0 ml-1">
-                        <motion.span className="absolute inset-0 rounded-full" style={{ background: accent.primary }}
-                            animate={{ scale: [1, 2.4, 1], opacity: [0.6, 0, 0.6] }} transition={{ duration: 2.2, repeat: Infinity }} />
-                        <span className="relative flex h-2 w-2 rounded-full" style={{ background: accent.primary }} />
+                        <motion.span className="absolute inset-0 rounded-full bg-white/50"
+                            animate={{ scale: [1, 2.2, 1], opacity: [0.5, 0, 0.5] }} transition={{ duration: 2.2, repeat: Infinity }} />
+                        <span className="relative flex h-2 w-2 rounded-full bg-white/80" />
                     </div>
-                    {/* Shimmer */}
+                    {/* Shimmer sweep */}
                     <motion.div className="absolute inset-0 pointer-events-none"
-                        style={{ background: "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.04) 50%, transparent 80%)" }}
-                        animate={{ x: ["-100%", "200%"] }} transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 2 }} />
+                        style={{ background: "linear-gradient(100deg, transparent 20%, rgba(255,255,255,0.05) 50%, transparent 80%)" }}
+                        animate={{ x: ["-100%", "200%"] }} transition={{ duration: 3.5, repeat: Infinity, ease: "linear", repeatDelay: 2.5 }} />
                 </motion.button>
             )}
 
@@ -268,9 +273,9 @@ export function Chatbot() {
                             boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 72px -12px rgba(0,0,0,0.8), 0 0 80px -20px ${accent.glow}`,
                         }}
                     >
-                        {/* ─── Header gradient banner ─── */}
+                        {/* ─── Header ─── */}
                         <div className="relative shrink-0 px-5 pt-5 pb-4"
-                            style={{ background: "linear-gradient(160deg, rgba(255,83,115,0.08) 0%, rgba(23,231,255,0.05) 60%, transparent 100%)" }}>
+                            style={{ background: "rgba(255,255,255,0.02)" }}>
 
                             {/* Thin top line */}
                             <motion.div className="absolute top-0 left-0 right-0 h-[1.5px]"
@@ -280,19 +285,23 @@ export function Chatbot() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     {/* Avatar circle */}
-                                    <div className="relative h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-[13px] font-black text-white font-display"
-                                        style={{ background: `linear-gradient(135deg, #FF5373, #6D3BFF)`, boxShadow: `0 0 16px rgba(255,83,115,0.4)` }}>
+                                    <div className="relative h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-[13px] font-black text-white"
+                                        style={{
+                                            background: "rgba(255,255,255,0.06)",
+                                            border: "1px solid rgba(255,255,255,0.18)",
+                                            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.20), 0 8px 24px rgba(0,0,0,0.5)",
+                                        }}>
                                         B
                                         <motion.div className="absolute inset-0 rounded-full"
-                                            style={{ border: `1.5px solid rgba(255,255,255,0.25)` }}
-                                            animate={{ opacity: [0.4, 0.9, 0.4] }} transition={{ duration: 2.5, repeat: Infinity }} />
+                                            style={{ border: "1.5px solid rgba(255,255,255,0.15)" }}
+                                            animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 2.5, repeat: Infinity }} />
                                     </div>
                                     <div>
-                                        <p className="text-[14px] font-bold text-white leading-none tracking-tight font-display">
-                                            Bibek<span style={{ color: accent.primary }}>.AI</span>
+                                        <p className="text-[14px] font-bold text-white leading-none" style={{ letterSpacing: "-0.01em" }}>
+                                            Bibek<span className="text-white/40 font-light">.AI</span>
                                         </p>
                                         <div className="flex items-center gap-1.5 mt-1">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                            <span className="h-1.5 w-1.5 rounded-full bg-white/50 animate-pulse" />
                                             <span className="text-[10px] text-white/35 tracking-wide">online · ready to chat</span>
                                         </div>
                                     </div>
@@ -318,8 +327,12 @@ export function Chatbot() {
                                     className={cn("flex gap-2.5", msg.role === "user" ? "justify-end" : "justify-start items-start")}
                                 >
                                     {msg.role === "assistant" && (
-                                        <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white mt-0.5 font-display"
-                                            style={{ background: "linear-gradient(135deg, #FF5373, #6D3BFF)", flexShrink: 0 }}>
+                                        <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white mt-0.5"
+                                            style={{
+                                                background: "rgba(255,255,255,0.07)",
+                                                border: "1px solid rgba(255,255,255,0.15)",
+                                                flexShrink: 0,
+                                            }}>
                                             B
                                         </div>
                                     )}
@@ -334,8 +347,13 @@ export function Chatbot() {
                                             })() : null}
                                         </div>
                                     ) : (
-                                        <div className="max-w-[78%] text-[12.5px] leading-[1.6] text-white rounded-2xl rounded-br-sm px-4 py-2.5"
-                                            style={{ background: "linear-gradient(135deg, rgba(255,83,115,0.25), rgba(109,59,255,0.2))", border: "1px solid rgba(255,83,115,0.2)" }}>
+                                        <div className="max-w-[78%] text-[12.5px] leading-[1.6] text-white/90 rounded-2xl rounded-br-sm px-4 py-2.5"
+                                            style={{
+                                                background: "rgba(255,255,255,0.08)",
+                                                border: "1px solid rgba(255,255,255,0.14)",
+                                                borderTopColor: "rgba(255,255,255,0.20)",
+                                                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                                            }}>
                                             {msg.content}
                                         </div>
                                     )}
@@ -346,8 +364,8 @@ export function Chatbot() {
                             {isLoading && (
                                 <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                                     className="flex items-start gap-2.5">
-                                    <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white font-display"
-                                        style={{ background: "linear-gradient(135deg, #FF5373, #6D3BFF)" }}>B</div>
+                                    <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white"
+                                        style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)" }}>B</div>
                                     <div className="flex items-center gap-1.5 py-2">
                                         {[0, 1, 2].map((i) => (
                                             <motion.div key={i} className="h-[5px] w-[5px] rounded-full"
@@ -382,8 +400,8 @@ export function Chatbot() {
                             <form onSubmit={handleSubmit}>
                                 <motion.div className="flex items-center gap-3 rounded-2xl px-4 py-3"
                                     animate={{
-                                        borderColor: input.length > 0 ? `${accent.primary}50` : "rgba(255,255,255,0.07)",
-                                        boxShadow: input.length > 0 ? `0 0 16px -4px ${accent.glow}` : "none",
+                                        borderColor: input.length > 0 ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.07)",
+                                        boxShadow: input.length > 0 ? "inset 0 1px 0 rgba(255,255,255,0.10), 0 0 20px rgba(255,255,255,0.04)" : "none",
                                     }}
                                     transition={{ duration: 0.2 }}
                                     style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
@@ -401,13 +419,14 @@ export function Chatbot() {
                                         disabled={isLoading || !input.trim()}
                                         className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 disabled:opacity-20 transition-all duration-200"
                                         style={{
-                                            background: input.trim() ? `linear-gradient(135deg, #FF5373, #6D3BFF)` : "rgba(255,255,255,0.06)",
-                                            boxShadow: input.trim() ? "0 4px 16px rgba(255,83,115,0.35)" : "none",
+                                            background: input.trim() ? "#ffffff" : "rgba(255,255,255,0.06)",
+                                            border: input.trim() ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255,255,255,0.06)",
+                                            boxShadow: input.trim() ? "inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 16px rgba(255,255,255,0.12)" : "none",
                                         }}
                                         animate={{ scale: isSending ? 0.88 : 1 }}
                                         whileHover={input.trim() ? { scale: 1.08 } : {}}
                                         transition={{ type: "spring", stiffness: 400, damping: 15 }}>
-                                        <Send className="h-3.5 w-3.5 text-white" />
+                                        <Send className={`h-3.5 w-3.5 ${input.trim() ? "text-black" : "text-white/50"}`} />
                                     </motion.button>
                                 </motion.div>
                             </form>

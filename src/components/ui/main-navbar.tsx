@@ -57,14 +57,14 @@ function ScrambleLink({
 
       {/* Hover underline */}
       {!isActive && (
-        <span className="absolute bottom-1 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 bg-gradient-to-r from-[#FF5373]/60 to-[#17E7FF]/60" />
+        <span className="absolute bottom-1 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 bg-gradient-to-r from-transparent via-white/50 to-transparent" />
       )}
 
       {/* Active indicator dot */}
       {isActive && (
         <motion.span
           layoutId="nav-dot"
-          className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-[#FF5373]"
+          className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-white"
           transition={{ type: "spring", stiffness: 400, damping: 35 }}
         />
       )}
@@ -126,17 +126,23 @@ export function MainNavbar() {
 
       {/* Scroll progress bar */}
       <motion.div
-        className="absolute top-0 left-0 right-0 h-[2px] origin-left z-10"
-        style={{ scaleX, background: "linear-gradient(90deg, #FF5373, #FFC858, #17E7FF, #6D3BFF, #17E7FF, #FFC858, #FF5373)" }}
+        className="absolute top-0 left-0 right-0 h-[1.5px] origin-left z-10"
+        style={{ scaleX, background: "linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.9), rgba(255,255,255,0.5), rgba(255,255,255,0.9), rgba(255,255,255,0.2))" }}
       />
 
       <div className={cn("mx-auto max-w-7xl px-4 sm:px-8 transition-all duration-500", scrolled ? "pt-2" : "pt-4")}>
         <nav className={cn(
           "relative flex items-center justify-between rounded-2xl border px-6 py-3 transition-all duration-500",
           scrolled
-            ? "border-white/[0.10] bg-[#060916]/85 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,63,255,0.20)]"
-            : "border-white/[0.08] bg-white/[0.06] backdrop-blur-xl"
-        )}>
+            ? "border-white/[0.10] border-t-white/[0.20] bg-black/75 backdrop-blur-[40px]"
+            : "border-white/[0.08] border-t-white/[0.15] bg-white/[0.04] backdrop-blur-[32px]"
+        )}
+          style={{
+            boxShadow: scrolled
+              ? "inset 0 1px 0 rgba(255,255,255,0.12), 0 24px 64px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4)"
+              : "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.4)"
+          }}
+        >
 
           {/* Inner top shimmer */}
           <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.10] to-transparent" />
@@ -147,10 +153,10 @@ export function MainNavbar() {
             className="group flex items-center gap-2.5 shrink-0"
           >
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF5373] opacity-60" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FF5373]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-40" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
-            <span className="text-[0.82rem] font-black tracking-tight text-white group-hover:text-white/80 transition-colors duration-200 font-display">
+            <span className="text-[0.82rem] font-black tracking-tight text-white group-hover:text-white/70 transition-colors duration-200 font-display">
               BIBEK.DEV
             </span>
           </button>
@@ -173,7 +179,12 @@ export function MainNavbar() {
             {/* CTA button */}
             <a
               href="#contact"
-              className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#FF5373] text-white text-[0.72rem] font-bold tracking-wide hover:bg-[#FF5373]/85 shadow-md shadow-[#FF5373]/25 hover:shadow-[#FF5373]/40 transition-all duration-300 hover:-translate-y-px active:scale-95"
+              className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full text-black text-[0.72rem] font-bold tracking-wide transition-all duration-300 hover:-translate-y-px active:scale-95"
+              style={{
+                background: "#ffffff",
+                border: "1px solid rgba(255,255,255,0.5)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 16px rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.4)",
+              }}
             >
               Hire Me
             </a>
@@ -222,7 +233,13 @@ export function MainNavbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.97 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="md:hidden mt-2 rounded-2xl border border-white/[0.10] bg-[#060916]/90 backdrop-blur-2xl shadow-xl shadow-black/40 overflow-hidden"
+              className="md:hidden mt-2 rounded-2xl border border-white/[0.10] border-t-white/[0.18] overflow-hidden"
+              style={{
+                background: "rgba(8,8,8,0.85)",
+                backdropFilter: "blur(40px) saturate(180%)",
+                WebkitBackdropFilter: "blur(40px) saturate(180%)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 24px 64px rgba(0,0,0,0.7)",
+              }}
             >
               <div className="h-px bg-gradient-to-r from-transparent via-white/[0.10] to-transparent" />
 
@@ -240,15 +257,22 @@ export function MainNavbar() {
                     )}
                   >
                     {isActive(link) && (
-                      <span className="mr-2 h-1.5 w-1.5 rounded-full bg-[#FF5373] shrink-0" />
+                      <span className="mr-2 h-1.5 w-1.5 rounded-full bg-white shrink-0" />
                     )}
                     {link.name}
                   </Link>
                 ))}
 
                 <div className="flex items-center gap-2 px-3 pt-3 mt-1 border-t border-white/[0.06]">
-                  <a href="#contact"
-                    className="ml-auto px-5 py-2 rounded-full bg-[#FF5373] text-white text-[0.72rem] font-bold hover:bg-[#FF5373]/85 transition-all active:scale-95">
+                  <a
+                    href="#contact"
+                    className="ml-auto px-5 py-2 rounded-full text-black text-[0.72rem] font-bold transition-all active:scale-95"
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid rgba(255,255,255,0.4)",
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 16px rgba(255,255,255,0.10)",
+                    }}
+                  >
                     Hire Me
                   </a>
                 </div>

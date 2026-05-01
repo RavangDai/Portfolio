@@ -61,7 +61,7 @@ export function ContactSection() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,83,115,0.09) 1.5px, transparent 1.5px)",
+            backgroundImage: "radial-gradient(circle, rgba(255,17,68,0.09) 1.5px, transparent 1.5px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -71,7 +71,7 @@ export function ContactSection() {
           ref={pixelGlowRef}
           className="absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,83,115,1) 1.5px, transparent 1.5px)",
+            backgroundImage: "radial-gradient(circle, rgba(255,17,68,1) 1.5px, transparent 1.5px)",
             backgroundSize: "28px 28px",
             maskImage: "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)",
           }}
@@ -82,7 +82,7 @@ export function ContactSection() {
           ref={pixelCyanRef}
           className="absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(23,231,255,0.45) 1.5px, transparent 1.5px)",
+            backgroundImage: "radial-gradient(circle, rgba(0,207,255,0.45) 1.5px, transparent 1.5px)",
             backgroundSize: "28px 28px",
             maskImage: "radial-gradient(ellipse 420px 420px at -999px -999px, black 30%, transparent 100%)",
           }}
@@ -92,7 +92,7 @@ export function ContactSection() {
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="absolute rounded-full border border-[#FF5373]/[0.07]"
+            className="absolute rounded-full border border-[#7700FF]/[0.07]"
             style={{
               width:  `${(i + 1) * 220}px`,
               height: `${(i + 1) * 220}px`,
@@ -104,7 +104,7 @@ export function ContactSection() {
         ))}
 
         {/* Ambient aurora */}
-        <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-[#17E7FF]/[0.05] blur-[90px] animate-aurora-3" />
+        <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-[#00CFFF]/[0.05] blur-[90px] animate-aurora-3" />
 
         {/* Edge vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_50%_50%,transparent_50%,#060916_100%)]" />
@@ -123,7 +123,7 @@ export function ContactSection() {
             className="flex flex-col gap-12"
           >
             <div>
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#FF5373]/70 mb-5">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#FF1144]/70 mb-5">
                 Get In Touch
               </p>
               <h2
@@ -153,7 +153,7 @@ export function ContactSection() {
                     onClick={handleCopy}
                     className={cn(
                       "btn-icon h-7 w-7 transition-all duration-300",
-                      copied && "!border-[#FF5373]/30 !bg-[#FF5373]/10 !text-[#FF5373] !shadow-[0_0_12px_rgba(255,83,115,0.2)]"
+                      copied && "!border-[#FF1144]/30 !bg-[#FF1144]/10 !text-[#FF1144] !shadow-[0_0_12px_rgba(255,17,68,0.2)]"
                     )}
                     aria-label="Copy email"
                   >
@@ -164,7 +164,7 @@ export function ContactSection() {
                   <motion.p
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-1.5 text-xs text-[#FF5373]/70"
+                    className="mt-1.5 text-xs text-[#FF1144]/70"
                   >
                     {feedback}
                   </motion.p>
@@ -189,10 +189,10 @@ export function ContactSection() {
               </div>
 
               {/* Status */}
-              <div className="inline-flex items-center gap-2 text-[0.65rem] font-medium uppercase tracking-widest text-[#17E7FF]/70">
+              <div className="inline-flex items-center gap-2 text-[0.65rem] font-medium uppercase tracking-widest text-[#00CFFF]/70">
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#17E7FF] opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#17E7FF]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00CFFF] opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#00CFFF]" />
                 </span>
                 Open to Internships
               </div>
@@ -291,7 +291,7 @@ const minimalInput = cn(
   "w-full bg-transparent border-0 border-b border-white/[0.07] py-3 px-0",
   "text-sm text-slate-200 placeholder-white/[0.1]",
   "transition-all duration-300",
-  "focus:border-[#17E7FF]/50 focus:outline-none",
+  "focus:border-[#00CFFF]/50 focus:outline-none",
   "hover:border-white/[0.14]"
 );
 

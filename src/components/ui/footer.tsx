@@ -33,7 +33,7 @@ export function Footer() {
     return (
         <footer className="relative w-full bg-[#050B1A] pt-16 pb-8 overflow-hidden">
             {/* Background glow */}
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(255,83,115,0.06),_transparent_60%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(119,0,255,0.06),_transparent_60%)]" />
 
             <div className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
                 {/* Top row: Brand + Nav + Socials */}
@@ -44,7 +44,7 @@ export function Footer() {
                             onClick={scrollToTop}
                             className="group text-left"
                         >
-                            <span className="text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-[#17E7FF]">
+                            <span className="text-lg font-semibold tracking-tight text-white transition-colors group-hover:text-[#00CFFF]">
                                 Bibek Pathak
                             </span>
                         </button>
