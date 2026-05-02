@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUp } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const NAV_LINKS = [
   { name: "Home",         href: "#home"         },
@@ -116,10 +117,11 @@ export function Footer() {
 
           {/* Back to top */}
           <AnimatedContainer delay={0.28} className="flex flex-col items-start lg:items-end justify-between gap-6">
-            <motion.button
+            <LiquidButton
               onClick={scrollToTop}
-              whileTap={{ scale: 0.97 }}
-              className="btn-ghost !py-2.5 !px-5 !text-xs !font-medium group flex items-center gap-2"
+              size="sm"
+              variant="ghost"
+              className="rounded-full text-xs font-medium"
             >
               Back to top
               <motion.span
@@ -128,7 +130,7 @@ export function Footer() {
               >
                 <ArrowUp className="h-3.5 w-3.5" />
               </motion.span>
-            </motion.button>
+            </LiquidButton>
           </AnimatedContainer>
         </div>
 

@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FlowButton } from "@/components/ui/flow-button";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -268,14 +268,14 @@ export function ContactSection() {
             </MinimalField>
 
             <div className="flex items-center gap-4 pt-2">
-              <FlowButton
+              <LiquidButton
                 type="submit"
-                variant="primary"
+                size="lg"
                 disabled={isSent}
-                className="disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+                className="rounded-full font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSent ? "Opening Mail App..." : "Send Message"}
-              </FlowButton>
+              </LiquidButton>
             </div>
           </motion.form>
 

@@ -12,10 +12,10 @@ import {
   LayoutGrid,
   ArrowRight,
   Download,
-  Sparkles,
 } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { NeatGradientBg } from "@/components/ui/neat-gradient-bg";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const TECH_STACK = [
   { name: "React",      icon: Globe },
@@ -170,35 +170,23 @@ export function NewHero() {
               transition={{ duration: 0.7, delay: 0.65, ease }}
               className="flex items-center gap-4 flex-wrap mb-8 mt-9"
             >
-              <a
-                href="#projects"
-                className="group inline-flex items-center gap-2.5 px-7 py-3 rounded-full font-bold text-sm transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
-                style={{
-                  background: "#ffffff",
-                  color: "#000000",
-                  border: "1px solid rgba(255,255,255,0.5)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.12), 0 4px 16px rgba(0,0,0,0.4)",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 40px rgba(255,255,255,0.22), 0 8px 28px rgba(0,0,0,0.5)")}
-                onMouseLeave={e => (e.currentTarget.style.boxShadow = "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.12), 0 4px 16px rgba(0,0,0,0.4)")}
+              <LiquidButton
+                size="xl"
+                className="rounded-full font-bold group"
+                onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
               >
                 View Portfolio
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </a>
-              <a
-                href="/Bibek_Pathak_Resume_Mar26.pdf"
-                className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full font-semibold text-sm text-white/75 hover:text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 16px rgba(0,0,0,0.3)",
-                }}
+              </LiquidButton>
+              <LiquidButton
+                size="xl"
+                variant="ghost"
+                className="rounded-full font-semibold"
+                onClick={() => window.open("/Bibek_Pathak_Resume_Mar26.pdf", "_blank")}
               >
                 Download CV
                 <Download className="h-3.5 w-3.5" />
-              </a>
+              </LiquidButton>
             </motion.div>
 
             {/* Social icons */}

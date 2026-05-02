@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%";
 
@@ -181,26 +182,13 @@ export function MainNavbar() {
 
           {/* ── Right: CTA ── */}
           <div className="flex items-center gap-2">
-            <motion.a
-              href="#contact"
-              className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full text-black text-[0.72rem] font-bold tracking-wide transition-all duration-300 hover:-translate-y-px active:scale-95"
-              style={{
-                background: "#ffffff",
-                border: "1px solid rgba(255,255,255,0.5)",
-              }}
-              animate={scrolled ? {
-                boxShadow: [
-                  "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.4)",
-                  "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 28px rgba(255,255,255,0.35), 0 4px 12px rgba(0,0,0,0.4)",
-                  "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.4)",
-                ],
-              } : {
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 12px rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.4)",
-              }}
-              transition={scrolled ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}
+            <LiquidButton
+              size="sm"
+              className="hidden md:inline-flex rounded-full text-[0.72rem] font-bold tracking-wide"
+              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
             >
               Hire Me
-            </motion.a>
+            </LiquidButton>
 
             {/* Mobile toggle */}
             <button
@@ -277,17 +265,13 @@ export function MainNavbar() {
                 ))}
 
                 <div className="flex items-center gap-2 px-3 pt-3 mt-1 border-t border-white/[0.06]">
-                  <a
-                    href="#contact"
-                    className="ml-auto px-5 py-2 rounded-full text-black text-[0.72rem] font-bold transition-all active:scale-95"
-                    style={{
-                      background: "#ffffff",
-                      border: "1px solid rgba(255,255,255,0.4)",
-                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 0 16px rgba(255,255,255,0.10)",
-                    }}
+                  <LiquidButton
+                    size="sm"
+                    className="ml-auto rounded-full text-[0.72rem] font-bold"
+                    onClick={() => { handleLinkClick("#contact"); document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); }}
                   >
                     Hire Me
-                  </a>
+                  </LiquidButton>
                 </div>
               </div>
             </motion.div>
