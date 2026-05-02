@@ -648,8 +648,8 @@ export function BlogSection() {
 
             <motion.h2
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.08 }}
-              className="leading-[0.92] tracking-tighter"
-              style={{ fontSize: "clamp(2.8rem, 7vw, 5rem)", fontFamily: "var(--font-lora), Georgia, serif" }}
+              className="font-black font-display leading-[0.92] tracking-tighter"
+              style={{ fontSize: "clamp(2.8rem, 7vw, 5rem)" }}
             >
               <span className="text-white">Things I&apos;m</span><br />
               <span className="shimmer-text">working through.</span>

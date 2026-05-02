@@ -123,7 +123,7 @@ export function ContactSection() {
                 Get In Touch
               </p>
               <h2
-                className="font-bold tracking-tighter leading-[0.9]"
+                className="font-black font-display tracking-tighter leading-[0.9]"
                 style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)" }}
               >
                 <span className="shimmer-text">Let&apos;s build</span><br />

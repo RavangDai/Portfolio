@@ -4,7 +4,6 @@ import { ContactSection } from "@/components/ui/contact-section";
 import { NewHero } from "@/components/ui/new-hero";
 import { PageTransition } from "@/components/ui/page-transition";
 import { SectionReveal } from "@/components/ui/section-reveal";
-
 export default function HomePage() {
   return (
     <PageTransition>

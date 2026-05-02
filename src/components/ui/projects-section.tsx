@@ -620,7 +620,7 @@ export function ProjectsSection() {
             Selected Work
           </p>
           <h2
-            className="font-bold tracking-tighter leading-[0.9]"
+            className="font-black font-display tracking-tighter leading-[0.9]"
             style={{ fontSize: "clamp(2.8rem,7vw,5rem)" }}
           >
             <span className="shimmer-text">Built &amp;</span><br />
