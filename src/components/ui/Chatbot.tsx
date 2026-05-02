@@ -6,6 +6,7 @@ import { X, ChevronRight } from "lucide-react";
 import GlowingChatInput from "./animated-glowing-search-bar";
 import { cn } from "@/lib/utils";
 import { parseMessageToCards, MessageCard } from "./MessageCard";
+import { ShiningText } from "./shining-text";
 
 /* ─── Types ─── */
 interface ChatMessage {
@@ -361,19 +362,15 @@ export function Chatbot() {
                                 </motion.div>
                             ))}
 
-                            {/* Loading dots */}
+                            {/* Thinking indicator */}
                             {isLoading && (
                                 <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                     className="flex items-start gap-2.5">
                                     <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white"
                                         style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)" }}>B</div>
-                                    <div className="flex items-center gap-1.5 py-2">
-                                        {[0, 1, 2].map((i) => (
-                                            <motion.div key={i} className="h-[5px] w-[5px] rounded-full"
-                                                style={{ background: accent.primary }}
-                                                animate={{ y: [0, -4, 0], opacity: [0.3, 1, 0.3] }}
-                                                transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.12 }} />
-                                        ))}
+                                    <div className="flex items-center py-[7px]">
+                                        <ShiningText text="thinking..." />
                                     </div>
                                 </motion.div>
                             )}

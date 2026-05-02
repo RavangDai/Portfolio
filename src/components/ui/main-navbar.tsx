@@ -69,9 +69,17 @@ function ScrambleLink({
         />
       )}
 
-      {/* Hover underline for inactive */}
+      {/* Hover frosted capsule for inactive */}
       {!isActive && (
-        <span className="absolute bottom-1 left-4 right-4 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+        <span
+          className="absolute inset-0 rounded-full opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-[opacity,transform] duration-[220ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          style={{
+            background: "rgba(255,255,255,0.055)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderTopColor: "rgba(255,255,255,0.14)",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
+          }}
+        />
       )}
 
       <span className="relative z-10">{display}</span>

@@ -52,15 +52,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 const liquidbuttonVariants = cva(
-  "inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,transform] duration-300 ease-out disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none",
+  "inline-flex items-center justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,transform] duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none",
   {
     variants: {
       variant: {
-        default: "bg-transparent text-white hover:-translate-y-[3px] active:translate-y-0 active:scale-[0.97]",
-        destructive: "bg-destructive text-white hover:-translate-y-[3px] active:translate-y-0 active:scale-[0.97]",
-        outline: "border border-white/20 bg-transparent text-white hover:-translate-y-[3px] active:translate-y-0 active:scale-[0.97]",
-        secondary: "bg-white/10 text-white hover:-translate-y-[3px] active:translate-y-0 active:scale-[0.97]",
-        ghost: "text-white/70 hover:text-white hover:-translate-y-[3px] active:translate-y-0 active:scale-[0.97]",
+        default: "bg-transparent text-white hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.97]",
+        destructive: "bg-destructive text-white hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.97]",
+        outline: "border border-white/20 bg-transparent text-white hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.97]",
+        secondary: "bg-white/10 text-white hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.97]",
+        ghost: "text-white/70 hover:text-white hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.97]",
         link: "text-white underline-offset-4 hover:underline",
       },
       size: {
@@ -103,7 +103,7 @@ export function LiquidButton({
     >
       {/* Glass depth + glow — blooms on hover */}
       <div className={cn(
-        "absolute top-0 left-0 z-0 h-full w-full rounded-full transition-[box-shadow] duration-300",
+        "absolute top-0 left-0 z-0 h-full w-full rounded-full transition-[box-shadow] duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
         "shadow-[0_0_6px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3px_rgba(255,255,255,0.12),inset_-3px_-3px_0.5px_-3px_rgba(255,255,255,0.06),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.18),inset_-1px_-1px_1px_-0.5px_rgba(255,255,255,0.1),inset_0_0_6px_6px_rgba(255,255,255,0.04),inset_0_0_2px_2px_rgba(255,255,255,0.06),0_0_16px_rgba(255,255,255,0.08)]",
         "group-hover:shadow-[0_0_6px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.14),inset_3px_3px_0.5px_-3px_rgba(255,255,255,0.22),inset_-3px_-3px_0.5px_-3px_rgba(255,255,255,0.12),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.34),inset_-1px_-1px_1px_-0.5px_rgba(255,255,255,0.22),inset_0_0_6px_6px_rgba(255,255,255,0.09),inset_0_0_2px_2px_rgba(255,255,255,0.13),0_0_36px_rgba(255,255,255,0.20)]"
       )} />
@@ -116,8 +116,11 @@ export function LiquidButton({
 
       {/* Shimmer sweep on hover — clipped inside button bounds */}
       <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden rounded-[inherit]">
-        <div className="absolute inset-y-0 left-0 w-full -translate-x-full group-hover:translate-x-full transition-transform duration-[550ms] ease-in-out bg-gradient-to-r from-transparent via-white/[0.13] to-transparent -skew-x-[20deg]" />
+        <div className="absolute inset-y-0 left-0 w-full -translate-x-full group-hover:translate-x-full transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] bg-gradient-to-r from-transparent via-white/[0.09] to-transparent -skew-x-[20deg]" />
       </div>
+
+      {/* Top-edge refraction — thin light catch that brightens on hover */}
+      <div className="pointer-events-none absolute top-0 inset-x-[12%] h-px z-30 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-35 group-hover:opacity-90 transition-opacity duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]" />
 
       {/* Content */}
       <div className="pointer-events-none relative z-10 flex items-center gap-[inherit]">

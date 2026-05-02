@@ -22,29 +22,26 @@ export default function GlowingChatInput({
 }: GlowingChatInputProps) {
   return (
     <form onSubmit={onSubmit} className="relative flex items-center justify-center w-full">
-      <div className="relative flex items-center justify-center group w-full">
+      <div className={`relative flex items-center justify-center group w-full${disabled ? " ring-paused" : ""}`}>
 
-        {/* Outer glow ring */}
-        <div className="absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[3px]
+        {/* Outer glow ring — animates on hover/focus via .glow-ring-layer CSS */}
+        <div className="glow-ring-layer absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[3px]
                         before:absolute before:content-[''] before:z-[-2] before:w-[999px] before:h-[999px] before:bg-no-repeat before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[60deg]
                         before:bg-[conic-gradient(#000,#402fb5_5%,#000_38%,#000_50%,#cf30aa_60%,#000_87%)]" />
 
-        {/* Mid glow layer */}
-        <div className="absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[3px]
+        <div className="glow-ring-layer absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[3px]
                         before:absolute before:content-[''] before:z-[-2] before:w-[600px] before:h-[600px] before:bg-no-repeat before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[82deg]
                         before:bg-[conic-gradient(rgba(0,0,0,0),#18116a,rgba(0,0,0,0)_10%,rgba(0,0,0,0)_50%,#6e1b60,rgba(0,0,0,0)_60%)]" />
 
-        <div className="absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[3px]
+        <div className="glow-ring-layer absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[3px]
                         before:absolute before:content-[''] before:z-[-2] before:w-[600px] before:h-[600px] before:bg-no-repeat before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[82deg]
                         before:bg-[conic-gradient(rgba(0,0,0,0),#18116a,rgba(0,0,0,0)_10%,rgba(0,0,0,0)_50%,#6e1b60,rgba(0,0,0,0)_60%)]" />
 
-        {/* Bright inner shimmer */}
-        <div className="absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[2px]
+        <div className="glow-ring-layer absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[2px]
                         before:absolute before:content-[''] before:z-[-2] before:w-[600px] before:h-[600px] before:bg-no-repeat before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[83deg]
                         before:bg-[conic-gradient(rgba(0,0,0,0)_0%,#a099d8,rgba(0,0,0,0)_8%,rgba(0,0,0,0)_50%,#dfa2da,rgba(0,0,0,0)_58%)] before:brightness-[1.4]" />
 
-        {/* Dark framing layer */}
-        <div className="absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[0.5px]
+        <div className="glow-ring-layer absolute z-[-1] overflow-hidden h-full w-full rounded-xl blur-[0.5px]
                         before:absolute before:content-[''] before:z-[-2] before:w-[600px] before:h-[600px] before:bg-no-repeat before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-[70deg]
                         before:bg-[conic-gradient(#1c191c,#402fb5_5%,#1c191c_14%,#1c191c_50%,#cf30aa_60%,#1c191c_64%)] before:brightness-[1.3]" />
 
@@ -85,9 +82,9 @@ export default function GlowingChatInput({
             </svg>
           </div>
 
-          {/* Send button */}
+          {/* Send button — border spins on hover/focus via .send-btn-ring CSS */}
           <div className="absolute right-[6px] top-1/2 -translate-y-1/2 h-[38px] w-[38px]">
-            <div className="absolute inset-0 overflow-hidden rounded-lg
+            <div className="send-btn-ring absolute inset-0 overflow-hidden rounded-lg
                             before:absolute before:content-[''] before:w-[600px] before:h-[600px] before:bg-no-repeat before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-90
                             before:bg-[conic-gradient(rgba(0,0,0,0),#3d3a4f,rgba(0,0,0,0)_50%,rgba(0,0,0,0)_50%,#3d3a4f,rgba(0,0,0,0)_100%)]
                             before:brightness-[1.35]" />
