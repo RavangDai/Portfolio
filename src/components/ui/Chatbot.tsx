@@ -318,7 +318,7 @@ export function Chatbot() {
                         <div className="h-px mx-5 bg-white/[0.06]" />
 
                         {/* ─── Messages ─── */}
-                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 chat-scroll">
+                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
                             {visibleMessages.map((msg) => (
                                 <motion.div key={msg.id}
                                     initial={{ opacity: 0, y: 8 }}

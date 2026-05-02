@@ -128,28 +128,39 @@ export function NewHero() {
                 }}
               >
                 BIBEK{" "}
-                <span
-                  style={{
-                    background: "linear-gradient(135deg, #ffffff 0%, #cccccc 50%, #f0f0f0 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
-                    filter: "drop-shadow(0 2px 16px rgba(0,0,0,0.8))",
-                  }}
-                >
+                <span className="pathak-gradient">
                   PATHAK
                 </span>
               </h1>
-              <p
-                className="mt-4 font-medium text-white/65 leading-snug tracking-wide"
-                style={{
-                  fontSize: "clamp(0.88rem, 1.4vw, 1.05rem)",
-                  textShadow: "0 1px 8px rgba(0,0,0,0.9)",
-                  letterSpacing: "0.04em",
-                }}
-              >
-                Building Smart &amp; Scalable Web Solutions
-              </p>
+              <div className="mt-5 space-y-2.5">
+                <p
+                  className="font-semibold text-white leading-tight"
+                  style={{
+                    fontSize: "clamp(1rem, 1.6vw, 1.18rem)",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+                  }}
+                >
+                  Full Stack Engineer
+                  <span className="mx-2.5 text-white/25 font-light">/</span>
+                  <span className="text-white/55 font-normal">AI &amp; ML Developer</span>
+                </p>
+                <div
+                  className="flex items-center gap-2 text-white/40 flex-wrap"
+                  style={{
+                    fontSize: "clamp(0.65rem, 0.9vw, 0.72rem)",
+                    fontWeight: 600,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+                  }}
+                >
+                  <span>CS <span className="text-white/30">@</span> SELU</span>
+                  <span className="text-white/20">·</span>
+                  <span><span className="text-white/70">20+</span> Projects</span>
+                  <span className="text-white/20">·</span>
+                  <span>React · Next.js · Python</span>
+                </div>
+              </div>
             </motion.div>
 
             {/* CTA buttons */}
@@ -292,26 +303,11 @@ export function NewHero() {
                 </div>
               </div>
 
-              {/* Curved quote SVG */}
-              <div className="relative -mt-10 px-2">
-                <svg viewBox="0 0 460 72" xmlns="http://www.w3.org/2000/svg" className="w-full overflow-visible">
-                  <defs>
-                    <path id="arc" d="M 10,8 Q 230,70 450,8" />
-                  </defs>
-                  <path d="M 10,8 Q 230,70 450,8" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeLinecap="round" />
-                  <text fontSize="11.5" fontFamily="ui-sans-serif, system-ui" letterSpacing="0.04em">
-                    <textPath href="#arc" startOffset="50%" textAnchor="middle" fill="rgba(255,255,255,0.40)">
-                      ✦ building smart &amp; scalable solutions, one line at a time ✦
-                    </textPath>
-                  </text>
-                </svg>
-              </div>
-
               {/* Floating code card — liquid glass */}
               <motion.div
                 animate={{ y: [-7, 7, -7] }}
                 transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-12 top-14 px-4 py-3 rounded-2xl"
+                className="absolute -left-12 top-14 px-3.5 py-2.5 rounded-2xl"
                 style={{
                   background: "linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
                   border: "1px solid rgba(255,255,255,0.12)",
@@ -319,15 +315,30 @@ export function NewHero() {
                   backdropFilter: "blur(32px) saturate(180%)",
                   WebkitBackdropFilter: "blur(32px) saturate(180%)",
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 20px 60px rgba(0,0,0,0.6)",
+                  minWidth: "140px",
                 }}
               >
-                <p className="text-[0.55rem] font-mono text-white/35 mb-1.5">// stack.ts</p>
-                <p className="text-[0.63rem] font-mono text-white/85">
-                  <span className="text-white/50">const</span> <span className="text-white">skills</span> <span className="text-white/40">=</span> <span className="text-white/40">[</span>
-                </p>
-                <p className="text-[0.63rem] font-mono text-white/60 pl-3">&quot;React&quot;, &quot;Next.js&quot;,</p>
-                <p className="text-[0.63rem] font-mono text-white/60 pl-3">&quot;Python&quot;, &quot;AI/ML&quot;</p>
-                <p className="text-[0.63rem] font-mono text-white/40">]</p>
+                <p className="text-[0.58rem] font-mono mb-1.5 leading-none" style={{ color: "#98c379", textShadow: "0 0 10px rgba(152,195,121,0.45)" }}>// stack.ts</p>
+                <div className="font-mono space-y-[3px]" style={{ fontSize: "0.62rem", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
+                  <p>
+                    <span style={{ color: "#c678dd" }}>const </span>
+                    <span style={{ color: "#61afef" }}>skills</span>
+                    <span style={{ color: "#abb2bf" }}> = </span>
+                    <span style={{ color: "#e5c07b" }}>[</span>
+                  </p>
+                  <p className="pl-4">
+                    <span style={{ color: "#98c379" }}>&quot;React&quot;</span>
+                    <span style={{ color: "#abb2bf" }}>, </span>
+                    <span style={{ color: "#98c379" }}>&quot;Next.js&quot;</span>
+                    <span style={{ color: "#abb2bf" }}>,</span>
+                  </p>
+                  <p className="pl-4">
+                    <span style={{ color: "#98c379" }}>&quot;Python&quot;</span>
+                    <span style={{ color: "#abb2bf" }}>, </span>
+                    <span style={{ color: "#98c379" }}>&quot;AI/ML&quot;</span>
+                  </p>
+                  <p><span style={{ color: "#e5c07b" }}>]</span></p>
+                </div>
               </motion.div>
 
               {/* Floating stats card — liquid glass */}
@@ -344,10 +355,10 @@ export function NewHero() {
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 20px 60px rgba(0,0,0,0.6)",
                 }}
               >
-                <p className="text-[0.55rem] font-semibold text-white/35 uppercase tracking-wider mb-2">Experience</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-2xl font-black text-white leading-none">3+</span>
-                  <span className="text-[0.62rem] text-white/40 font-medium mb-0.5">years</span>
+                <p className="text-[0.68rem] font-semibold uppercase tracking-widest mb-2.5 leading-none" style={{ color: "rgba(255,255,255,0.65)" }}>Projects</p>
+                <div className="flex items-end gap-2">
+                  <span className="text-[2rem] font-black text-white leading-none">20+</span>
+                  <span className="text-[0.7rem] font-semibold mb-1.5" style={{ color: "rgba(255,255,255,0.55)" }}>built</span>
                 </div>
               </motion.div>
             </div>

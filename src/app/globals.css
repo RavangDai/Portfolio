@@ -246,30 +246,48 @@ html {
   }
 }
 
+/* ===== Hide scrollbar utility ===== */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ===== Chat — Scrollbar ===== */
 
 /* Webkit (Chrome, Edge, Safari) */
 .chat-scroll::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 .chat-scroll::-webkit-scrollbar-track {
   background: transparent;
+  margin-block: 8px;
 }
 
 .chat-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.10)
+  );
+  border-radius: 99px;
 }
 
 .chat-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.45),
+    rgba(255, 255, 255, 0.25)
+  );
 }
 
 /* Firefox */
 .chat-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 
 /* ===== Chat — Visual Hierarchy ===== */
@@ -620,49 +638,6 @@ html {
 }
 .link-animate:hover::after { width: 100%; }
 
-/* ===== Blog — Thinking dots (loading indicator) ===== */
-
-@keyframes thinking-bounce {
-  0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
-  40%            { transform: translateY(-4px); opacity: 1; }
-}
-
-.thinking-dots .dot {
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  border-radius: 9999px;
-  background: currentColor;
-  animation: thinking-bounce 1.2s ease-in-out infinite;
-}
-.thinking-dots .dot:nth-child(2) { animation-delay: 0.15s; }
-.thinking-dots .dot:nth-child(3) { animation-delay: 0.3s; }
-
-/* ===== Blog — AI ring border spin ===== */
-/*
-  Oversized conic-gradient div rotates in place via translate+rotate combo.
-  Clipped by a parent with overflow:hidden, creating a spinning gradient border.
-*/
-@keyframes ai-ring-spin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.ai-ring-spin {
-  animation: ai-ring-spin 3.5s linear infinite;
-  will-change: transform;
-}
-
-/* ===== Blog — Enhance button shimmer sweep ===== */
-@keyframes btn-shimmer {
-  0%   { transform: translateX(-180%); }
-  100% { transform: translateX(180%); }
-}
-
-.btn-shimmer {
-  animation: btn-shimmer 1.4s ease-in-out infinite;
-  will-change: transform;
-}
 
 /* ===== Grain / Film-noise Texture ===== */
 @keyframes grain-shift {
@@ -729,6 +704,26 @@ html {
     0 2px 8px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(40px) saturate(200%) brightness(105%);
   -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(105%);
+}
+
+/* ===== PATHAK moving white/black gradient ===== */
+.pathak-gradient {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #c8c8c8 22%,
+    #ffffff 42%,
+    #b0b0b0 60%,
+    #ffffff 78%,
+    #c8c8c8 92%,
+    #ffffff 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sweep 5s linear infinite;
+  will-change: background-position;
 }
 
 /* ===== Role Badge ===== */
