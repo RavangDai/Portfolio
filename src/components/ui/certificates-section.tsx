@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useRef, useCallback } from "react";
+import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
 const sortVariants = {
   enter: (d: number) => ({
@@ -237,86 +238,12 @@ export function CertificatesSection() {
   }, [sort]);
 
   // Cursor-reveal — direct DOM updates, zero re-renders
-  const sectionRef    = useRef<HTMLElement>(null);
-  const crossRevealRef = useRef<HTMLDivElement>(null);
-  const crossSoftRef   = useRef<HTMLDivElement>(null);
-  const spotlightRef   = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const { left, top } = el.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-
-    if (crossRevealRef.current)
-      crossRevealRef.current.style.maskImage =
-        `radial-gradient(ellipse 200px 200px at ${x}px ${y}px, black 0%, transparent 100%)`;
-    if (crossSoftRef.current)
-      crossSoftRef.current.style.maskImage =
-        `radial-gradient(ellipse 440px 440px at ${x}px ${y}px, black 15%, transparent 100%)`;
-    if (spotlightRef.current)
-      spotlightRef.current.style.background =
-        `radial-gradient(ellipse 500px 340px at ${x}px ${y}px, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 45%, transparent 70%)`;
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    const off = "radial-gradient(ellipse 200px 200px at -999px -999px, black 0%, transparent 100%)";
-    if (crossRevealRef.current)  crossRevealRef.current.style.maskImage  = off;
-    if (crossSoftRef.current)    crossSoftRef.current.style.maskImage    = off;
-    if (spotlightRef.current)    spotlightRef.current.style.background   = "transparent";
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       id="certificates"
       className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-
-      {/* Background layers */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {/* Base cross/plus grid — always dim */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
-            backgroundSize: "48px 48px, 48px 48px, 48px 48px",
-          }}
-        />
-
-        {/* Cursor-revealed bright crosses — inner zone */}
-        <div
-          ref={crossRevealRef}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "radial-gradient(circle, white 1.5px, transparent 1.5px), linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-            backgroundSize: "48px 48px, 48px 48px, 48px 48px",
-            opacity: 0.5,
-            maskImage: "radial-gradient(ellipse 200px 200px at -999px -999px, black 0%, transparent 100%)",
-          }}
-        />
-
-        {/* Cursor-revealed soft crosses — outer zone */}
-        <div
-          ref={crossSoftRef}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-            opacity: 0.12,
-            maskImage: "radial-gradient(ellipse 440px 440px at -999px -999px, black 15%, transparent 100%)",
-          }}
-        />
-
-        {/* Smooth spotlight */}
-        <div ref={spotlightRef} className="absolute inset-0" />
-
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_70%_at_50%_50%,transparent_45%,#080808_100%)]" />
-      </div>
+      <SectionGradientBg />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl px-6 md:px-8">
 

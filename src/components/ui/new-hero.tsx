@@ -195,9 +195,9 @@ export function NewHero() {
               <LiquidButton
                 size="xl"
                 className="rounded-full font-bold group"
-                onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => window.location.href = "/achievements"}
               >
-                View Projects
+                View Achievements
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
               </LiquidButton>
               <LiquidButton

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { X, ArrowUpRight } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
@@ -55,7 +56,6 @@ function ScrambleLink({
         isActive ? "text-white" : "text-white/55 hover:text-white"
       )}
     >
-      {/* Active frosted pill */}
       {isActive && (
         <motion.span
           layoutId="nav-pill"
@@ -69,8 +69,6 @@ function ScrambleLink({
           transition={{ type: "spring", stiffness: 400, damping: 35 }}
         />
       )}
-
-      {/* Hover frosted capsule for inactive */}
       {!isActive && (
         <span
           className="absolute inset-0 rounded-full opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-[opacity,transform] duration-[220ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -82,7 +80,6 @@ function ScrambleLink({
           }}
         />
       )}
-
       <span className="relative z-10">{display}</span>
     </Link>
   );
@@ -98,6 +95,9 @@ export function MainNavbar() {
   const [scrolled, setScrolled]           = useState(false);
   const [mobileOpen, setMobileOpen]       = useState(false);
 
+  const pathname = usePathname();
+  const router   = useRouter();
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
 
@@ -107,7 +107,13 @@ export function MainNavbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  // Active section: pathname-based for non-home pages; observer-based on home
   useEffect(() => {
+    if (pathname !== "/") {
+      setActiveSection(pathname.replace("/", ""));
+      return;
+    }
+
     const sections = ["home", "projects", "certificates", "contact"];
     const observer = new IntersectionObserver(
       (entries) => {
@@ -133,25 +139,40 @@ export function MainNavbar() {
       observer.disconnect();
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [pathname]);
+
+  // Keep scrolled state up to date on non-home pages
+  useEffect(() => {
+    if (pathname === "/") return;
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
 
   const links = [
-    { name: "Projects",     href: "#projects",     id: "projects"     },
-    { name: "Certificates", href: "#certificates", id: "certificates" },
-    { name: "Contact",      href: "#contact",      id: "contact"      },
+    { name: "Projects",      href: "/#projects",      id: "projects"      },
+    { name: "Certificates",  href: "/#certificates",  id: "certificates"  },
+    { name: "Achievements",  href: "/achievements",   id: "achievements"  },
+    { name: "Contact",       href: "/#contact",       id: "contact"       },
   ];
 
-  const handleLinkClick = (href: string) => {
+  const handleBrandClick = () => {
     setMobileOpen(false);
-    if (href === "/") window.scrollTo({ top: 0, behavior: "smooth" });
+    if (pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      router.push("/");
+    }
   };
+
+  const handleLinkClick = () => setMobileOpen(false);
 
   const isActive = (link: { id: string }) => activeSection === link.id;
 
   return (
     <>
       <header className="fixed top-0 z-50 w-full">
-
         {/* Scroll progress bar */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-[1.5px] origin-left z-10"
@@ -172,12 +193,11 @@ export function MainNavbar() {
                 : "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.4)"
             }}
           >
-            {/* Inner top shimmer */}
             <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.10] to-transparent" />
 
             {/* ── Brand ── */}
             <button
-              onClick={() => { window.scrollTo({ top: 0, behavior: "smooth" }); setMobileOpen(false); }}
+              onClick={handleBrandClick}
               className="group flex items-center gap-2.5 shrink-0"
             >
               <span className="relative flex h-2 w-2 shrink-0">
@@ -197,7 +217,7 @@ export function MainNavbar() {
                   text={link.name}
                   href={link.href}
                   isActive={isActive(link)}
-                  onClick={() => handleLinkClick(link.href)}
+                  onClick={handleLinkClick}
                 />
               ))}
             </div>
@@ -207,7 +227,13 @@ export function MainNavbar() {
               <LiquidButton
                 size="sm"
                 className="hidden md:inline-flex rounded-full text-[0.72rem] font-bold tracking-wide"
-                onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => {
+                  if (pathname === "/") {
+                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    router.push("/#contact");
+                  }
+                }}
               >
                 Hire Me
               </LiquidButton>
@@ -266,7 +292,7 @@ export function MainNavbar() {
               WebkitBackdropFilter: "blur(48px) saturate(180%)",
             }}
           >
-            {/* Grain texture overlay */}
+            {/* Grain texture */}
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.025]"
               style={{
@@ -275,11 +301,9 @@ export function MainNavbar() {
                 backgroundSize: "128px",
               }}
             />
-
-            {/* Top edge glow */}
             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-            {/* ── Header row ── */}
+            {/* Header row */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -287,12 +311,11 @@ export function MainNavbar() {
               className="flex items-center justify-between px-7 pt-6 pb-4"
             >
               <button
-                onClick={() => { setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                onClick={handleBrandClick}
                 className="text-[0.82rem] font-black tracking-tight text-white/80"
               >
                 BIBEK.DEV
               </button>
-
               <button
                 onClick={() => setMobileOpen(false)}
                 className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/40 hover:text-white hover:border-white/25 transition-all duration-200"
@@ -302,7 +325,7 @@ export function MainNavbar() {
               </button>
             </motion.div>
 
-            {/* ── Nav links — large editorial ── */}
+            {/* Nav links */}
             <div className="flex-1 flex flex-col justify-center px-7 overflow-hidden">
               {links.map((link, i) => (
                 <motion.div
@@ -312,40 +335,31 @@ export function MainNavbar() {
                   exit={{ opacity: 0, x: -24, filter: "blur(4px)" }}
                   transition={{
                     duration: 0.55,
-                    delay: 0.08 + i * 0.08,
+                    delay: 0.08 + i * 0.07,
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   className="border-b border-white/[0.06] last:border-b-0"
                 >
                   <Link
                     href={link.href}
-                    onClick={() => handleLinkClick(link.href)}
+                    onClick={handleLinkClick}
                     className="group flex items-center gap-5 py-5"
                   >
-                    {/* Index number */}
                     <span className="font-mono text-[0.58rem] font-medium tracking-[0.25em] text-white/20 w-6 shrink-0">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-
-                    {/* Link label */}
                     <span
                       className={cn(
                         "font-black tracking-tighter leading-none uppercase transition-colors duration-300",
                         isActive(link) ? "shimmer-text" : "text-white/35 group-hover:text-white/75"
                       )}
-                      style={{ fontSize: "clamp(2.4rem, 11vw, 3.5rem)" }}
+                      style={{ fontSize: "clamp(2rem, 10vw, 3.5rem)" }}
                     >
                       {link.name}
                     </span>
-
-                    {/* Arrow — slides in on hover */}
-                    <motion.div
-                      className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
+                    <motion.div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <ArrowUpRight className="h-6 w-6 text-white/40" />
                     </motion.div>
-
-                    {/* Active dot */}
                     {isActive(link) && (
                       <span className="relative flex h-1.5 w-1.5 shrink-0 ml-auto">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-50" />
@@ -357,15 +371,14 @@ export function MainNavbar() {
               ))}
             </div>
 
-            {/* ── Bottom bar: socials + CTA ── */}
+            {/* Bottom bar */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.45, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.45, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="px-7 pt-5 pb-8 flex items-center justify-between border-t border-white/[0.06]"
             >
-              {/* Socials */}
               <div className="flex items-center gap-3">
                 {SOCIALS.map(({ name, href, Icon }) => (
                   <a
@@ -380,13 +393,16 @@ export function MainNavbar() {
                   </a>
                 ))}
               </div>
-
               <LiquidButton
                 size="sm"
                 className="rounded-full text-[0.72rem] font-bold"
                 onClick={() => {
-                  handleLinkClick("#contact");
-                  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  setMobileOpen(false);
+                  if (pathname === "/") {
+                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    router.push("/#contact");
+                  }
                 }}
               >
                 Hire Me

@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Play, X, ArrowUpRight } from "lucide-react";
+import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -517,94 +518,12 @@ export function ProjectsSection() {
     return () => window.removeEventListener("keydown", onKey);
   }, [activeVideo, handleCloseVideo]);
 
-  // Cursor-reveal refs — direct DOM updates, zero re-renders
-  const sectionRef = useRef<HTMLElement>(null);
-  const gridRevealRef = useRef<HTMLDivElement>(null);
-  const gridSoftRef   = useRef<HTMLDivElement>(null);
-  const spotlightRef  = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const { left, top } = el.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-
-    if (gridRevealRef.current)
-      gridRevealRef.current.style.maskImage =
-        `radial-gradient(ellipse 240px 240px at ${x}px ${y}px, black 0%, transparent 100%)`;
-    if (gridSoftRef.current)
-      gridSoftRef.current.style.maskImage =
-        `radial-gradient(ellipse 480px 480px at ${x}px ${y}px, black 20%, transparent 100%)`;
-    if (spotlightRef.current)
-      spotlightRef.current.style.background =
-        `radial-gradient(ellipse 560px 380px at ${x}px ${y}px, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.018) 40%, transparent 70%)`;
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    const off = "radial-gradient(ellipse 240px 240px at -999px -999px, black 0%, transparent 100%)";
-    if (gridRevealRef.current)  gridRevealRef.current.style.maskImage  = off;
-    if (gridSoftRef.current)    gridSoftRef.current.style.maskImage    = off;
-    if (spotlightRef.current)   spotlightRef.current.style.background  = "transparent";
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       id="projects"
       className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-
-      {/* Background layers */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {/* Base PCB grid — always dim */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.045]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="pcb-base" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="48" x2="96" y2="48" stroke="white" strokeWidth="0.5" />
-              <line x1="48" y1="0" x2="48" y2="96" stroke="white" strokeWidth="0.5" />
-              <circle cx="48" cy="48" r="2.5" fill="none" stroke="white" strokeWidth="0.7" />
-              <circle cx="28" cy="18" r="1.5" fill="white" />
-              <circle cx="68" cy="76" r="1.5" fill="white" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#pcb-base)" />
-        </svg>
-
-        {/* Cursor-revealed bright grid — inner zone */}
-        <div
-          ref={gridRevealRef}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cline x1='0' y1='48' x2='96' y2='48' stroke='white' stroke-width='0.8'/%3E%3Cline x1='48' y1='0' x2='48' y2='96' stroke='white' stroke-width='0.8'/%3E%3Ccircle cx='48' cy='48' r='2.5' fill='none' stroke='white' stroke-width='1'/%3E%3Ccircle cx='28' cy='18' r='1.5' fill='white'/%3E%3Ccircle cx='68' cy='76' r='1.5' fill='white'/%3E%3C/svg%3E")`,
-            backgroundSize: "96px 96px",
-            opacity: 0.55,
-            maskImage: "radial-gradient(ellipse 240px 240px at -999px -999px, black 0%, transparent 100%)",
-          }}
-        />
-
-        {/* Cursor-revealed soft grid — outer zone */}
-        <div
-          ref={gridSoftRef}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cline x1='0' y1='48' x2='96' y2='48' stroke='white' stroke-width='0.6'/%3E%3Cline x1='48' y1='0' x2='48' y2='96' stroke='white' stroke-width='0.6'/%3E%3Ccircle cx='48' cy='48' r='2' fill='none' stroke='white' stroke-width='0.7'/%3E%3C/svg%3E")`,
-            backgroundSize: "96px 96px",
-            opacity: 0.14,
-            maskImage: "radial-gradient(ellipse 480px 480px at -999px -999px, black 20%, transparent 100%)",
-          }}
-        />
-
-        {/* Smooth spotlight glow that follows cursor */}
-        <div ref={spotlightRef} className="absolute inset-0 transition-none" />
-
-        <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-white/[0.02] blur-[100px] animate-aurora-2" />
-        <div className="absolute -bottom-20 -left-20 h-[350px] w-[350px] rounded-full bg-white/[0.015] blur-[90px] animate-aurora-3" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_50%,#080808_100%)]" />
-      </div>
+      <SectionGradientBg />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
 

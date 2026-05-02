@@ -257,6 +257,20 @@ html {
 }
 
 
+/* ===== Section gradient background orb animations ===== */
+@keyframes sgb-orb-a {
+  from { transform: translate(0%,  0%)  scale(1);    }
+  to   { transform: translate(9%,  13%) scale(1.14); }
+}
+@keyframes sgb-orb-b {
+  from { transform: translate(0%,  0%)  scale(1);    }
+  to   { transform: translate(-11%, -9%) scale(1.12); }
+}
+@keyframes sgb-orb-c {
+  from { transform: translate(0%,  0%)  scale(1);    }
+  to   { transform: translate(-7%,  14%) scale(0.88); }
+}
+
 /* ===== Chat input hover glow ===== */
 @keyframes input-glow-pulse {
   0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.10), 0 0 12px rgba(255,255,255,0.04); }

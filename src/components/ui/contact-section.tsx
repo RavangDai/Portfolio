@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
+import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -12,28 +13,6 @@ export function ContactSection() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Pixel hover refs — direct DOM update, zero re-renders
-  const sectionRef   = useRef<HTMLElement>(null);
-  const pixelGlowRef = useRef<HTMLDivElement>(null);
-  const pixelCyanRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    if (pixelGlowRef.current)
-      pixelGlowRef.current.style.maskImage = `radial-gradient(ellipse 260px 260px at ${x}px ${y}px, black 0%, transparent 100%)`;
-    if (pixelCyanRef.current)
-      pixelCyanRef.current.style.maskImage = `radial-gradient(ellipse 420px 420px at ${x}px ${y}px, black 30%, transparent 100%)`;
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    const off = "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)";
-    if (pixelGlowRef.current) pixelGlowRef.current.style.maskImage = off;
-    if (pixelCyanRef.current) pixelCyanRef.current.style.maskImage = off;
-  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText("bibekg2029@gmail.com");
@@ -56,55 +35,10 @@ export function ContactSection() {
 
   return (
     <section
-      ref={sectionRef}
       id="contact"
       className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-      {/* ── Background layers ── */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1.5px, transparent 1.5px)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-        <div
-          ref={pixelGlowRef}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.7) 1.5px, transparent 1.5px)",
-            backgroundSize: "28px 28px",
-            maskImage: "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)",
-          }}
-        />
-        <div
-          ref={pixelCyanRef}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px)",
-            backgroundSize: "28px 28px",
-            maskImage: "radial-gradient(ellipse 420px 420px at -999px -999px, black 30%, transparent 100%)",
-          }}
-        />
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="absolute rounded-full border border-white/[0.04]"
-            style={{
-              width:  `${(i + 1) * 220}px`,
-              height: `${(i + 1) * 220}px`,
-              left: "-40px",
-              bottom: "-40px",
-              animation: `sonar-pulse 5s ease-out ${i * 1.1}s infinite`,
-            }}
-          />
-        ))}
-        <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-white/[0.02] blur-[90px] animate-aurora-3" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_50%_50%,transparent_50%,#080808_100%)]" />
-      </div>
+      <SectionGradientBg />
 
       {/* ── Content ── */}
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
