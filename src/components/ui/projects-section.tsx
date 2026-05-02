@@ -13,6 +13,25 @@ function GithubIcon({ className }: { className?: string }) {
 }
 import { cn } from "@/lib/utils";
 
+// ─── Animated "Building..." badge ─────────────────────────────────────────────
+
+function BuildingBadge() {
+  const [dots, setDots] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setDots((d) => (d + 1) % 4), 520);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <span className="text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/50 border-white/10 bg-white/[0.03] inline-flex items-center gap-1">
+      <span className="relative flex h-1.5 w-1.5 shrink-0">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/40 opacity-75" />
+        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/40" />
+      </span>
+      Building{".".repeat(dots)}
+    </span>
+  );
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ProjectStatus = "Completed" | "In progress";
@@ -167,10 +186,10 @@ function ScreenshotCard({
           }}
           exit={{
             opacity: 0,
-            scale: 0.88,
-            y: 10,
-            filter: "blur(4px)",
-            transition: { duration: 0.2 },
+            scale: 0.92,
+            y: 6,
+            filter: "blur(6px)",
+            transition: { duration: 0.12, ease: "easeIn" },
           }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           style={{ perspective: 800 }}
@@ -278,14 +297,13 @@ function ProjectCard({
         <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-white/30">
           {project.tag}
         </p>
-        <span className={cn(
-          "text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border",
-          project.status === "Completed"
-            ? "text-white/70 border-white/15 bg-white/[0.05]"
-            : "text-white/50 border-white/10 bg-white/[0.03]"
-        )}>
-          {project.status === "Completed" ? "Shipped" : "Building"}
-        </span>
+        {project.status === "Completed" ? (
+          <span className="text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/70 border-white/15 bg-white/[0.05]">
+            Shipped
+          </span>
+        ) : (
+          <BuildingBadge />
+        )}
         <span className="ml-auto font-mono text-[0.6rem] text-white/20">{project.year}</span>
       </div>
 

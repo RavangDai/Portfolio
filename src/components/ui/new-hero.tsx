@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Code2,
@@ -61,8 +62,29 @@ function TechMarquee() {
 }
 
 export function NewHero() {
+  // Mouse parallax — direct DOM manipulation, zero re-renders
+  const photoRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const photo = photoRef.current;
+    if (!photo) return;
+    const { innerWidth: w, innerHeight: h } = window;
+    const x = (e.clientX / w - 0.5) * 2;   // -1 to 1
+    const y = (e.clientY / h - 0.5) * 2;   // -1 to 1
+    photo.style.transform = `translate(${x * -10}px, ${y * -7}px)`;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (photoRef.current) photoRef.current.style.transform = "translate(0px, 0px)";
+  }, []);
+
   return (
-    <section id="home" className="relative flex min-h-[100svh] flex-col overflow-hidden">
+    <section
+      id="home"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
 
       {/* ── Background ── */}
       <NeatGradientBg />
@@ -240,8 +262,12 @@ export function NewHero() {
             <div className="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-white/8 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-56 h-56 rounded-full bg-white/5 blur-3xl pointer-events-none" />
 
-            {/* Photo card */}
-            <div className="relative w-full max-w-[480px]">
+            {/* Photo card — parallax wrapper */}
+            <div
+              ref={photoRef}
+              className="relative w-full max-w-[480px]"
+              style={{ transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1)", willChange: "transform" }}
+            >
               {/* Ambient glow under photo */}
               <div
                 className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none"
@@ -293,7 +319,7 @@ export function NewHero() {
 
               {/* Floating code card — liquid glass */}
               <motion.div
-                animate={{ y: [-7, 7, -7] }}
+                animate={{ y: [-6, 8, -6], x: [-2, 3, -2], rotate: [-0.6, 0.5, -0.6] }}
                 transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -left-12 top-14 px-3.5 py-2.5 rounded-2xl"
                 style={{
@@ -331,7 +357,7 @@ export function NewHero() {
 
               {/* Floating stats card — liquid glass */}
               <motion.div
-                animate={{ y: [7, -7, 7] }}
+                animate={{ y: [8, -5, 8], x: [3, -3, 3], rotate: [0.5, -0.7, 0.5] }}
                 transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
                 className="absolute -right-8 bottom-24 px-5 py-3.5 rounded-2xl"
                 style={{
