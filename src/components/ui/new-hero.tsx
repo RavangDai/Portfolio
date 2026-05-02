@@ -197,7 +197,7 @@ export function NewHero() {
                 className="rounded-full font-bold group"
                 onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
               >
-                View Portfolio
+                View Projects
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
               </LiquidButton>
               <LiquidButton
@@ -206,7 +206,7 @@ export function NewHero() {
                 className="rounded-full font-semibold"
                 onClick={() => window.open("/Bibek_Pathak_Resume_Mar26.pdf", "_blank")}
               >
-                Download CV
+                Download Resume
                 <Download className="h-3.5 w-3.5" />
               </LiquidButton>
             </motion.div>
