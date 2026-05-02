@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lora } from "next/font/google";
 import { BrainCircuit, Sparkles, X, ChevronDown } from "lucide-react";
@@ -379,24 +379,80 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
 // ─── BlogSection ──────────────────────────────────────────────────────────────
 
 export function BlogSection() {
+  // Cursor-reveal — direct DOM updates, zero re-renders
+  const sectionRef      = useRef<HTMLElement>(null);
+  const lineRevealRef   = useRef<HTMLDivElement>(null);
+  const lineSoftRef     = useRef<HTMLDivElement>(null);
+  const spotlightRef    = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const { left, top } = el.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+
+    if (lineRevealRef.current)
+      lineRevealRef.current.style.maskImage =
+        `radial-gradient(ellipse 280px 160px at ${x}px ${y}px, black 0%, transparent 100%)`;
+    if (lineSoftRef.current)
+      lineSoftRef.current.style.maskImage =
+        `radial-gradient(ellipse 520px 320px at ${x}px ${y}px, black 10%, transparent 100%)`;
+    if (spotlightRef.current)
+      spotlightRef.current.style.background =
+        `radial-gradient(ellipse 600px 340px at ${x}px ${y}px, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 50%, transparent 70%)`;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const off = "radial-gradient(ellipse 280px 160px at -999px -999px, black 0%, transparent 100%)";
+    if (lineRevealRef.current)  lineRevealRef.current.style.maskImage  = off;
+    if (lineSoftRef.current)    lineSoftRef.current.style.maskImage    = off;
+    if (spotlightRef.current)   spotlightRef.current.style.background  = "transparent";
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="blog"
       className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <svg
-          className="absolute inset-0 h-full w-full opacity-[0.025]"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+
+        {/* Base ruled lines — always dim */}
+        <svg className="absolute inset-0 h-full w-full opacity-[0.025]" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="ruled" x="0" y="0" width="100%" height="36" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="rgba(255,255,255,0.5)" strokeWidth="0.5" />
+            <pattern id="ruled-base" x="0" y="0" width="100%" height="36" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="white" strokeWidth="0.5" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#ruled)" />
+          <rect width="100%" height="100%" fill="url(#ruled-base)" />
         </svg>
+
+        {/* Cursor-revealed bright lines — inner zone (wide ellipse, horizontal emphasis) */}
+        <div
+          ref={lineRevealRef}
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255,255,255,0.55) 35px, rgba(255,255,255,0.55) 36px)",
+            maskImage: "radial-gradient(ellipse 280px 160px at -999px -999px, black 0%, transparent 100%)",
+          }}
+        />
+
+        {/* Cursor-revealed soft lines — outer zone */}
+        <div
+          ref={lineSoftRef}
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255,255,255,0.12) 35px, rgba(255,255,255,0.12) 36px)",
+            maskImage: "radial-gradient(ellipse 520px 320px at -999px -999px, black 10%, transparent 100%)",
+          }}
+        />
+
+        {/* Smooth spotlight */}
+        <div ref={spotlightRef} className="absolute inset-0" />
 
         <div className="absolute -top-32 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/[0.02] blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[300px] w-[400px] rounded-full bg-white/[0.015] blur-[100px]" />
