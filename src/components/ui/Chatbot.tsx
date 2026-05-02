@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, X, ChevronRight } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
+import GlowingChatInput from "./animated-glowing-search-bar";
 import { cn } from "@/lib/utils";
 import { parseMessageToCards, MessageCard } from "./MessageCard";
 
@@ -395,41 +396,15 @@ export function Chatbot() {
                         )}
 
                         {/* ─── Input bar ─── */}
-                        <div className="px-4 pb-4 pt-2 shrink-0"
+                        <div className="px-4 pb-4 pt-3 shrink-0"
                             style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                            <form onSubmit={handleSubmit}>
-                                <motion.div className="flex items-center gap-3 rounded-2xl px-4 py-3"
-                                    animate={{
-                                        borderColor: input.length > 0 ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.07)",
-                                        boxShadow: input.length > 0 ? "inset 0 1px 0 rgba(255,255,255,0.10), 0 0 20px rgba(255,255,255,0.04)" : "none",
-                                    }}
-                                    transition={{ duration: 0.2 }}
-                                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                                    <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={input}
-                                        onChange={(e) => setInput(e.target.value)}
-                                        placeholder="ask anything about Bibek..."
-                                        disabled={isLoading}
-                                        className="flex-1 min-w-0 bg-transparent text-[13px] text-white/80 placeholder:text-white/20 focus:outline-none"
-                                        style={{ letterSpacing: "-0.01em" }}
-                                    />
-                                    <motion.button type="submit"
-                                        disabled={isLoading || !input.trim()}
-                                        className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 disabled:opacity-20 transition-all duration-200"
-                                        style={{
-                                            background: input.trim() ? "#ffffff" : "rgba(255,255,255,0.06)",
-                                            border: input.trim() ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255,255,255,0.06)",
-                                            boxShadow: input.trim() ? "inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 16px rgba(255,255,255,0.12)" : "none",
-                                        }}
-                                        animate={{ scale: isSending ? 0.88 : 1 }}
-                                        whileHover={input.trim() ? { scale: 1.08 } : {}}
-                                        transition={{ type: "spring", stiffness: 400, damping: 15 }}>
-                                        <Send className={`h-3.5 w-3.5 ${input.trim() ? "text-black" : "text-white/50"}`} />
-                                    </motion.button>
-                                </motion.div>
-                            </form>
+                            <GlowingChatInput
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onSubmit={handleSubmit}
+                                disabled={isLoading}
+                                inputRef={inputRef}
+                            />
                         </div>
                     </motion.div>
                 )}

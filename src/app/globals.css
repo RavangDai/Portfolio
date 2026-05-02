@@ -246,6 +246,16 @@ html {
   }
 }
 
+/* ===== Slow spin (glowing input send button border) ===== */
+@keyframes spin-slow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+  will-change: transform;
+}
+
 /* ===== Hide scrollbar utility ===== */
 .no-scrollbar {
   -ms-overflow-style: none;
