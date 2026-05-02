@@ -256,41 +256,6 @@ html {
   will-change: transform;
 }
 
-/* ===== Chatbot glow ring — plays only on hover & focus-within ===== */
-/* Uses standalone CSS `rotate` property which stacks on top of Tailwind's
-   transform-based rotate, so each layer starts from its own initial angle. */
-@keyframes glow-ring-spin {
-  to { rotate: 360deg; }
-}
-
-.glow-ring-layer::before {
-  animation: glow-ring-spin 7s linear infinite;
-  animation-play-state: paused;
-  will-change: rotate;
-}
-
-.group:hover .glow-ring-layer::before,
-.group:focus-within .glow-ring-layer::before {
-  animation-play-state: running;
-}
-
-/* Send button spinning border — same activation rule */
-.send-btn-ring::before {
-  animation: glow-ring-spin 3s linear infinite;
-  animation-play-state: paused;
-  will-change: rotate;
-}
-
-.group:hover .send-btn-ring::before,
-.group:focus-within .send-btn-ring::before {
-  animation-play-state: running;
-}
-
-/* Pause all ring animation while AI is thinking */
-.ring-paused .glow-ring-layer::before,
-.ring-paused .send-btn-ring::before {
-  animation-play-state: paused !important;
-}
 
 /* ===== Hide scrollbar utility ===== */
 .no-scrollbar {
