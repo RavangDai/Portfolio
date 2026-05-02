@@ -83,8 +83,21 @@ const certificates: Certificate[] = [
 /* FLIP CARD                                                                  */
 /* -------------------------------------------------------------------------- */
 
-function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: number }) {
+function CertFlipCard({ cert, index }: { cert: Certificate; index: number }) {
   const [flipped, setFlipped] = useState(false);
+
+  // Alternate flip axis per card: Y → X → Y
+  const flipOnX = index % 2 === 1;
+  const flippedTransform    = flipOnX ? "[transform:rotateX(180deg)]"        : "[transform:rotateY(180deg)]";
+  const hoverTransform      = flipOnX ? "group-hover:[transform:rotateX(180deg)]" : "group-hover:[transform:rotateY(180deg)]";
+  const backFaceBaseTransform = flipOnX ? "[transform:rotateX(180deg)]"      : "[transform:rotateY(180deg)]";
+
+  // Accent line direction changes with axis to reinforce the flip direction visually
+  const accentBase   = "absolute left-0 right-0 h-[1.5px]";
+  const topAccent    = { background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.25) 70%, transparent)" };
+  const topAccentBrt = { background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.45) 30%, rgba(255,255,255,0.70) 50%, rgba(255,255,255,0.45) 70%, transparent)" };
+  // For X-flip cards, the accent runs along the bottom edge on the front (the edge that flips up)
+  const xFlipEdge    = flipOnX ? "bottom-0" : "top-0";
 
   return (
     <div
@@ -95,18 +108,25 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
         className={cn(
           "relative h-full w-full [transform-style:preserve-3d]",
           "transition-transform duration-[750ms] ease-[cubic-bezier(0.4,0.2,0.2,1)]",
-          flipped ? "[transform:rotateY(180deg)]" : "group-hover:[transform:rotateY(180deg)]"
+          flipped ? flippedTransform : hoverTransform
         )}
       >
 
         {/* ════════ FRONT ════════ */}
-        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0d0d0d] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_40px_-8px_rgba(255,255,255,0.08)]">
+        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0d0d0d] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_48px_-8px_rgba(255,255,255,0.10)]">
 
-          {/* Gradient top accent */}
-          <div
-            className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.25) 70%, transparent)" }}
-          />
+          {/* Accent edge — top for Y-flip cards, bottom for X-flip cards */}
+          <div className={cn(accentBase, xFlipEdge)} style={topAccent} />
+
+          {/* Flip-axis hint icon */}
+          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className={cn(
+              "text-white/20 text-[0.5rem] font-mono tracking-widest uppercase",
+              flipOnX ? "rotate-90" : ""
+            )}>
+              {flipOnX ? "↑↓" : "↔"}
+            </div>
+          </div>
 
           {/* Issuer + year */}
           <div className="flex items-center justify-between">
@@ -140,14 +160,13 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
         </div>
 
         {/* ════════ BACK ════════ */}
+        <div className={cn(
+          "absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.10] bg-[#111111] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(255,255,255,0.05)]",
+          backFaceBaseTransform
+        )}>
 
-        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border border-white/[0.10] bg-[#111111] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(255,255,255,0.05)]">
-
-          {/* Gradient top accent — brighter on back */}
-          <div
-            className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.45) 30%, rgba(255,255,255,0.70) 50%, rgba(255,255,255,0.45) 70%, transparent)" }}
-          />
+          {/* Accent edge — opposite edge on back so it appears at same visual edge after flip */}
+          <div className={cn(accentBase, flipOnX ? "top-0" : "top-0")} style={topAccentBrt} />
 
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
@@ -345,6 +364,11 @@ export function CertificatesSection() {
           </div>
         </motion.div>
 
+        {/* Ambient gradient centered on the card grid */}
+        <div className="pointer-events-none relative -mx-6 mb-[-60px]">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[700px] h-[300px] rounded-full bg-white/[0.025] blur-[90px]" />
+        </div>
+
         {/* GRID */}
         <AnimatePresence mode="wait" custom={dirRef.current}>
           <motion.div
@@ -354,10 +378,18 @@ export function CertificatesSection() {
             initial="enter"
             animate="center"
             exit="exit"
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            className="relative grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {sortedCertificates.map((cert, index) => (
-              <motion.div key={cert.title} variants={cardVariants}>
+              <motion.div key={cert.title} variants={cardVariants} className="group/wrap relative">
+                {/* Per-card ambient glow — intensifies on hover */}
+                <div
+                  className="pointer-events-none absolute -inset-3 rounded-3xl opacity-0 group-hover/wrap:opacity-100 transition-opacity duration-700"
+                  style={{
+                    background: "radial-gradient(ellipse at 50% 60%, rgba(255,255,255,0.07) 0%, transparent 70%)",
+                    filter: "blur(12px)",
+                  }}
+                />
                 <CertFlipCard cert={cert} index={index} />
               </motion.div>
             ))}

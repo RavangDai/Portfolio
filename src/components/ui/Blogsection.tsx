@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lora } from "next/font/google";
 import { BrainCircuit, Sparkles, X, ChevronDown } from "lucide-react";
@@ -85,40 +85,159 @@ async function fetchEnhanced(
   }
 }
 
+// ─── Desktop side panel ───────────────────────────────────────────────────────
+
+function EnhancedPanel({
+  thought,
+  enhanced,
+  loading,
+  error,
+  onClose,
+}: {
+  thought: Thought;
+  enhanced: string;
+  loading: boolean;
+  error: boolean;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <>
+      {/* Backdrop — desktop only */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        className="fixed inset-0 z-40 hidden md:block bg-black/50"
+        onClick={onClose}
+      />
+
+      {/* Panel */}
+      <motion.div
+        initial={{ x: "100%", opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: "100%", opacity: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 32 }}
+        className="fixed right-0 top-0 bottom-0 z-50 w-[min(420px,92vw)] hidden md:flex flex-col overflow-hidden"
+        style={{
+          background: "rgba(8,8,8,0.98)",
+          backdropFilter: "blur(48px) saturate(180%)",
+          WebkitBackdropFilter: "blur(48px) saturate(180%)",
+          borderLeft: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "-32px 0 96px rgba(0,0,0,0.7)",
+        }}
+      >
+        {/* Top edge glow */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
+
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 px-7 pt-8 pb-5 border-b border-white/[0.06] shrink-0">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-white/[0.06]">
+                <Sparkles className="h-2.5 w-2.5 text-white/50" />
+              </div>
+              <p className="text-[0.58rem] font-semibold uppercase tracking-[0.25em] text-white/30">
+                Enhanced Thinking
+              </p>
+            </div>
+            <h3
+              className="text-[1.05rem] font-semibold text-white leading-snug"
+              style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
+            >
+              {thought.title}
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="btn-icon h-8 w-8 shrink-0 mt-0.5"
+            aria-label="Close panel"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* Original thought — italic callout */}
+        <div className="px-7 py-5 border-b border-white/[0.04] shrink-0">
+          <p
+            className="text-[0.82rem] text-white/35 leading-relaxed italic"
+            style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
+          >
+            &ldquo;{thought.raw}&rdquo;
+          </p>
+        </div>
+
+        {/* AI content — scrollable */}
+        <div className="flex-1 overflow-y-auto px-7 py-6 no-scrollbar">
+          {error ? (
+            <p className="text-sm text-white/35">
+              Couldn&apos;t reach the AI right now. Try again in a moment.
+            </p>
+          ) : (
+            <div
+              className="text-[0.88rem] leading-[1.95] text-white/65 space-y-4"
+              style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
+            >
+              {enhanced
+                ? enhanced.split("\n\n").map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))
+                : null}
+              {loading && (
+                <span className="inline-block h-[1.1em] w-[2px] animate-pulse bg-white/40 align-text-bottom" />
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer — date + tags */}
+        <div className="px-7 pb-7 pt-4 border-t border-white/[0.04] flex items-center gap-3 shrink-0">
+          <span className="font-mono text-[0.58rem] text-white/20 uppercase tracking-widest">
+            {thought.date}
+          </span>
+          {thought.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[0.58rem] rounded-full border border-white/[0.07] bg-white/[0.03] px-2 py-0.5 text-white/25 uppercase tracking-wide"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
 // ─── ThoughtCard ──────────────────────────────────────────────────────────────
 
-function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
-  const [enhanced, setEnhanced] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [error, setError] = useState(false);
+function ThoughtCard({
+  thought,
+  index,
+  isActive,
+  isLoading,
+  onToggle,
+  enhanced,
+  panelError,
+  isFeatured,
+}: {
+  thought: Thought;
+  index: number;
+  isActive: boolean;
+  isLoading: boolean;
+  onToggle: (t: Thought) => void;
+  enhanced: string;
+  panelError: boolean;
+  isFeatured?: boolean;
+}) {
   const [btnHover, setBtnHover] = useState(false);
-
-  // Ring is visible when button is hovered, AI is loading, or panel is open
-  const ringActive = btnHover || loading || open;
-
-  const handleEnhance = useCallback(async () => {
-    if (open) {
-      setOpen(false);
-      setEnhanced("");
-      setError(false);
-      return;
-    }
-    setOpen(true);
-    setEnhanced("");
-    setError(false);
-    setLoading(true);
-
-    try {
-      await fetchEnhanced(thought.title, thought.raw, (chunk) => {
-        setEnhanced((prev) => prev + chunk);
-      });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, [open, thought]);
+  const ringActive = btnHover || isLoading || isActive;
 
   return (
     <motion.article
@@ -137,10 +256,9 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
         {thought.number}
       </span>
 
-      {/* ── Ring + Card wrapper ── */}
       <div className="relative">
 
-        {/* ── Animated AI ring (monochrome) ── */}
+        {/* Animated AI ring */}
         <div
           className="pointer-events-none absolute -inset-[2px] rounded-[1.1rem] overflow-hidden transition-opacity duration-500"
           style={{ opacity: ringActive ? 1 : 0 }}
@@ -153,17 +271,17 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
               height: "250%",
               top: "50%",
               left: "50%",
-              background: loading
+              background: isLoading
                 ? "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.6) 8%, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.6) 32%, transparent 48%)"
-                : open
+                : isActive
                 ? "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.4) 12%, rgba(255,255,255,0.7) 24%, rgba(255,255,255,0.4) 36%, transparent 48%)"
                 : "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.3) 10%, rgba(255,255,255,0.5) 18%, transparent 28%)",
-              animationDuration: loading ? "1.4s" : "3.5s",
+              animationDuration: isLoading ? "1.4s" : "3.5s",
             }}
           />
         </div>
 
-        {/* Soft outer glow */}
+        {/* Outer glow */}
         <div
           className="pointer-events-none absolute -inset-[6px] rounded-[1.3rem] blur-[12px] transition-all duration-500"
           style={{
@@ -173,15 +291,15 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
           aria-hidden="true"
         />
 
-        {/* ── Card ── */}
+        {/* Card */}
         <div
-          className="relative overflow-hidden rounded-2xl p-6 md:p-7 transition-colors duration-500"
+          className="relative overflow-hidden rounded-2xl transition-colors duration-500"
           style={{
             background: ringActive ? "#111111" : "#0d0d0d",
             border: "1px solid rgba(255,255,255,0.04)",
+            padding: isFeatured ? "1.75rem" : "1.5rem",
           }}
         >
-          {/* Inner radial glow when ring active */}
           <div
             className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-500"
             style={{
@@ -190,200 +308,275 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
             }}
           />
 
-          <div className="relative">
+          <div className={isFeatured ? "relative md:grid md:grid-cols-[1fr_auto] md:gap-8" : "relative"}>
 
-            {/* Meta row */}
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[0.6rem] font-medium tracking-[0.25em] text-white/30 uppercase">
-                {thought.date}
-              </span>
-              <span className="text-white/10">·</span>
-              {thought.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-white/[0.07] bg-white/[0.04] px-2 py-0.5 text-[0.6rem] font-medium tracking-wide text-white/35 uppercase"
-                >
-                  {tag}
+            {/* Left content */}
+            <div>
+              {/* Meta row */}
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="font-mono text-[0.6rem] font-medium tracking-[0.25em] text-white/30 uppercase">
+                  {thought.date}
                 </span>
-              ))}
-            </div>
-
-            {/* Title */}
-            <h3
-              className="mb-3 text-lg font-semibold leading-snug text-white/90 transition-colors duration-300 group-hover:text-white md:text-xl"
-              style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
-            >
-              {thought.title}
-            </h3>
-
-            {/* Raw thought */}
-            <p
-              className="text-sm leading-relaxed text-white/50 transition-colors duration-300 group-hover:text-white/65 md:text-[0.9rem]"
-              style={{ fontFamily: "var(--font-lora), Georgia, serif", fontStyle: "italic" }}
-            >
-              &ldquo;{thought.raw}&rdquo;
-            </p>
-
-            {/* ── Enhance button ── */}
-            <div className="mt-5 flex items-center justify-between">
-
-              <div className="relative">
-
-                {/* Pulse rings on hover */}
-                <AnimatePresence>
-                  {btnHover && !open && !loading && (
-                    <>
-                      <motion.span
-                        key="pulse-1"
-                        initial={{ scale: 1, opacity: 0.5 }}
-                        animate={{ scale: 2.2, opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.1, ease: "easeOut", repeat: Infinity }}
-                        className="pointer-events-none absolute inset-0 rounded-full border border-white/25"
-                      />
-                      <motion.span
-                        key="pulse-2"
-                        initial={{ scale: 1, opacity: 0.35 }}
-                        animate={{ scale: 2.8, opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 1.1, ease: "easeOut", delay: 0.3, repeat: Infinity }}
-                        className="pointer-events-none absolute inset-0 rounded-full border border-white/15"
-                      />
-                    </>
-                  )}
-                </AnimatePresence>
-
-                <button
-                  onClick={handleEnhance}
-                  onMouseEnter={() => setBtnHover(true)}
-                  onMouseLeave={() => setBtnHover(false)}
-                  disabled={loading}
-                  className="relative flex items-center gap-2 overflow-hidden rounded-full px-4 py-2 text-[0.7rem] font-semibold tracking-wide uppercase transition-all duration-300"
-                  style={{
-                    border: open || btnHover || loading
-                      ? "1px solid rgba(255,255,255,0.20)"
-                      : "1px solid rgba(255,255,255,0.08)",
-                    color: open || btnHover || loading
-                      ? "rgba(255,255,255,0.85)"
-                      : "rgba(255,255,255,0.35)",
-                    background: open || loading
-                      ? "rgba(255,255,255,0.06)"
-                      : btnHover
-                      ? "rgba(255,255,255,0.04)"
-                      : "transparent",
-                    boxShadow: btnHover || open
-                      ? "0 0 18px rgba(255,255,255,0.10), 0 0 6px rgba(255,255,255,0.06), inset 0 0 12px rgba(255,255,255,0.04)"
-                      : "none",
-                    transform: btnHover && !loading ? "translateY(-1.5px)" : "none",
-                  }}
-                >
-                  {/* Shimmer sweep */}
-                  {(btnHover || loading) && (
-                    <span
-                      className="pointer-events-none absolute inset-0 rounded-full btn-shimmer"
-                      style={{
-                        background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)",
-                      }}
-                    />
-                  )}
-
-                  {loading ? (
-                    <>
-                      <span className="thinking-dots inline-flex gap-[3px]">
-                        <span className="dot" />
-                        <span className="dot" />
-                        <span className="dot" />
-                      </span>
-                      <span>Thinking...</span>
-                    </>
-                  ) : open ? (
-                    <>
-                      <X className="h-3 w-3" />
-                      <span>Collapse</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles
-                        className="h-3 w-3 transition-all duration-300"
-                        style={{
-                          transform: btnHover ? "rotate(20deg) scale(1.3)" : "rotate(0deg) scale(1)",
-                          filter: btnHover
-                            ? "drop-shadow(0 0 5px rgba(255,255,255,0.6))"
-                            : "none",
-                        }}
-                      />
-                      <span>Enhance Thinking</span>
-                    </>
-                  )}
-                </button>
+                <span className="text-white/10">·</span>
+                {thought.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/[0.07] bg-white/[0.04] px-2 py-0.5 text-[0.6rem] font-medium tracking-wide text-white/35 uppercase"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
 
-              {open && !loading && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <ChevronDown className="h-3.5 w-3.5 text-white/30" />
-                </motion.div>
+              {/* Title */}
+              <h3
+                className="mb-3 font-semibold leading-snug text-white/90 transition-colors duration-300 group-hover:text-white"
+                style={{
+                  fontFamily: "var(--font-lora), Georgia, serif",
+                  fontSize: isFeatured ? "clamp(1.25rem, 2.2vw, 1.6rem)" : "1.125rem",
+                }}
+              >
+                {thought.title}
+              </h3>
+
+              {/* Raw thought */}
+              <p
+                className="text-sm leading-relaxed text-white/50 transition-colors duration-300 group-hover:text-white/65 md:text-[0.9rem]"
+                style={{ fontFamily: "var(--font-lora), Georgia, serif", fontStyle: "italic" }}
+              >
+                &ldquo;{thought.raw}&rdquo;
+              </p>
+
+              {/* Enhance button — below text on mobile, stays here on featured */}
+              {!isFeatured && (
+                <EnhanceButton
+                  isActive={isActive}
+                  isLoading={isLoading}
+                  btnHover={btnHover}
+                  setBtnHover={setBtnHover}
+                  onToggle={() => onToggle(thought)}
+                />
               )}
             </div>
 
-            {/* ── Enhanced content panel ── */}
-            <AnimatePresence>
-              {open && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-hidden"
-                >
-                  <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 md:p-5">
-                    <div className="mb-3 flex items-center gap-2">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-white/[0.06]">
-                        <Sparkles className="h-2.5 w-2.5 text-white/50" />
-                      </div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-white/30">
-                        Enhanced Thinking
-                      </span>
-                    </div>
+            {/* Featured: button on right column */}
+            {isFeatured && (
+              <div className="hidden md:flex flex-col items-end justify-between mt-4 md:mt-0 shrink-0">
+                <div className="text-[3rem] font-black text-white/[0.03] font-mono leading-none select-none">
+                  {thought.number}
+                </div>
+                <EnhanceButton
+                  isActive={isActive}
+                  isLoading={isLoading}
+                  btnHover={btnHover}
+                  setBtnHover={setBtnHover}
+                  onToggle={() => onToggle(thought)}
+                />
+              </div>
+            )}
 
-                    {error ? (
-                      <p className="text-sm text-white/40">
-                        Couldn&apos;t reach the AI right now. Try again in a moment.
-                      </p>
-                    ) : (
-                      <div
-                        className="text-sm leading-relaxed text-white/65 md:text-[0.88rem]"
-                        style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
-                      >
-                        {enhanced}
-                        {loading && (
-                          <span className="ml-0.5 inline-block h-[1.1em] w-[2px] animate-pulse bg-white/50 align-text-bottom" />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
+            {/* Mobile enhance button on featured card */}
+            {isFeatured && (
+              <div className="md:hidden mt-5">
+                <EnhanceButton
+                  isActive={isActive}
+                  isLoading={isLoading}
+                  btnHover={btnHover}
+                  setBtnHover={setBtnHover}
+                  onToggle={() => onToggle(thought)}
+                />
+              </div>
+            )}
           </div>
+
+          {/* Inline enhanced content — mobile only (md:hidden), desktop uses panel */}
+          <AnimatePresence>
+            {isActive && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden md:hidden"
+              >
+                <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-white/[0.06]">
+                      <Sparkles className="h-2.5 w-2.5 text-white/50" />
+                    </div>
+                    <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-white/30">
+                      Enhanced Thinking
+                    </span>
+                  </div>
+                  {panelError ? (
+                    <p className="text-sm text-white/40">Couldn&apos;t reach the AI. Try again.</p>
+                  ) : (
+                    <div
+                      className="text-sm leading-relaxed text-white/65"
+                      style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
+                    >
+                      {enhanced}
+                      {isLoading && (
+                        <span className="ml-0.5 inline-block h-[1.1em] w-[2px] animate-pulse bg-white/50 align-text-bottom" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
         </div>
       </div>
     </motion.article>
   );
 }
 
+// ─── Enhance button ────────────────────────────────────────────────────────────
+
+function EnhanceButton({
+  isActive, isLoading, btnHover, setBtnHover, onToggle,
+}: {
+  isActive: boolean;
+  isLoading: boolean;
+  btnHover: boolean;
+  setBtnHover: (v: boolean) => void;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="relative mt-5 flex items-center gap-3">
+      {/* Pulse rings on hover */}
+      <AnimatePresence>
+        {btnHover && !isActive && !isLoading && (
+          <>
+            <motion.span
+              key="pulse-1"
+              initial={{ scale: 1, opacity: 0.5 }}
+              animate={{ scale: 2.2, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.1, ease: "easeOut", repeat: Infinity }}
+              className="pointer-events-none absolute inset-0 rounded-full border border-white/25"
+            />
+            <motion.span
+              key="pulse-2"
+              initial={{ scale: 1, opacity: 0.35 }}
+              animate={{ scale: 2.8, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.1, ease: "easeOut", delay: 0.3, repeat: Infinity }}
+              className="pointer-events-none absolute inset-0 rounded-full border border-white/15"
+            />
+          </>
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={onToggle}
+        onMouseEnter={() => setBtnHover(true)}
+        onMouseLeave={() => setBtnHover(false)}
+        disabled={isLoading}
+        className="relative flex items-center gap-2 overflow-hidden rounded-full px-4 py-2 text-[0.7rem] font-semibold tracking-wide uppercase transition-all duration-300"
+        style={{
+          border: isActive || btnHover || isLoading
+            ? "1px solid rgba(255,255,255,0.20)"
+            : "1px solid rgba(255,255,255,0.08)",
+          color: isActive || btnHover || isLoading
+            ? "rgba(255,255,255,0.85)"
+            : "rgba(255,255,255,0.35)",
+          background: isActive || isLoading
+            ? "rgba(255,255,255,0.06)"
+            : btnHover
+            ? "rgba(255,255,255,0.04)"
+            : "transparent",
+          boxShadow: btnHover || isActive
+            ? "0 0 18px rgba(255,255,255,0.10), inset 0 0 12px rgba(255,255,255,0.04)"
+            : "none",
+          transform: btnHover && !isLoading ? "translateY(-1.5px)" : "none",
+        }}
+      >
+        {(btnHover || isLoading) && (
+          <span
+            className="pointer-events-none absolute inset-0 rounded-full btn-shimmer"
+            style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)" }}
+          />
+        )}
+        {isLoading ? (
+          <>
+            <span className="thinking-dots inline-flex gap-[3px]">
+              <span className="dot" /><span className="dot" /><span className="dot" />
+            </span>
+            <span>Thinking...</span>
+          </>
+        ) : isActive ? (
+          <>
+            <X className="h-3 w-3" /><span>Collapse</span>
+          </>
+        ) : (
+          <>
+            <Sparkles
+              className="h-3 w-3 transition-all duration-300"
+              style={{
+                transform: btnHover ? "rotate(20deg) scale(1.3)" : "rotate(0deg) scale(1)",
+                filter: btnHover ? "drop-shadow(0 0 5px rgba(255,255,255,0.6))" : "none",
+              }}
+            />
+            <span>Enhance Thinking</span>
+          </>
+        )}
+      </button>
+
+      {isActive && !isLoading && (
+        <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+          <ChevronDown className="h-3.5 w-3.5 text-white/30" />
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 // ─── BlogSection ──────────────────────────────────────────────────────────────
 
 export function BlogSection() {
-  // Cursor-reveal — direct DOM updates, zero re-renders
-  const sectionRef      = useRef<HTMLElement>(null);
-  const lineRevealRef   = useRef<HTMLDivElement>(null);
-  const lineSoftRef     = useRef<HTMLDivElement>(null);
-  const spotlightRef    = useRef<HTMLDivElement>(null);
+  // Lifted enhance state — one active thought at a time
+  const [activeId,      setActiveId]      = useState<string | null>(null);
+  const [enhanced,      setEnhanced]      = useState("");
+  const [panelLoading,  setPanelLoading]  = useState(false);
+  const [panelError,    setPanelError]    = useState(false);
+
+  const activeThought = thoughts.find((t) => t.id === activeId) ?? null;
+
+  const handleToggle = useCallback(async (thought: Thought) => {
+    if (activeId === thought.id) {
+      setActiveId(null);
+      setEnhanced("");
+      setPanelError(false);
+      return;
+    }
+    setActiveId(thought.id);
+    setEnhanced("");
+    setPanelError(false);
+    setPanelLoading(true);
+    try {
+      await fetchEnhanced(thought.title, thought.raw, (chunk) => {
+        setEnhanced((prev) => prev + chunk);
+      });
+    } catch {
+      setPanelError(true);
+    } finally {
+      setPanelLoading(false);
+    }
+  }, [activeId]);
+
+  const handleClose = useCallback(() => {
+    setActiveId(null);
+    setEnhanced("");
+    setPanelError(false);
+  }, []);
+
+  // Cursor-reveal refs
+  const sectionRef    = useRef<HTMLElement>(null);
+  const lineRevealRef = useRef<HTMLDivElement>(null);
+  const lineSoftRef   = useRef<HTMLDivElement>(null);
+  const spotlightRef  = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const el = sectionRef.current;
@@ -391,7 +584,6 @@ export function BlogSection() {
     const { left, top } = el.getBoundingClientRect();
     const x = e.clientX - left;
     const y = e.clientY - top;
-
     if (lineRevealRef.current)
       lineRevealRef.current.style.maskImage =
         `radial-gradient(ellipse 280px 160px at ${x}px ${y}px, black 0%, transparent 100%)`;
@@ -411,134 +603,117 @@ export function BlogSection() {
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="blog"
-      className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {/* Base ruled lines — always dim */}
-        <svg className="absolute inset-0 h-full w-full opacity-[0.025]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="ruled-base" x="0" y="0" width="100%" height="36" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="white" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#ruled-base)" />
-        </svg>
-
-        {/* Cursor-revealed bright lines — inner zone (wide ellipse, horizontal emphasis) */}
-        <div
-          ref={lineRevealRef}
-          className="absolute inset-0"
-          style={{
+    <>
+      <section
+        ref={sectionRef}
+        id="blog"
+        className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <svg className="absolute inset-0 h-full w-full opacity-[0.025]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="ruled-base" x="0" y="0" width="100%" height="36" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="white" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#ruled-base)" />
+          </svg>
+          <div ref={lineRevealRef} className="absolute inset-0" style={{
             backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255,255,255,0.55) 35px, rgba(255,255,255,0.55) 36px)",
             maskImage: "radial-gradient(ellipse 280px 160px at -999px -999px, black 0%, transparent 100%)",
-          }}
-        />
-
-        {/* Cursor-revealed soft lines — outer zone */}
-        <div
-          ref={lineSoftRef}
-          className="absolute inset-0"
-          style={{
+          }} />
+          <div ref={lineSoftRef} className="absolute inset-0" style={{
             backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255,255,255,0.12) 35px, rgba(255,255,255,0.12) 36px)",
             maskImage: "radial-gradient(ellipse 520px 320px at -999px -999px, black 10%, transparent 100%)",
-          }}
-        />
+          }} />
+          <div ref={spotlightRef} className="absolute inset-0" />
+          <div className="absolute -top-32 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/[0.02] blur-[120px]" />
+          <div className="absolute bottom-0 right-0 h-[300px] w-[400px] rounded-full bg-white/[0.015] blur-[100px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_40%,#080808_100%)]" />
+        </div>
 
-        {/* Smooth spotlight */}
-        <div ref={spotlightRef} className="absolute inset-0" />
+        <SectionReveal className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
 
-        <div className="absolute -top-32 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/[0.02] blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[300px] w-[400px] rounded-full bg-white/[0.015] blur-[100px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_40%,#080808_100%)]" />
-      </div>
+          {/* Header */}
+          <div className="mb-16 md:mb-20">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-5 flex items-center gap-3">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
+                <BrainCircuit className="h-3.5 w-3.5 text-white/40" />
+              </div>
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/40">Raw Thoughts</span>
+            </motion.div>
 
-      <SectionReveal className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.08 }}
+              className="leading-[0.92] tracking-tighter"
+              style={{ fontSize: "clamp(2.8rem, 7vw, 5rem)", fontFamily: "var(--font-lora), Georgia, serif" }}
+            >
+              <span className="text-white">Things I&apos;m</span><br />
+              <span className="shimmer-text">working through.</span>
+            </motion.h2>
 
-        {/* Header */}
-        <div className="mb-16 md:mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-5 flex items-center gap-3"
-          >
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
-              <BrainCircuit className="h-3.5 w-3.5 text-white/40" />
-            </div>
-            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/40">
-              Raw Thoughts
-            </span>
-          </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.18 }}
+              className="mt-5 max-w-xl text-sm text-white/30 md:text-base leading-relaxed"
+            >
+              Unpolished ideas, half-baked opinions, and notes to my future self. Hit{" "}
+              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[0.65rem] font-semibold text-white/40 uppercase tracking-wide">
+                <Sparkles className="h-2.5 w-2.5" />Enhance
+              </span>{" "}
+              to let the AI expand any thought.
+            </motion.p>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.08 }}
-            className="leading-[0.92] tracking-tighter"
-            style={{
-              fontSize: "clamp(2.8rem, 7vw, 5rem)",
-              fontFamily: "var(--font-lora), Georgia, serif",
-            }}
-          >
-            <span className="text-white">Things I&apos;m</span>
-            <br />
-            <span className="shimmer-text">working through.</span>
-          </motion.h2>
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }} whileInView={{ scaleX: 1, opacity: 1 }} viewport={{ once: true }}
+              transition={{ delay: 0.25, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-8 h-px origin-left"
+              style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 50%, transparent 100%)" }}
+            />
+          </div>
+
+          {/* Grid — first card is featured (full width on md+) */}
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+            {thoughts.map((thought, i) => (
+              <div key={thought.id} className={i === 0 ? "md:col-span-2" : ""}>
+                <ThoughtCard
+                  thought={thought}
+                  index={i}
+                  isActive={activeId === thought.id}
+                  isLoading={activeId === thought.id && panelLoading}
+                  onToggle={handleToggle}
+                  enhanced={activeId === thought.id ? enhanced : ""}
+                  panelError={activeId === thought.id ? panelError : false}
+                  isFeatured={i === 0}
+                />
+              </div>
+            ))}
+          </div>
 
           <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.18 }}
-            className="mt-5 max-w-xl text-sm text-white/30 md:text-base leading-relaxed"
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.4 }}
+            className="mt-12 text-center text-[0.7rem] text-white/20"
           >
-            Unpolished ideas, half-baked opinions, and notes to my future self. Hit{" "}
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[0.65rem] font-semibold text-white/40 uppercase tracking-wide">
-              <Sparkles className="h-2.5 w-2.5" />
-              Enhance
-            </span>{" "}
-            to let the AI expand any thought.
+            More thoughts shipping soon. These are drafts — rough by design.
           </motion.p>
 
-          <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            whileInView={{ scaleX: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.25, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8 h-px origin-left"
-            style={{
-              background: "linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 50%, transparent 100%)",
-            }}
+        </SectionReveal>
+      </section>
+
+      {/* Desktop side panel — rendered outside section so it can cover full viewport height */}
+      <AnimatePresence>
+        {activeId && activeThought && (
+          <EnhancedPanel
+            thought={activeThought}
+            enhanced={enhanced}
+            loading={panelLoading}
+            error={panelError}
+            onClose={handleClose}
           />
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-          {thoughts.map((thought, i) => (
-            <ThoughtCard key={thought.id} thought={thought} index={i} />
-          ))}
-        </div>
-
-        {/* Footer */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-12 text-center text-[0.7rem] text-white/20"
-        >
-          More thoughts shipping soon. These are drafts — rough by design.
-        </motion.p>
-
-      </SectionReveal>
-    </section>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

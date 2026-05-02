@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
@@ -9,12 +9,11 @@ import { LiquidButton } from "@/components/ui/liquid-glass-button";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function ContactSection() {
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [isSent, setIsSent] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Pixel hover refs — direct DOM update, zero re-renders
-  const sectionRef = useRef<HTMLElement>(null);
+  const sectionRef   = useRef<HTMLElement>(null);
   const pixelGlowRef = useRef<HTMLDivElement>(null);
   const pixelCyanRef = useRef<HTMLDivElement>(null);
 
@@ -24,26 +23,35 @@ export function ContactSection() {
     const rect = el.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    if (pixelGlowRef.current) {
+    if (pixelGlowRef.current)
       pixelGlowRef.current.style.maskImage = `radial-gradient(ellipse 260px 260px at ${x}px ${y}px, black 0%, transparent 100%)`;
-    }
-    if (pixelCyanRef.current) {
+    if (pixelCyanRef.current)
       pixelCyanRef.current.style.maskImage = `radial-gradient(ellipse 420px 420px at ${x}px ${y}px, black 30%, transparent 100%)`;
-    }
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    const offscreen = "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)";
-    if (pixelGlowRef.current) pixelGlowRef.current.style.maskImage = offscreen;
-    if (pixelCyanRef.current) pixelCyanRef.current.style.maskImage = offscreen;
+    const off = "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)";
+    if (pixelGlowRef.current) pixelGlowRef.current.style.maskImage = off;
+    if (pixelCyanRef.current) pixelCyanRef.current.style.maskImage = off;
   }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText("bibekg2029@gmail.com");
     setCopied(true);
-    setFeedback("Copied to clipboard.");
-    setTimeout(() => { setCopied(false); setFeedback(null); }, 2000);
+    setTimeout(() => setCopied(false), 2200);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd      = new FormData(form);
+    const name    = (fd.get("name")    as string)?.trim() || "";
+    const subject = (fd.get("subject") as string)?.trim() || "New message";
+    const message = (fd.get("message") as string)?.trim() || "";
+    window.location.href = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
+    setFormSubmitted(true);
+    form.reset();
+    setTimeout(() => setFormSubmitted(false), 5000);
   };
 
   return (
@@ -56,8 +64,6 @@ export function ContactSection() {
     >
       {/* ── Background layers ── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {/* Always-dim base dot grid */}
         <div
           className="absolute inset-0"
           style={{
@@ -65,8 +71,6 @@ export function ContactSection() {
             backgroundSize: "28px 28px",
           }}
         />
-
-        {/* Cursor-revealed bright pixel glow — inner ring */}
         <div
           ref={pixelGlowRef}
           className="absolute inset-0"
@@ -76,8 +80,6 @@ export function ContactSection() {
             maskImage: "radial-gradient(ellipse 260px 260px at -999px -999px, black 0%, transparent 100%)",
           }}
         />
-
-        {/* Cursor-revealed outer soft glow */}
         <div
           ref={pixelCyanRef}
           className="absolute inset-0"
@@ -87,8 +89,6 @@ export function ContactSection() {
             maskImage: "radial-gradient(ellipse 420px 420px at -999px -999px, black 30%, transparent 100%)",
           }}
         />
-
-        {/* Sonar rings */}
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
@@ -102,11 +102,7 @@ export function ContactSection() {
             }}
           />
         ))}
-
-        {/* Ambient glow */}
         <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-white/[0.02] blur-[90px] animate-aurora-3" />
-
-        {/* Edge vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_75%_at_50%_50%,transparent_50%,#080808_100%)]" />
       </div>
 
@@ -146,29 +142,67 @@ export function ContactSection() {
                   Email
                 </p>
                 <div className="flex items-center gap-3">
-                  <span className="text-base font-medium text-white/60 hover:text-white transition-colors select-all">
-                    bibekg2029@gmail.com
-                  </span>
+                  {/* Inline text swap on copy */}
+                  <div className="relative overflow-hidden">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      {copied ? (
+                        <motion.span
+                          key="copied"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.22, ease }}
+                          className="text-base font-medium text-white block"
+                        >
+                          Copied!
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="email"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.22, ease }}
+                          className="text-base font-medium text-white/60 hover:text-white transition-colors select-all block"
+                        >
+                          bibekg2029@gmail.com
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </div>
                   <button
                     onClick={handleCopy}
                     className={cn(
-                      "btn-icon h-7 w-7 transition-all duration-300",
+                      "btn-icon h-7 w-7 transition-all duration-300 shrink-0",
                       copied && "!border-white/20 !bg-white/[0.08] !text-white !shadow-[0_0_12px_rgba(255,255,255,0.12)]"
                     )}
                     aria-label="Copy email"
                   >
-                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                    <AnimatePresence mode="wait" initial={false}>
+                      {copied ? (
+                        <motion.span
+                          key="check"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1,   opacity: 1 }}
+                          exit={{   scale: 0.5, opacity: 0 }}
+                          transition={{ duration: 0.18 }}
+                        >
+                          <Check className="h-3 w-3" />
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="copy"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1,   opacity: 1 }}
+                          exit={{   scale: 0.5, opacity: 0 }}
+                          transition={{ duration: 0.18 }}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                   </button>
                 </div>
-                {feedback && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-1.5 text-xs text-white/40"
-                  >
-                    {feedback}
-                  </motion.p>
-                )}
               </div>
 
               {/* Location */}
@@ -199,85 +233,164 @@ export function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Right: form */}
-          <motion.form
+          {/* Right: form / success */}
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.15, ease }}
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = e.currentTarget;
-              const formData = new FormData(form);
-              const name    = (formData.get("name")    as string)?.trim() || "";
-              const subject = (formData.get("subject") as string)?.trim() || "New message";
-              const message = (formData.get("message") as string)?.trim() || "";
-              const mailto  = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
-              window.location.href = mailto;
-              setIsSent(true);
-              setTimeout(() => setIsSent(false), 2500);
-              form.reset();
-            }}
-            className="relative flex flex-col gap-8"
+            className="relative"
           >
             {/* Soft blur behind inputs */}
             <div className="pointer-events-none absolute -inset-6 -z-10 rounded-3xl bg-black/15 backdrop-blur-[3px]" />
-            <div className="grid gap-8 sm:grid-cols-2">
-              <MinimalField label="Name" htmlFor="f-name">
-                <input
-                  id="f-name"
-                  name="name"
-                  type="text"
-                  placeholder="Your name"
-                  className={minimalInput}
-                  required
-                />
-              </MinimalField>
-              <MinimalField label="Email" htmlFor="f-email">
-                <input
-                  id="f-email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  className={minimalInput}
-                  required
-                />
-              </MinimalField>
-            </div>
 
-            <MinimalField label="Subject" htmlFor="f-subject">
-              <input
-                id="f-subject"
-                name="subject"
-                type="text"
-                placeholder="What are we working on?"
-                className={minimalInput}
-                required
-              />
-            </MinimalField>
+            <AnimatePresence mode="wait">
+              {formSubmitted ? (
+                /* ── Success state ── */
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.96, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, scale: 1,    filter: "blur(0px)" }}
+                  exit={{   opacity: 0, scale: 0.96, filter: "blur(6px)" }}
+                  transition={{ duration: 0.5, ease }}
+                  className="flex flex-col items-center justify-center gap-8 py-16 text-center"
+                >
+                  {/* Animated checkmark */}
+                  <div className="relative flex h-20 w-20 items-center justify-center">
+                    {/* Outer ring pulse */}
+                    <motion.div
+                      initial={{ scale: 0.6, opacity: 0 }}
+                      animate={{ scale: [0.6, 1.3, 1], opacity: [0, 0.2, 0] }}
+                      transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
+                      className="absolute inset-0 rounded-full border border-white/30"
+                    />
+                    {/* Circle */}
+                    <svg
+                      width="80" height="80"
+                      viewBox="0 0 80 80"
+                      fill="none"
+                      className="absolute inset-0"
+                    >
+                      <motion.circle
+                        cx="40" cy="40" r="35"
+                        stroke="rgba(255,255,255,0.15)"
+                        strokeWidth="1.5"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
+                      />
+                      <motion.path
+                        d="M24 40 L36 52 L56 30"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="none"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    </svg>
+                  </div>
 
-            <MinimalField label="Message" htmlFor="f-message">
-              <textarea
-                id="f-message"
-                name="message"
-                rows={5}
-                placeholder="Tell me about your idea, timeline, and how I can help."
-                className={cn(minimalInput, "resize-none min-h-[120px]")}
-                required
-              />
-            </MinimalField>
+                  <div className="space-y-3">
+                    <motion.h3
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.65, ease }}
+                      className="text-2xl font-bold tracking-tighter text-white"
+                    >
+                      Message queued.
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.78, ease }}
+                      className="text-sm text-white/35 max-w-[260px] leading-relaxed"
+                    >
+                      Your mail client should be opening now. I&apos;ll get back to you soon.
+                    </motion.p>
+                  </div>
 
-            <div className="flex items-center gap-4 pt-2">
-              <LiquidButton
-                type="submit"
-                size="lg"
-                disabled={isSent}
-                className="rounded-full font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSent ? "Opening Mail App..." : "Send Message"}
-              </LiquidButton>
-            </div>
-          </motion.form>
+                  {/* Progress bar draining down */}
+                  <motion.div className="w-32 h-px bg-white/[0.08] rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-white/40 rounded-full origin-left"
+                      initial={{ scaleX: 1 }}
+                      animate={{ scaleX: 0 }}
+                      transition={{ duration: 5, ease: "linear", delay: 0.2 }}
+                    />
+                  </motion.div>
+                </motion.div>
+              ) : (
+                /* ── Form ── */
+                <motion.form
+                  key="form"
+                  initial={{ opacity: 0, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  exit={{   opacity: 0, filter: "blur(6px)" }}
+                  transition={{ duration: 0.45, ease }}
+                  onSubmit={handleSubmit}
+                  className="flex flex-col gap-8"
+                >
+                  <div className="grid gap-8 sm:grid-cols-2">
+                    <MinimalField label="Name" htmlFor="f-name">
+                      <input
+                        id="f-name"
+                        name="name"
+                        type="text"
+                        placeholder="Your name"
+                        className={minimalInput}
+                        required
+                      />
+                    </MinimalField>
+                    <MinimalField label="Email" htmlFor="f-email">
+                      <input
+                        id="f-email"
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        className={minimalInput}
+                        required
+                      />
+                    </MinimalField>
+                  </div>
+
+                  <MinimalField label="Subject" htmlFor="f-subject">
+                    <input
+                      id="f-subject"
+                      name="subject"
+                      type="text"
+                      placeholder="What are we working on?"
+                      className={minimalInput}
+                      required
+                    />
+                  </MinimalField>
+
+                  <MinimalField label="Message" htmlFor="f-message">
+                    <textarea
+                      id="f-message"
+                      name="message"
+                      rows={5}
+                      placeholder="Tell me about your idea, timeline, and how I can help."
+                      className={cn(minimalInput, "resize-none min-h-[120px]")}
+                      required
+                    />
+                  </MinimalField>
+
+                  <div className="flex items-center gap-4 pt-2">
+                    <LiquidButton
+                      type="submit"
+                      size="lg"
+                      className="rounded-full font-semibold"
+                    >
+                      Send Message
+                    </LiquidButton>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
         </div>
       </div>
