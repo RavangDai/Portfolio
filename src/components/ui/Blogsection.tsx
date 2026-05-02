@@ -140,12 +140,7 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
       {/* ── Ring + Card wrapper ── */}
       <div className="relative">
 
-        {/* ── Animated AI ring ── */}
-        {/*
-          Technique: overflow-hidden wrapper at -inset-[2px] clips an oversized,
-          centered conic-gradient div that spins. The card on top covers everything
-          except the 2px edge, creating a rotating gradient border.
-        */}
+        {/* ── Animated AI ring (monochrome) ── */}
         <div
           className="pointer-events-none absolute -inset-[2px] rounded-[1.1rem] overflow-hidden transition-opacity duration-500"
           style={{ opacity: ringActive ? 1 : 0 }}
@@ -159,27 +154,21 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
               top: "50%",
               left: "50%",
               background: loading
-                // While AI is generating: full vivid rainbow arc, spins faster
-                ? "conic-gradient(from 0deg, transparent 0%, #10b981 8%, #22d3ee 18%, #818cf8 28%, #ec4899 36%, #f59e0b 44%, transparent 52%)"
-                // Panel open (done): emerald-cyan sweep
+                ? "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.6) 8%, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.6) 32%, transparent 48%)"
                 : open
-                ? "conic-gradient(from 0deg, transparent 0%, #10b981 12%, #22d3ee 24%, #818cf8 36%, transparent 48%)"
-                // Button hover only: softer emerald arc
-                : "conic-gradient(from 0deg, transparent 0%, rgba(16,185,129,0.8) 10%, rgba(34,211,238,0.6) 18%, transparent 28%)",
+                ? "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.4) 12%, rgba(255,255,255,0.7) 24%, rgba(255,255,255,0.4) 36%, transparent 48%)"
+                : "conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.3) 10%, rgba(255,255,255,0.5) 18%, transparent 28%)",
               animationDuration: loading ? "1.4s" : "3.5s",
             }}
           />
         </div>
 
-        {/* Soft outer glow that bleeds behind the ring — matches ring color */}
+        {/* Soft outer glow */}
         <div
           className="pointer-events-none absolute -inset-[6px] rounded-[1.3rem] blur-[12px] transition-all duration-500"
           style={{
-            background: loading
-              ? "conic-gradient(from 0deg, transparent 0%, rgba(16,185,129,0.25) 8%, rgba(34,211,238,0.2) 18%, rgba(129,140,248,0.2) 28%, transparent 52%)"
-              : "radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.08) 0%, transparent 70%)",
             opacity: ringActive ? 1 : 0,
-            animationDuration: loading ? "1.4s" : "3.5s",
           }}
           aria-hidden="true"
         />
@@ -188,17 +177,15 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
         <div
           className="relative overflow-hidden rounded-2xl p-6 md:p-7 transition-colors duration-500"
           style={{
-            // Solid background so it fully covers the ring layer underneath
-            background: ringActive ? "#061410" : "#040f0a",
+            background: ringActive ? "#111111" : "#0d0d0d",
             border: "1px solid rgba(255,255,255,0.04)",
           }}
         >
-          {/* Inner radial glow at bottom when ring active */}
+          {/* Inner radial glow when ring active */}
           <div
             className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-500"
             style={{
-              background:
-                "radial-gradient(ellipse 80% 50% at 50% 110%, rgba(16,185,129,0.07) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse 80% 50% at 50% 110%, rgba(255,255,255,0.04) 0%, transparent 70%)",
               opacity: ringActive ? 1 : 0,
             }}
           />
@@ -207,7 +194,7 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
 
             {/* Meta row */}
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[0.6rem] font-medium tracking-[0.25em] text-emerald-400/50 uppercase">
+              <span className="font-mono text-[0.6rem] font-medium tracking-[0.25em] text-white/30 uppercase">
                 {thought.date}
               </span>
               <span className="text-white/10">·</span>
@@ -240,10 +227,9 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
             {/* ── Enhance button ── */}
             <div className="mt-5 flex items-center justify-between">
 
-              {/* Button wrapper holds the pulse rings at the same layer */}
               <div className="relative">
 
-                {/* Pulse rings — only while hovering, idle state */}
+                {/* Pulse rings on hover */}
                 <AnimatePresence>
                   {btnHover && !open && !loading && (
                     <>
@@ -253,7 +239,7 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
                         animate={{ scale: 2.2, opacity: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1.1, ease: "easeOut", repeat: Infinity }}
-                        className="pointer-events-none absolute inset-0 rounded-full border border-emerald-400/40"
+                        className="pointer-events-none absolute inset-0 rounded-full border border-white/25"
                       />
                       <motion.span
                         key="pulse-2"
@@ -261,7 +247,7 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
                         animate={{ scale: 2.8, opacity: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1.1, ease: "easeOut", delay: 0.3, repeat: Infinity }}
-                        className="pointer-events-none absolute inset-0 rounded-full border border-cyan-400/25"
+                        className="pointer-events-none absolute inset-0 rounded-full border border-white/15"
                       />
                     </>
                   )}
@@ -275,29 +261,28 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
                   className="relative flex items-center gap-2 overflow-hidden rounded-full px-4 py-2 text-[0.7rem] font-semibold tracking-wide uppercase transition-all duration-300"
                   style={{
                     border: open || btnHover || loading
-                      ? "1px solid rgba(16,185,129,0.45)"
+                      ? "1px solid rgba(255,255,255,0.20)"
                       : "1px solid rgba(255,255,255,0.08)",
                     color: open || btnHover || loading
-                      ? "rgb(110,231,183)"
-                      : "rgba(255,255,255,0.4)",
+                      ? "rgba(255,255,255,0.85)"
+                      : "rgba(255,255,255,0.35)",
                     background: open || loading
-                      ? "rgba(16,185,129,0.1)"
+                      ? "rgba(255,255,255,0.06)"
                       : btnHover
-                      ? "rgba(16,185,129,0.07)"
+                      ? "rgba(255,255,255,0.04)"
                       : "transparent",
                     boxShadow: btnHover || open
-                      ? "0 0 18px rgba(16,185,129,0.22), 0 0 6px rgba(16,185,129,0.12), inset 0 0 12px rgba(16,185,129,0.06)"
+                      ? "0 0 18px rgba(255,255,255,0.10), 0 0 6px rgba(255,255,255,0.06), inset 0 0 12px rgba(255,255,255,0.04)"
                       : "none",
                     transform: btnHover && !loading ? "translateY(-1.5px)" : "none",
                   }}
                 >
-                  {/* Shimmer sweep across button on hover */}
+                  {/* Shimmer sweep */}
                   {(btnHover || loading) && (
                     <span
                       className="pointer-events-none absolute inset-0 rounded-full btn-shimmer"
                       style={{
-                        background:
-                          "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.09) 50%, transparent 100%)",
+                        background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)",
                       }}
                     />
                   )}
@@ -323,7 +308,7 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
                         style={{
                           transform: btnHover ? "rotate(20deg) scale(1.3)" : "rotate(0deg) scale(1)",
                           filter: btnHover
-                            ? "drop-shadow(0 0 5px rgba(52,211,153,0.9))"
+                            ? "drop-shadow(0 0 5px rgba(255,255,255,0.6))"
                             : "none",
                         }}
                       />
@@ -339,7 +324,7 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25 }}
                 >
-                  <ChevronDown className="h-3.5 w-3.5 text-emerald-400/50" />
+                  <ChevronDown className="h-3.5 w-3.5 text-white/30" />
                 </motion.div>
               )}
             </div>
@@ -354,28 +339,28 @@ function ThoughtCard({ thought, index }: { thought: Thought; index: number }) {
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-5 rounded-xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4 md:p-5">
+                  <div className="mt-5 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 md:p-5">
                     <div className="mb-3 flex items-center gap-2">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/20">
-                        <Sparkles className="h-2.5 w-2.5 text-emerald-400" />
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/15 bg-white/[0.06]">
+                        <Sparkles className="h-2.5 w-2.5 text-white/50" />
                       </div>
-                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-emerald-400/70">
+                      <span className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-white/30">
                         Enhanced Thinking
                       </span>
                     </div>
 
                     {error ? (
-                      <p className="text-sm text-red-400/70">
+                      <p className="text-sm text-white/40">
                         Couldn&apos;t reach the AI right now. Try again in a moment.
                       </p>
                     ) : (
                       <div
-                        className="text-sm leading-relaxed text-white/70 md:text-[0.88rem]"
+                        className="text-sm leading-relaxed text-white/65 md:text-[0.88rem]"
                         style={{ fontFamily: "var(--font-lora), Georgia, serif" }}
                       >
                         {enhanced}
                         {loading && (
-                          <span className="ml-0.5 inline-block h-[1.1em] w-[2px] animate-pulse bg-emerald-400 align-text-bottom" />
+                          <span className="ml-0.5 inline-block h-[1.1em] w-[2px] animate-pulse bg-white/50 align-text-bottom" />
                         )}
                       </div>
                     )}
@@ -397,7 +382,7 @@ export function BlogSection() {
   return (
     <section
       id="blog"
-      className="relative w-full bg-[#030C08] py-20 md:py-28 overflow-hidden"
+      className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -407,15 +392,15 @@ export function BlogSection() {
         >
           <defs>
             <pattern id="ruled" x="0" y="0" width="100%" height="36" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="#10b981" strokeWidth="0.5" />
+              <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="rgba(255,255,255,0.5)" strokeWidth="0.5" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#ruled)" />
         </svg>
 
-        <div className="absolute -top-32 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-emerald-600/[0.05] blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[300px] w-[400px] rounded-full bg-cyan-600/[0.04] blur-[100px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_40%,#030C08_100%)]" />
+        <div className="absolute -top-32 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/[0.02] blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[300px] w-[400px] rounded-full bg-white/[0.015] blur-[100px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_40%,#080808_100%)]" />
       </div>
 
       <SectionReveal className="relative z-10 mx-auto w-full max-w-6xl px-4 md:px-6">
@@ -429,7 +414,7 @@ export function BlogSection() {
             className="mb-5 flex items-center gap-3"
           >
             <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03]">
-              <BrainCircuit className="h-3.5 w-3.5 text-emerald-400" />
+              <BrainCircuit className="h-3.5 w-3.5 text-white/40" />
             </div>
             <span className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/40">
               Raw Thoughts
@@ -449,9 +434,7 @@ export function BlogSection() {
           >
             <span className="text-white">Things I&apos;m</span>
             <br />
-            <span className="bg-gradient-to-r from-emerald-300 via-white to-cyan-300 bg-clip-text text-transparent">
-              working through.
-            </span>
+            <span className="shimmer-text">working through.</span>
           </motion.h2>
 
           <motion.p
@@ -459,10 +442,10 @@ export function BlogSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.18 }}
-            className="mt-5 max-w-xl text-sm text-slate-500 md:text-base leading-relaxed"
+            className="mt-5 max-w-xl text-sm text-white/30 md:text-base leading-relaxed"
           >
             Unpolished ideas, half-baked opinions, and notes to my future self. Hit{" "}
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-semibold text-emerald-400 uppercase tracking-wide">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[0.65rem] font-semibold text-white/40 uppercase tracking-wide">
               <Sparkles className="h-2.5 w-2.5" />
               Enhance
             </span>{" "}
@@ -476,8 +459,7 @@ export function BlogSection() {
             transition={{ delay: 0.25, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 h-px origin-left"
             style={{
-              background:
-                "linear-gradient(90deg, rgba(16,185,129,0.4) 0%, rgba(34,211,238,0.2) 50%, transparent 100%)",
+              background: "linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 50%, transparent 100%)",
             }}
           />
         </div>

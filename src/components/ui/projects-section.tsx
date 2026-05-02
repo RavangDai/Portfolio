@@ -196,7 +196,7 @@ function ScreenshotCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
             {/* Corner glow */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#FF1144]/10 via-transparent to-[#00CFFF]/10 opacity-0 transition-opacity duration-500 group-hover/img:opacity-100" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-white/[0.03] opacity-0 transition-opacity duration-500 group-hover/img:opacity-100" />
 
             {/* Bottom label */}
             <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -211,7 +211,7 @@ function ScreenshotCard({
                 aria-label={`Play ${project.name} demo`}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-all duration-300 hover:bg-[#FF1144]/80 hover:border-[#FF1144]/60 hover:scale-110 active:scale-95">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-110 active:scale-95">
                   <Play className="h-4 w-4 fill-current ml-0.5" />
                 </span>
               </button>
@@ -250,7 +250,7 @@ function ProjectCard({
       className="w-full max-w-[400px]"
     >
       {/* Index */}
-      <span className="block font-mono text-[0.6rem] font-bold tracking-[0.25em] text-[#FF1144]/40 mb-3 uppercase">
+      <span className="block font-mono text-[0.6rem] font-bold tracking-[0.25em] text-white/20 mb-3 uppercase">
         {String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
       </span>
 
@@ -265,7 +265,7 @@ function ProjectCard({
         {project.video && (
           <button
             onClick={(e) => { e.stopPropagation(); onPlay(project.name); }}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-[#FF1144]/30 text-[#FF1144]/60 hover:border-[#FF1144]/60 hover:text-[#FF1144] hover:bg-[#FF1144]/10 transition-all duration-200 flex-shrink-0"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-white/15 text-white/35 hover:border-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200 flex-shrink-0"
             aria-label={`Play ${project.name} demo`}
           >
             <Play className="h-2.5 w-2.5 fill-current ml-px" />
@@ -275,14 +275,14 @@ function ProjectCard({
 
       {/* Tag + status */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-[#FF1144]/50">
+        <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-white/30">
           {project.tag}
         </p>
         <span className={cn(
           "text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border",
           project.status === "Completed"
-            ? "text-[#FF1144] border-[#FF1144]/25 bg-[#FF1144]/8"
-            : "text-amber-400 border-amber-500/25 bg-amber-500/8"
+            ? "text-white/70 border-white/15 bg-white/[0.05]"
+            : "text-white/50 border-white/10 bg-white/[0.03]"
         )}>
           {project.status === "Completed" ? "Shipped" : "Building"}
         </span>
@@ -327,7 +327,7 @@ function ProjectCard({
             href={project.live}
             target="_blank"
             rel="noreferrer"
-            className="group/live flex items-center gap-1 text-[0.7rem] font-medium text-[#00CFFF]/70 hover:text-[#00CFFF] transition-colors duration-200"
+            className="group/live flex items-center gap-1 text-[0.7rem] font-medium text-white/50 hover:text-white transition-colors duration-200"
           >
             Live Demo
             <ArrowUpRight className="h-3 w-3 transition-transform duration-200 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
@@ -387,7 +387,7 @@ function ProjectRow({
           style={{
             width: 40,
             right: "50%",
-            background: "linear-gradient(to left, rgba(255,17,68,0.6), transparent)",
+            background: "linear-gradient(to left, rgba(255,255,255,0.25), transparent)",
             display: isLeft ? undefined : "none",
             translateY: "-50%",
           }}
@@ -398,11 +398,11 @@ function ProjectRow({
           animate={{
             scale: hovered ? 1.6 : 1,
             boxShadow: hovered
-              ? "0 0 0 5px rgba(119,0,255,0.2), 0 0 24px rgba(255,17,68,0.5)"
-              : "0 0 0 3px rgba(255,17,68,0.08)",
+              ? "0 0 0 5px rgba(255,255,255,0.08), 0 0 24px rgba(255,255,255,0.20)"
+              : "0 0 0 3px rgba(255,255,255,0.05)",
           }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="h-3 w-3 rounded-full bg-[#FF1144] border border-[#FF1144]/70 relative z-10"
+          className="h-3 w-3 rounded-full bg-white/70 border border-white/40 relative z-10"
         />
 
         {/* Branch line right */}
@@ -411,7 +411,7 @@ function ProjectRow({
           style={{
             width: 40,
             left: "50%",
-            background: "linear-gradient(to right, rgba(255,17,68,0.6), transparent)",
+            background: "linear-gradient(to right, rgba(255,255,255,0.25), transparent)",
             opacity: hovered ? 1 : 0.3,
             display: !isLeft ? undefined : "none",
           }}
@@ -453,7 +453,7 @@ function MobileProjectCard({
       className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden p-5"
     >
       {/* Hover wash */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FF1144]/[0.04] via-[#7700FF]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative space-y-4">
         {/* Image */}
@@ -469,7 +469,7 @@ function MobileProjectCard({
               onClick={() => onPlay(project.name)}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm hover:bg-[#FF1144]/80 hover:border-[#FF1144] transition-all duration-200">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm hover:bg-white/20 hover:border-white/40 transition-all duration-200">
                 <Play className="h-3.5 w-3.5 fill-white text-white ml-0.5" />
               </span>
             </button>
@@ -500,30 +500,30 @@ export function ProjectsSection() {
   }, [activeVideo, handleCloseVideo]);
 
   return (
-    <section id="projects" className="relative w-full bg-[#060916] py-20 md:py-28 overflow-hidden">
+    <section id="projects" className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden">
 
-      {/* PCB background */}
+      {/* Subtle grid background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <motion.svg
           className="absolute inset-0 w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
-          animate={{ opacity: [0.07, 0.12, 0.07] }}
+          animate={{ opacity: [0.04, 0.07, 0.04] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
           <defs>
             <pattern id="pcb" x="0" y="0" width="96" height="96" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="48" x2="96" y2="48" stroke="#00CFFF" strokeWidth="0.6" />
-              <line x1="48" y1="0" x2="48" y2="96" stroke="#00CFFF" strokeWidth="0.6" />
-              <circle cx="48" cy="48" r="2.5" fill="none" stroke="#7700FF" strokeWidth="0.8" />
-              <circle cx="28" cy="18" r="1.5" fill="#FF1144" />
-              <circle cx="68" cy="76" r="1.5" fill="#FF1144" />
+              <line x1="0" y1="48" x2="96" y2="48" stroke="rgba(255,255,255,0.5)" strokeWidth="0.5" />
+              <line x1="48" y1="0" x2="48" y2="96" stroke="rgba(255,255,255,0.5)" strokeWidth="0.5" />
+              <circle cx="48" cy="48" r="2.5" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.7" />
+              <circle cx="28" cy="18" r="1.5" fill="rgba(255,255,255,0.3)" />
+              <circle cx="68" cy="76" r="1.5" fill="rgba(255,255,255,0.3)" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#pcb)" />
         </motion.svg>
-        <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-[#00CFFF]/[0.06] blur-[100px] animate-aurora-2" />
-        <div className="absolute -bottom-20 -left-20 h-[350px] w-[350px] rounded-full bg-[#FF1144]/[0.05] blur-[90px] animate-aurora-3" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_50%,#060916_100%)]" />
+        <div className="absolute -top-20 -right-20 h-[400px] w-[400px] rounded-full bg-white/[0.02] blur-[100px] animate-aurora-2" />
+        <div className="absolute -bottom-20 -left-20 h-[350px] w-[350px] rounded-full bg-white/[0.015] blur-[90px] animate-aurora-3" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_50%,transparent_50%,#080808_100%)]" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
@@ -536,7 +536,7 @@ export function ProjectsSection() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="mb-16 md:mb-20"
         >
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#FF1144]/70 mb-5">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/35 mb-5">
             Selected Work
           </p>
           <h2
@@ -546,7 +546,7 @@ export function ProjectsSection() {
             <span className="shimmer-text">Built &amp;</span><br />
             <span className="text-white/20">Shipped.</span>
           </h2>
-          <p className="mt-5 text-sm text-slate-500 max-w-sm leading-relaxed">
+          <p className="mt-5 text-sm text-white/30 max-w-sm leading-relaxed">
             Hover any project to preview it. Click the play button to watch a demo.
           </p>
         </motion.div>
@@ -557,7 +557,7 @@ export function ProjectsSection() {
           {/* Vertical spine */}
           <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 flex flex-col items-center pointer-events-none">
             <div className="w-px flex-1" style={{
-              background: "linear-gradient(to bottom, transparent, rgba(119,0,255,0.25) 8%, rgba(255,17,68,0.15) 90%, transparent)",
+              background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.10) 8%, rgba(255,255,255,0.06) 90%, transparent)",
             }} />
           </div>
 
@@ -608,25 +608,25 @@ export function ProjectsSection() {
             >
               <div className="mb-4 flex items-center justify-between px-1">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF1144]/20 border border-[#FF1144]/30">
-                    <Play className="h-4 w-4 fill-[#FF1144] text-[#FF1144]" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.08] border border-white/15">
+                    <Play className="h-4 w-4 fill-white text-white" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-white">{activeProject.name}</h3>
-                    <p className="text-xs text-slate-400">{activeProject.tag}</p>
+                    <p className="text-xs text-white/40">{activeProject.tag}</p>
                   </div>
                 </div>
                 <button
                   onClick={handleCloseVideo}
-                  className="btn-icon h-10 w-10 !text-white/50 hover:!border-red-400/40 hover:!bg-red-500/10 hover:!text-red-300"
+                  className="btn-icon h-10 w-10 !text-white/50 hover:!border-white/30 hover:!bg-white/[0.08] hover:!text-white"
                   aria-label="Close video"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-[#FF1144]/5">
-                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-[#FF1144]/10 via-[#7700FF]/10 to-[#00CFFF]/10 blur-xl" />
+              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
+                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-white/[0.04] to-transparent blur-xl" />
                 <iframe
                   src={getYouTubeEmbedUrl(activeProject.video!) || activeProject.video}
                   title={`${activeProject.name} demo`}
@@ -636,9 +636,9 @@ export function ProjectsSection() {
                 />
               </div>
 
-              <p className="mt-3 text-center text-xs text-slate-500">
+              <p className="mt-3 text-center text-xs text-white/25">
                 Press{" "}
-                <kbd className="mx-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-white/5">
+                <kbd className="mx-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-white/40 border border-white/5">
                   Esc
                 </kbd>
                 or click outside to close

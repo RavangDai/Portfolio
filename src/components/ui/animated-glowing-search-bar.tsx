@@ -25,7 +25,10 @@ export default function GlowingChatInput({
       <div className="relative flex items-center justify-center w-full">
 
         {/* Input row */}
-        <div className="relative w-full">
+        <div className="chat-input-wrapper relative w-full overflow-hidden">
+          {/* Shimmer sweep on hover */}
+          <div className="input-shimmer pointer-events-none absolute top-0 left-0 h-full w-[60px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent skew-x-[-20deg]" />
+
           <input
             ref={inputRef}
             value={value}
@@ -33,7 +36,7 @@ export default function GlowingChatInput({
             disabled={disabled}
             placeholder={placeholder}
             type="text"
-            className="bg-[#010201] border-none w-full h-[50px] rounded-xl text-white pl-[46px] pr-[54px] text-[13px] focus:outline-none placeholder:text-white/20 disabled:opacity-50"
+            className="relative bg-[#010201] border-none w-full h-[50px] rounded-xl text-white pl-[46px] pr-[54px] text-[13px] focus:outline-none placeholder:text-white/20 disabled:opacity-50"
             style={{ letterSpacing: "-0.01em" }}
           />
 

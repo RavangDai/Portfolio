@@ -100,18 +100,18 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
       >
 
         {/* ════════ FRONT ════════ */}
-        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#070D1F] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_40px_-8px_rgba(255,17,68,0.2)]">
+        <div className="absolute inset-0 [backface-visibility:hidden] rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0d0d0d] p-7 flex flex-col justify-between shadow-[0_20px_60px_-12px_rgba(0,0,0,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_40px_-8px_rgba(255,255,255,0.08)]">
 
           {/* Gradient top accent */}
           <div
             className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(255,17,68,0.5) 30%, rgba(119,0,255,0.5) 50%, rgba(0,207,255,0.5) 70%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0.25) 70%, transparent)" }}
           />
 
           {/* Issuer + year */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BadgeCheck className="h-3.5 w-3.5 text-[#FF1144]/60" />
+              <BadgeCheck className="h-3.5 w-3.5 text-white/30" />
               <span className="text-[0.6rem] font-bold uppercase tracking-[0.2em] text-white/40">
                 {cert.issuer}
               </span>
@@ -124,7 +124,7 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
             <h3 className="text-lg font-bold tracking-tight leading-snug text-white">
               {cert.title}
             </h3>
-            <p className="mt-2 text-sm text-slate-400/70 leading-relaxed line-clamp-2">
+            <p className="mt-2 text-sm text-white/40 leading-relaxed line-clamp-2">
               {cert.highlight}
             </p>
           </div>
@@ -136,26 +136,26 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
             </span>
           </div>
 
-          <div className="pointer-events-none absolute -bottom-10 -right-10 h-36 w-36 rounded-full bg-[#FF1144]/[0.05] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 -right-10 h-36 w-36 rounded-full bg-white/[0.02] blur-3xl" />
         </div>
 
         {/* ════════ BACK ════════ */}
 
-        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border border-[#FF1144]/20 bg-[#060A1A] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(255,17,68,0.15)]">
+        <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl overflow-hidden border border-white/[0.10] bg-[#111111] p-7 flex flex-col shadow-[0_20px_60px_-12px_rgba(255,255,255,0.05)]">
 
           {/* Gradient top accent — brighter on back */}
           <div
             className="absolute top-0 left-0 right-0 h-[1.5px]"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(255,17,68,0.8) 30%, rgba(119,0,255,0.8) 50%, rgba(0,207,255,0.8) 70%, transparent)" }}
+            style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.45) 30%, rgba(255,255,255,0.70) 50%, rgba(255,255,255,0.45) 70%, transparent)" }}
           />
 
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7700FF]/10 border border-[#7700FF]/20">
-              <BadgeCheck className="h-4 w-4 text-[#FF1144]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] border border-white/10">
+              <BadgeCheck className="h-4 w-4 text-white/50" />
             </div>
             <div>
-              <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-[#FF1144]/70">
+              <p className="text-[0.58rem] font-bold uppercase tracking-[0.22em] text-white/35">
                 Skills Verified
               </p>
               <p className="text-[0.56rem] text-white/30 mt-0.5">
@@ -168,8 +168,8 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
           <ul className="flex-1 space-y-2.5">
             {cert.skills.map((skill) => (
               <li key={skill} className="flex items-center gap-3">
-                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-[#FF1144]/50" />
-                <span className="text-sm font-medium text-slate-300">{skill}</span>
+                <span className="h-[4px] w-[4px] shrink-0 rounded-full bg-white/30" />
+                <span className="text-sm font-medium text-white/70">{skill}</span>
               </li>
             ))}
           </ul>
@@ -181,15 +181,15 @@ function CertFlipCard({ cert, index: _index }: { cert: Certificate; index: numbe
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-[#FF1144]/20 bg-[#FF1144]/10 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-[#FF1144]/70 hover:border-[#FF1144]/40 hover:text-[#FF1144] active:border-[#FF1144]/40 active:text-[#FF1144] transition-all duration-200"
+              className="group/v mt-5 inline-flex items-center gap-2 self-start rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-wider text-white/40 hover:border-white/30 hover:text-white/80 hover:bg-white/[0.08] transition-all duration-200"
             >
-              <ExternalLink className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5 group-active/v:-translate-y-0.5 group-active/v:translate-x-0.5" />
+              <ExternalLink className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5" />
               Verify Credential
             </a>
           )}
 
-          <div className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[#FF1144]/[0.08] blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#00CFFF]/[0.06] blur-3xl" />
+          <div className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/[0.02] blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white/[0.015] blur-3xl" />
         </div>
 
       </div>
@@ -220,7 +220,7 @@ export function CertificatesSection() {
   return (
     <section
       id="certificates"
-      className="relative w-full bg-[#060916] py-20 md:py-28 overflow-hidden"
+      className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
     >
 
       <div className="relative z-10 mx-auto w-full max-w-5xl px-6 md:px-8">
@@ -234,7 +234,7 @@ export function CertificatesSection() {
           className="mb-14 md:mb-18 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
         >
           <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-[#FF1144]/70 mb-5">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/35 mb-5">
               Certifications
             </p>
             <h2
@@ -253,7 +253,7 @@ export function CertificatesSection() {
                 onClick={() => handleSort(option)}
                 className={cn(
                   "relative px-4 pb-3 pt-1 text-[0.65rem] font-semibold tracking-[0.2em] uppercase transition-colors duration-300",
-                  sort === option ? "text-white" : "text-slate-600 hover:text-slate-400"
+                  sort === option ? "text-white" : "text-white/25 hover:text-white/50"
                 )}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -262,7 +262,7 @@ export function CertificatesSection() {
                     "absolute bottom-0 left-0 h-[1.5px] w-full origin-left transition-all duration-300",
                     sort === option ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
                   )}
-                  style={{ background: "linear-gradient(90deg, #FF1144, #7700FF, #00CFFF)" }}
+                  style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2))" }}
                 />
               </button>
             ))}

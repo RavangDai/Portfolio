@@ -257,6 +257,41 @@ html {
 }
 
 
+/* ===== Chat input hover glow ===== */
+@keyframes input-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.10), 0 0 12px rgba(255,255,255,0.04); }
+  50%       { box-shadow: 0 0 0 1px rgba(255,255,255,0.22), 0 0 24px rgba(255,255,255,0.10); }
+}
+
+@keyframes input-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(400%); }
+}
+
+.chat-input-wrapper {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: border-color 0.25s ease;
+}
+
+.chat-input-wrapper:hover,
+.chat-input-wrapper:focus-within {
+  animation: input-glow-pulse 2s ease-in-out infinite;
+  border-color: transparent;
+}
+
+.chat-input-wrapper .input-shimmer {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chat-input-wrapper:hover .input-shimmer,
+.chat-input-wrapper:focus-within .input-shimmer {
+  opacity: 1;
+  animation: input-shimmer 1.8s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
 /* ===== Hide scrollbar utility ===== */
 .no-scrollbar {
   -ms-overflow-style: none;
