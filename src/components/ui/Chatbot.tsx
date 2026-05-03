@@ -2,11 +2,59 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight } from "lucide-react";
+import { X, Volume2, VolumeX } from "lucide-react";
 import GlowingChatInput from "./animated-glowing-search-bar";
 import { cn } from "@/lib/utils";
 import { parseMessageToCards, MessageCard } from "./MessageCard";
 import { ShiningText } from "./shining-text";
+
+/* ─── Follow-up chip parser ─── */
+function parseFollowups(content: string): { clean: string; chips: string[] } {
+    const fullMatch = content.match(/\[\[FOLLOWUPS:\s*([^\]]+)\]\]/i);
+    if (fullMatch) {
+        const clean = content.slice(0, fullMatch.index!).replace(/\s+$/, "");
+        const chips = fullMatch[1]
+            .split(/[|,]/)
+            .map((s) => s.trim().replace(/^["']+|["']+$/g, "").trim())
+            .filter(Boolean)
+            .slice(0, 3);
+        return { clean, chips };
+    }
+    // Hide partial marker during streaming
+    const idx = content.indexOf("[[");
+    if (idx !== -1) return { clean: content.slice(0, idx).replace(/\s+$/, ""), chips: [] };
+    return { clean: content, chips: [] };
+}
+
+/* ─── TTS helpers ─── */
+function plainTextForSpeech(text: string): string {
+    return text
+        .replace(/```[\s\S]*?```/g, "")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/\*\*(.+?)\*\*/g, "$1")
+        .replace(/^#+\s+/gm, "")
+        .replace(/^[-•]\s+/gm, "")
+        .replace(/^(Project|Impact|Stack|Tags|Status|Prompt):\s*/gm, "")
+        .replace(/\n+/g, ". ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function speakText(text: string) {
+    if (typeof window === "undefined" || !window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1.05;
+    utter.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred =
+        voices.find((v) => /Daniel|David|Alex|Mark|Google US English/i.test(v.name) && /en/i.test(v.lang)) ||
+        voices.find((v) => /en-US|en-GB/i.test(v.lang) && !/female/i.test(v.name)) ||
+        voices.find((v) => /^en/i.test(v.lang)) ||
+        null;
+    if (preferred) utter.voice = preferred;
+    window.speechSynthesis.speak(utter);
+}
 
 /* ─── Types ─── */
 interface ChatMessage {
@@ -96,32 +144,32 @@ function InlineFormatted({ text }: { text: string }) {
     );
 }
 
-/* ─── Prompts ─── */
-const PROMPTS = [
-    { icon: "⚡", label: "what have you shipped" },
-    { icon: "💼", label: "best project for hiring" },
-    { icon: "🛠️", label: "what can you build" },
-    { icon: "📖", label: "tell me your story" },
-];
-
 /* ─── Main Component ─── */
 export function Chatbot() {
     const [isOpen, setIsOpen]           = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [messages, setMessages]       = useState<ChatMessage[]>([{
         id: "welcome", role: "assistant",
-        content: "Hey! I'm Bibek's AI. Ask me anything about what I've built, my stack, or if I'm the right hire for your team.",
+        content: "Hey! I'm Bibek's AI. Ask me anything about what I've built, my stack, or if I'm the right hire for your team.\n[[FOLLOWUPS: what have you shipped | best project for hiring | tell me your story]]",
         important: true, timestamp: Date.now(),
     }]);
     const [input, setInput]       = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [intent, setIntent]     = useState<IntentColor>("neutral");
-    const [isSending, setIsSending] = useState(false);
+    const [, setIsSending] = useState(false);
+    const [voiceEnabled, setVoiceEnabled] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef       = useRef<HTMLInputElement>(null);
     const containerRef   = useRef<HTMLDivElement>(null);
 
     const accent = ACCENT_COLORS[intent];
+
+    const lastAssistantId = useMemo(() => {
+        for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].role === "assistant") return messages[i].id;
+        }
+        return null;
+    }, [messages]);
 
     useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
     useEffect(() => { if (isOpen) setTimeout(() => inputRef.current?.focus(), 200); }, [isOpen]);
@@ -131,21 +179,49 @@ export function Chatbot() {
         return () => window.removeEventListener("keydown", onKey);
     }, [isOpen]);
 
-    const handleClose = useCallback(() => { setIsOpen(false); setIsCollapsed(true); }, []);
+    // Restore voice preference
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        setVoiceEnabled(localStorage.getItem("bibekai_voice") === "1");
+        // Pre-load voices on some browsers
+        if (window.speechSynthesis) window.speechSynthesis.getVoices();
+    }, []);
+
+    // Stop any speech when chat closes
+    useEffect(() => {
+        if (!isOpen && typeof window !== "undefined") window.speechSynthesis?.cancel();
+    }, [isOpen]);
+
+    const handleClose = useCallback(() => {
+        setIsOpen(false); setIsCollapsed(true);
+        if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    }, []);
     const handleOpen  = useCallback(() => { setIsCollapsed(false); setIsOpen(true); }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!input.trim() || isLoading) return;
-        const trimmed = input.trim();
+    const toggleVoice = useCallback(() => {
+        setVoiceEnabled((v) => {
+            const next = !v;
+            if (typeof window !== "undefined") {
+                localStorage.setItem("bibekai_voice", next ? "1" : "0");
+                if (!next) window.speechSynthesis?.cancel();
+            }
+            return next;
+        });
+    }, []);
+
+    const sendMessage = async (text: string) => {
+        const trimmed = text.trim();
+        if (!trimmed || isLoading) return;
         setIntent(detectIntent(trimmed));
         setIsSending(true);
         setTimeout(() => setIsSending(false), 400);
 
         const userMsg: ChatMessage = { id: Date.now().toString(), role: "user", content: trimmed, timestamp: Date.now() };
         setMessages((p) => [...p, userMsg]);
-        setInput("");
         setIsLoading(true);
+
+        // Cancel any in-flight speech before the new reply lands
+        if (typeof window !== "undefined") window.speechSynthesis?.cancel();
 
         try {
             const res = await fetch("/api/chat", {
@@ -168,16 +244,35 @@ export function Chatbot() {
                 setMessages((p) => p.map((m) => m.id === aid ? { ...m, content } : m));
             }
             if (!content.trim()) {
-                setMessages((p) => p.map((m) => m.id === aid ? { ...m, content: "Signal lost. Try again." } : m));
+                setMessages((p) => p.map((m) => m.id === aid ? { ...m, content: "Signal lost. Try again.\n[[FOLLOWUPS: try again | see projects]]" } : m));
+            }
+
+            // Speak final response if voice enabled
+            if (voiceEnabled && content.trim()) {
+                const { clean } = parseFollowups(content);
+                speakText(plainTextForSpeech(clean));
             }
         } catch {
             setMessages((p) => {
                 const cleaned = p.filter((m) => !(m.role === "assistant" && m.content === ""));
-                return [...cleaned, { id: (Date.now() + 1).toString(), role: "assistant", content: "Connection dropped. Try again.", timestamp: Date.now() }];
+                return [...cleaned, { id: (Date.now() + 1).toString(), role: "assistant", content: "Connection dropped. Try again.\n[[FOLLOWUPS: try again | see projects | how to reach me]]", timestamp: Date.now() }];
             });
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!input.trim() || isLoading) return;
+        const text = input.trim();
+        setInput("");
+        await sendMessage(text);
+    };
+
+    const handleChipClick = (label: string) => {
+        if (isLoading) return;
+        sendMessage(label);
     };
 
     const visibleMessages = useMemo(() => {
@@ -308,11 +403,24 @@ export function Chatbot() {
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={handleClose}
-                                    className="h-8 w-8 flex items-center justify-center rounded-full text-white/30 hover:text-white/80 hover:bg-white/[0.08] transition-all duration-200"
-                                    aria-label="Close">
-                                    <X className="h-4 w-4" />
-                                </button>
+                                <div className="flex items-center gap-1">
+                                    <button onClick={toggleVoice}
+                                        className={cn(
+                                            "h-8 w-8 flex items-center justify-center rounded-full transition-all duration-200",
+                                            voiceEnabled
+                                                ? "text-white/85 bg-white/[0.08] hover:bg-white/[0.12]"
+                                                : "text-white/30 hover:text-white/80 hover:bg-white/[0.08]"
+                                        )}
+                                        aria-label={voiceEnabled ? "Disable voice" : "Enable voice"}
+                                        title={voiceEnabled ? "Voice on" : "Voice off"}>
+                                        {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                                    </button>
+                                    <button onClick={handleClose}
+                                        className="h-8 w-8 flex items-center justify-center rounded-full text-white/30 hover:text-white/80 hover:bg-white/[0.08] transition-all duration-200"
+                                        aria-label="Close">
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -321,46 +429,72 @@ export function Chatbot() {
 
                         {/* ─── Messages ─── */}
                         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5 no-scrollbar">
-                            {visibleMessages.map((msg) => (
-                                <motion.div key={msg.id}
-                                    initial={{ opacity: 0, y: 8 }}
-                                    animate={{ opacity: msg.opacity, y: 0 }}
-                                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                                    className={cn("flex gap-2.5", msg.role === "user" ? "justify-end" : "justify-start items-start")}
-                                >
-                                    {msg.role === "assistant" && (
-                                        <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white mt-0.5"
-                                            style={{
-                                                background: "rgba(255,255,255,0.07)",
-                                                border: "1px solid rgba(255,255,255,0.15)",
-                                                flexShrink: 0,
-                                            }}>
-                                            B
-                                        </div>
-                                    )}
-                                    {msg.role === "assistant" ? (
-                                        <div className="max-w-[88%] text-[12.5px] leading-[1.75] text-white/72"
-                                            style={{ letterSpacing: "0.01em" }}>
-                                            {msg.content ? (() => {
-                                                const cards = parseMessageToCards(msg.content);
-                                                const hasCards = cards.some(c => c.type !== "text");
-                                                if (hasCards) return <div className="space-y-2">{cards.map((card, i) => <MessageCard key={i} data={card} />)}</div>;
-                                                return <FormattedMessage text={msg.content} />;
-                                            })() : null}
-                                        </div>
-                                    ) : (
-                                        <div className="max-w-[78%] text-[12.5px] leading-[1.6] text-white/90 rounded-2xl rounded-br-sm px-4 py-2.5"
-                                            style={{
-                                                background: "rgba(255,255,255,0.08)",
-                                                border: "1px solid rgba(255,255,255,0.14)",
-                                                borderTopColor: "rgba(255,255,255,0.20)",
-                                                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
-                                            }}>
-                                            {msg.content}
-                                        </div>
-                                    )}
-                                </motion.div>
-                            ))}
+                            {visibleMessages.map((msg) => {
+                                const isAssistant = msg.role === "assistant";
+                                const { clean, chips } = isAssistant
+                                    ? parseFollowups(msg.content)
+                                    : { clean: msg.content, chips: [] as string[] };
+                                const showChips =
+                                    isAssistant && msg.id === lastAssistantId && !isLoading && chips.length > 0;
+
+                                return (
+                                    <motion.div key={msg.id}
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: msg.opacity, y: 0 }}
+                                        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                                        className={cn("flex gap-2.5", isAssistant ? "justify-start items-start" : "justify-end")}
+                                    >
+                                        {isAssistant && (
+                                            <div className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-black text-white mt-0.5"
+                                                style={{
+                                                    background: "rgba(255,255,255,0.07)",
+                                                    border: "1px solid rgba(255,255,255,0.15)",
+                                                }}>
+                                                B
+                                            </div>
+                                        )}
+                                        {isAssistant ? (
+                                            <div className="max-w-[88%] text-[12.5px] leading-[1.75] text-white/72"
+                                                style={{ letterSpacing: "0.01em" }}>
+                                                {clean ? (() => {
+                                                    const cards = parseMessageToCards(clean);
+                                                    const hasCards = cards.some((c) => c.type !== "text");
+                                                    if (hasCards) return <div className="space-y-2">{cards.map((card, i) => <MessageCard key={i} data={card} />)}</div>;
+                                                    return <FormattedMessage text={clean} />;
+                                                })() : null}
+                                                {showChips && (
+                                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                                        {chips.map((c, i) => (
+                                                            <motion.button
+                                                                key={`${msg.id}-chip-${i}`}
+                                                                initial={{ opacity: 0, y: 4 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                transition={{ delay: i * 0.06, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                                                whileHover={{ y: -1 }}
+                                                                whileTap={{ scale: 0.97 }}
+                                                                onClick={() => handleChipClick(c)}
+                                                                disabled={isLoading}
+                                                                className="px-3 py-1.5 rounded-full text-[10.5px] font-medium text-white/55 border border-white/[0.10] hover:border-white/25 hover:text-white/90 hover:bg-white/[0.04] transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                                                                {c}
+                                                            </motion.button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="max-w-[78%] text-[12.5px] leading-[1.6] text-white/90 rounded-2xl rounded-br-sm px-4 py-2.5"
+                                                style={{
+                                                    background: "rgba(255,255,255,0.08)",
+                                                    border: "1px solid rgba(255,255,255,0.14)",
+                                                    borderTopColor: "rgba(255,255,255,0.20)",
+                                                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                                                }}>
+                                                {msg.content}
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
 
                             {/* Thinking indicator */}
                             {isLoading && (
@@ -376,21 +510,6 @@ export function Chatbot() {
                             )}
                             <div ref={messagesEndRef} />
                         </div>
-
-                        {/* ─── Quick prompts (first load) ─── */}
-                        {messages.length <= 1 && (
-                            <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
-                                {PROMPTS.map((p) => (
-                                    <button key={p.label}
-                                        onClick={() => { setInput(p.label); setTimeout(() => inputRef.current?.focus(), 0); }}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap text-[11px] font-medium text-white/50 border border-white/[0.08] hover:border-white/20 hover:text-white/80 hover:bg-white/[0.04] transition-all duration-200 shrink-0 focus:outline-none">
-                                        <span>{p.icon}</span>
-                                        <span>{p.label}</span>
-                                        <ChevronRight className="h-3 w-3 opacity-40" />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
 
                         {/* ─── Input bar ─── */}
                         <div className="px-4 pt-3 shrink-0 sm:pb-4"
