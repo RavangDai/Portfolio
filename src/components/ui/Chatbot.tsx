@@ -40,20 +40,148 @@ function plainTextForSpeech(text: string): string {
         .trim();
 }
 
-function speakText(text: string) {
-    if (typeof window === "undefined" || !window.speechSynthesis || !text) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 1.05;
-    utter.pitch = 1.0;
+/* ─── Puter.js loader (free neural TTS, no API key) ─── */
+type PuterTTSOpts = {
+    provider?: string;
+    voice?: string;
+    engine?: string;
+    model?: string;
+    language?: string;
+};
+type PuterAPI = {
+    ai?: {
+        txt2speech?: (text: string, opts?: PuterTTSOpts) => Promise<HTMLAudioElement>;
+    };
+};
+let puterLoadPromise: Promise<boolean> | null = null;
+let currentPuterAudio: HTMLAudioElement | null = null;
+
+function loadPuter(): Promise<boolean> {
+    if (typeof window === "undefined") return Promise.resolve(false);
+    const w = window as Window & { puter?: PuterAPI };
+    if (w.puter?.ai?.txt2speech) return Promise.resolve(true);
+    if (puterLoadPromise) return puterLoadPromise;
+
+    puterLoadPromise = new Promise<boolean>((resolve) => {
+        const existing = document.querySelector('script[src="https://js.puter.com/v2/"]');
+        if (existing) {
+            existing.addEventListener("load", () => resolve(!!w.puter?.ai?.txt2speech));
+            existing.addEventListener("error", () => resolve(false));
+            return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://js.puter.com/v2/";
+        script.async = true;
+        script.onload = () => resolve(!!w.puter?.ai?.txt2speech);
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+        // Hard timeout so we don't hang if Puter is slow/down
+        setTimeout(() => resolve(!!w.puter?.ai?.txt2speech), 4000);
+    });
+    return puterLoadPromise;
+}
+
+function stopAllSpeech() {
+    if (typeof window === "undefined") return;
+    if (currentPuterAudio) {
+        try {
+            currentPuterAudio.pause();
+            currentPuterAudio.src = "";
+        } catch {}
+        currentPuterAudio = null;
+    }
+    window.speechSynthesis?.cancel();
+}
+
+function pickBestVoice(): SpeechSynthesisVoice | null {
+    if (typeof window === "undefined" || !window.speechSynthesis) return null;
     const voices = window.speechSynthesis.getVoices();
-    const preferred =
-        voices.find((v) => /Daniel|David|Alex|Mark|Google US English/i.test(v.name) && /en/i.test(v.lang)) ||
-        voices.find((v) => /en-US|en-GB/i.test(v.lang) && !/female/i.test(v.name)) ||
-        voices.find((v) => /^en/i.test(v.lang)) ||
-        null;
-    if (preferred) utter.voice = preferred;
-    window.speechSynthesis.speak(utter);
+    if (!voices.length) return null;
+
+    const en = voices.filter((v) => /^en[-_]/i.test(v.lang));
+    if (!en.length) return voices[0];
+
+    // Voice name patterns, ranked best to worst
+    const isOnlineNaturalMale = (v: SpeechSynthesisVoice) =>
+        /Christopher|Eric|Andrew|Brian|Guy|Davis|Tony|Roger|Steffan/i.test(v.name) && /Online \(Natural\)|Neural|Online/i.test(v.name);
+    const isOnlineNatural = (v: SpeechSynthesisVoice) => /Online \(Natural\)|Neural/i.test(v.name);
+    const isGoogleMale = (v: SpeechSynthesisVoice) =>
+        /^Google/i.test(v.name) && /UK English Male|US English$/i.test(v.name);
+    const isGoogle = (v: SpeechSynthesisVoice) => /^Google/i.test(v.name);
+    const isAppleEnhancedMale = (v: SpeechSynthesisVoice) =>
+        /^(Daniel|Alex|Tom|Aaron|Fred|Reed|Rocko)/i.test(v.name);
+    const isClassicMale = (v: SpeechSynthesisVoice) =>
+        /Mark|David|George|James|Ryan|Sean|Oliver/i.test(v.name);
+
+    return (
+        en.find(isOnlineNaturalMale) ||
+        en.find((v) => isOnlineNatural(v) && !/female|aria|jenny|emma|ava|libby|sonia/i.test(v.name)) ||
+        en.find(isGoogleMale) ||
+        en.find(isGoogle) ||
+        en.find(isAppleEnhancedMale) ||
+        en.find(isClassicMale) ||
+        en[0]
+    );
+}
+
+function ensureVoicesLoaded(): Promise<void> {
+    return new Promise((resolve) => {
+        if (typeof window === "undefined" || !window.speechSynthesis) return resolve();
+        if (window.speechSynthesis.getVoices().length > 0) return resolve();
+        const handler = () => {
+            window.speechSynthesis.removeEventListener("voiceschanged", handler);
+            resolve();
+        };
+        window.speechSynthesis.addEventListener("voiceschanged", handler);
+        setTimeout(() => {
+            window.speechSynthesis.removeEventListener("voiceschanged", handler);
+            resolve();
+        }, 1500);
+    });
+}
+
+// Antoni — natural American male voice on ElevenLabs (good fit for casual dev voice)
+const ELEVENLABS_VOICE_ID = "ErXwobaYiN019PkySvjV";
+
+async function speakText(text: string) {
+    if (typeof window === "undefined" || !text) return;
+    stopAllSpeech();
+
+    // Try Puter + ElevenLabs first (highest quality, free, no API key)
+    const puterReady = await loadPuter();
+    const w = window as Window & { puter?: PuterAPI };
+    if (puterReady && w.puter?.ai?.txt2speech) {
+        try {
+            const audio = await w.puter.ai.txt2speech(text, {
+                provider: "elevenlabs",
+                voice: ELEVENLABS_VOICE_ID,
+                model: "eleven_multilingual_v2",
+            });
+            currentPuterAudio = audio;
+            await audio.play();
+            return;
+        } catch (err) {
+            console.warn("Puter ElevenLabs TTS failed, falling back to browser TTS:", err);
+            currentPuterAudio = null;
+        }
+    }
+
+    // Fallback: browser SpeechSynthesis
+    if (!window.speechSynthesis) return;
+    await ensureVoicesLoaded();
+    const voice = pickBestVoice();
+    const isNeural = voice ? /Online|Neural|Google|Daniel|Alex/i.test(voice.name) : false;
+    const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+    for (const raw of chunks) {
+        const chunk = raw.trim();
+        if (!chunk) continue;
+        const utter = new SpeechSynthesisUtterance(chunk);
+        if (voice) utter.voice = voice;
+        utter.rate = isNeural ? 1.02 : 0.95;
+        utter.pitch = isNeural ? 0.98 : 0.92;
+        utter.volume = 1.0;
+        window.speechSynthesis.speak(utter);
+    }
 }
 
 /* ─── Types ─── */
@@ -189,12 +317,12 @@ export function Chatbot() {
 
     // Stop any speech when chat closes
     useEffect(() => {
-        if (!isOpen && typeof window !== "undefined") window.speechSynthesis?.cancel();
+        if (!isOpen && typeof window !== "undefined") stopAllSpeech();
     }, [isOpen]);
 
     const handleClose = useCallback(() => {
         setIsOpen(false); setIsCollapsed(true);
-        if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+        if (typeof window !== "undefined") stopAllSpeech();
     }, []);
     const handleOpen  = useCallback(() => { setIsCollapsed(false); setIsOpen(true); }, []);
 
@@ -203,7 +331,12 @@ export function Chatbot() {
             const next = !v;
             if (typeof window !== "undefined") {
                 localStorage.setItem("bibekai_voice", next ? "1" : "0");
-                if (!next) window.speechSynthesis?.cancel();
+                if (!next) {
+                    stopAllSpeech();
+                } else {
+                    // Preview so user immediately hears the voice quality
+                    speakText("Voice on. Ask me anything.");
+                }
             }
             return next;
         });
@@ -221,7 +354,7 @@ export function Chatbot() {
         setIsLoading(true);
 
         // Cancel any in-flight speech before the new reply lands
-        if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+        if (typeof window !== "undefined") stopAllSpeech();
 
         try {
             const res = await fetch("/api/chat", {
