@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export function ScrollSectionLine() {
   const [active, setActive] = useState(false);
   const lastId = useRef("");
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     const SECTIONS = ["home", "projects", "certificates", "contact"];
