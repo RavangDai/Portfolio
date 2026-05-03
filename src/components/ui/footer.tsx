@@ -60,7 +60,7 @@ export function Footer() {
           <AnimatedContainer delay={0.05} className="space-y-4">
             <button onClick={scrollToTop} className="group text-left">
               <span className="text-[0.95rem] font-black tracking-tight text-white transition-colors duration-200 group-hover:text-white/70 font-display">
-                BIBEK.DEV
+                BIBEK.TECH
               </span>
             </button>
             <p className="max-w-[220px] text-[0.8rem] leading-relaxed text-white/35">

@@ -205,7 +205,7 @@ export function MainNavbar() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
               </span>
               <span className="text-[0.82rem] font-black tracking-tight text-white group-hover:text-white/70 transition-colors duration-200 font-display">
-                BIBEK.DEV
+                BIBEK.TECH
               </span>
             </button>
 
@@ -314,7 +314,7 @@ export function MainNavbar() {
                 onClick={handleBrandClick}
                 className="text-[0.82rem] font-black tracking-tight text-white/80"
               >
-                BIBEK.DEV
+                BIBEK.TECH
               </button>
               <button
                 onClick={() => setMobileOpen(false)}

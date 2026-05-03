@@ -1,17 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Trophy, Star, Zap, Code2, GraduationCap, BookOpen } from "lucide-react";
+import { Trophy, Star, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const STATS = [
-  { value: "20+", label: "Projects Shipped" },
-  { value: "5+",  label: "Certifications"   },
-  { value: "3.8+",label: "GPA"              },
-  { value: "1",   label: "Hackathon Won"    },
+  { value: "10+", label: "Projects Shipped" },
+  { value: "3.5+",label: "GPA"              },
+  { value: "1/1", label: "Hackathon Win Rate"},
+  { value: "2",   label: "Honors Awards"    },
 ];
 
 type Category = "Academic" | "Certification" | "Competition" | "Project";
@@ -32,9 +32,9 @@ const ACHIEVEMENTS: Achievement[] = [
     id: 1,
     date: "Apr 2026",
     title: "1st Place — HackLions 2026",
-    org: "SELU Intramural Hackathon",
+    org: "SELU 1st Hackathon",
     category: "Competition",
-    desc: "Won SELU's intramural hackathon by building DollarPilot — a finance app that makes money management fun and brutal — from zero to shipped in 6 hours.",
+    desc: "Won SELU's hackathon by building DollarPilot — a finance app that makes money management fun and brutal — from zero to shipped in 6 hours.",
     Icon: Trophy,
     highlight: true,
   },
@@ -44,53 +44,17 @@ const ACHIEVEMENTS: Achievement[] = [
     title: "Dean's List — Fall 2024",
     org: "Southeastern Louisiana University",
     category: "Academic",
-    desc: "Recognized for academic excellence with a semester GPA of 3.8 — second consecutive semester on the list.",
+    desc: "Recognized for academic excellence with a semester GPA of 3.5 — consistent academic performance throughout the semester.",
     Icon: GraduationCap,
   },
   {
     id: 3,
-    date: "Sep 2024",
-    title: "AWS Certified Cloud Practitioner",
-    org: "Amazon Web Services",
-    category: "Certification",
-    desc: "Validated expertise in core AWS services, cloud security, pricing models, and global infrastructure.",
-    Icon: Zap,
-  },
-  {
-    id: 4,
-    date: "Jun 2024",
-    title: "Meta Frontend Developer Certificate",
-    org: "Coursera × Meta",
-    category: "Certification",
-    desc: "Completed Meta's professional certificate covering React, advanced CSS, and Figma-to-code production workflows.",
-    Icon: Code2,
-  },
-  {
-    id: 5,
-    date: "Apr 2024",
-    title: "Dean's List — Spring 2024",
+    date: "Aug 2023",
+    title: "Honors Scholarship",
     org: "Southeastern Louisiana University",
     category: "Academic",
-    desc: "Placed on the Dean's List for the Spring 2024 semester, maintaining consistent academic performance.",
-    Icon: GraduationCap,
-  },
-  {
-    id: 6,
-    date: "Feb 2024",
-    title: "Google Data Analytics Certificate",
-    org: "Google × Coursera",
-    category: "Certification",
-    desc: "Completed Google's professional data analytics program covering SQL, R, spreadsheets, Tableau, and data storytelling.",
+    desc: "Awarded the Honors Scholarship at Southeastern Louisiana University in recognition of outstanding academic achievement and potential.",
     Icon: Star,
-  },
-  {
-    id: 7,
-    date: "Nov 2023",
-    title: "CS Excellence Award",
-    org: "Southeastern Louisiana University",
-    category: "Academic",
-    desc: "Awarded for exceptional performance in the Computer Science department during the Fall 2023 semester.",
-    Icon: BookOpen,
   },
 ];
 
