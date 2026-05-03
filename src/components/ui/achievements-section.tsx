@@ -8,10 +8,10 @@ import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 const STATS = [
-  { value: "20+",  label: "Projects Shipped" },
-  { value: "5+",   label: "Certifications"   },
-  { value: "3.8+", label: "GPA"              },
-  { value: "2",    label: "Hackathons Won"   },
+  { value: "20+", label: "Projects Shipped" },
+  { value: "5+",  label: "Certifications"   },
+  { value: "3.8+",label: "GPA"              },
+  { value: "1",   label: "Hackathon Won"    },
 ];
 
 type Category = "Academic" | "Certification" | "Competition" | "Project";
@@ -30,11 +30,11 @@ interface Achievement {
 const ACHIEVEMENTS: Achievement[] = [
   {
     id: 1,
-    date: "Dec 2024",
-    title: "1st Place — HackSELA 2024",
-    org: "SELU Regional Hackathon",
+    date: "Apr 2026",
+    title: "1st Place — HackLions 2026",
+    org: "SELU Intramural Hackathon",
     category: "Competition",
-    desc: "Built and shipped an AI-powered web application in under 24 hours, placing first among 40+ competing teams.",
+    desc: "Won SELU's intramural hackathon by building DollarPilot — a finance app that makes money management fun and brutal — from zero to shipped in 6 hours.",
     Icon: Trophy,
     highlight: true,
   },
