@@ -41,8 +41,8 @@ export function ContactSection() {
       <SectionGradientBg />
 
       {/* ── Content ── */}
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8">
-        <div className="grid gap-16 lg:gap-20 xl:gap-28 lg:grid-cols-[1fr_1.3fr]">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
+        <div className="grid gap-8 md:gap-12 lg:gap-20 xl:gap-28 lg:grid-cols-[1fr_1.3fr]">
 
           {/* Left: info */}
           <motion.div

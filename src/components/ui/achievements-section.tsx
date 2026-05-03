@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Trophy, Star, GraduationCap, Code2, Zap, BookOpen, ExternalLink } from "lucide-react";
+import { Trophy, Star, Code2, Zap, BookOpen, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
@@ -93,7 +93,7 @@ export function AchievementsSection() {
     <div className="relative min-h-screen bg-[#080808] pt-32 pb-24 overflow-hidden">
       <SectionGradientBg />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-6 md:px-10">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 md:px-10">
 
         {/* ── Page header ── */}
         <motion.div

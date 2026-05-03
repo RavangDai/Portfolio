@@ -113,7 +113,7 @@ export function NewHero() {
       <div className="relative z-10 flex flex-1 flex-col">
 
         {/* Hero body */}
-        <div className="flex flex-1 items-center max-w-7xl mx-auto w-full px-6 md:px-10 lg:px-16 pt-28 md:pt-24 pb-6 gap-8 lg:gap-12">
+        <div className="flex flex-1 items-center max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-10 lg:px-16 pt-28 md:pt-24 pb-6 gap-8 lg:gap-12">
 
           {/* ═══════════════ LEFT — Copy ═══════════════ */}
           <div className="flex flex-col justify-center w-full lg:w-[52%]">
@@ -144,7 +144,7 @@ export function NewHero() {
               <h1
                 className="font-black leading-[1.0] tracking-tight text-white font-display"
                 style={{
-                  fontSize: "clamp(2.8rem, 5.5vw, 5.2rem)",
+                  fontSize: "clamp(2.2rem, 7.5vw, 5.2rem)",
                   letterSpacing: "-0.02em",
                   textShadow: "0 2px 32px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.9)",
                 }}
@@ -158,7 +158,7 @@ export function NewHero() {
                 <p
                   className="font-semibold text-white leading-tight"
                   style={{
-                    fontSize: "clamp(1rem, 1.6vw, 1.18rem)",
+                    fontSize: "clamp(0.9rem, 2.5vw, 1.18rem)",
                     textShadow: "0 1px 8px rgba(0,0,0,0.9)",
                   }}
                 >
@@ -169,7 +169,7 @@ export function NewHero() {
                 <div
                   className="flex items-center gap-2 text-white/40 flex-wrap"
                   style={{
-                    fontSize: "clamp(0.65rem, 0.9vw, 0.72rem)",
+                    fontSize: "clamp(0.62rem, 1.5vw, 0.72rem)",
                     fontWeight: 600,
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
@@ -178,7 +178,7 @@ export function NewHero() {
                 >
                   <span>CS <span className="text-white/30">@</span> SELU</span>
                   <span className="text-white/20">·</span>
-                  <span><span className="text-white/70">20+</span> Projects</span>
+                  <span><span className="text-white/70">10+</span> Projects</span>
                   <span className="text-white/20">·</span>
                   <span>React · Next.js · Python</span>
                 </div>
@@ -190,7 +190,7 @@ export function NewHero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.65, ease }}
-              className="flex items-center gap-4 flex-wrap mb-8 mt-9"
+              className="flex items-center gap-3 sm:gap-4 flex-wrap mb-8 mt-9"
             >
               <LiquidButton
                 size="xl"

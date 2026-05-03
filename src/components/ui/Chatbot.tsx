@@ -198,7 +198,7 @@ export function Chatbot() {
                         onClick={handleOpen}
                         initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
                         whileHover={{ scale: 1.05, y: -1 }}
-                        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 cursor-pointer focus:outline-none rounded-full"
+                        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2 px-4 py-2.5 cursor-pointer focus:outline-none rounded-full"
                         style={{ background: "rgba(10,12,20,0.95)", backdropFilter: "blur(24px)", border: `1px solid ${accent.primary}40`, boxShadow: `0 0 20px ${accent.glow}` }}
                         aria-label="Reopen chat"
                     >
@@ -218,7 +218,7 @@ export function Chatbot() {
                     transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1.5 }}
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.96 }}
-                    className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden"
+                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden"
                     style={{
                         borderRadius: "999px",
                         background: "rgba(8,8,8,0.92)",
@@ -393,8 +393,8 @@ export function Chatbot() {
                         )}
 
                         {/* ─── Input bar ─── */}
-                        <div className="px-4 pb-4 pt-3 shrink-0"
-                            style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div className="px-4 pt-3 shrink-0 sm:pb-4"
+                            style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingBottom: "max(1rem, env(safe-area-inset-bottom, 1rem))" }}>
                             <GlowingChatInput
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}

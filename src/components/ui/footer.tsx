@@ -51,7 +51,7 @@ export function Footer() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.12] to-transparent" />
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-32 bg-white/[0.03] blur-3xl rounded-full" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 md:px-8 pt-14 pb-8">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 pt-14 pb-8">
 
         {/* Main grid */}
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_auto] lg:gap-12 pb-10 border-b border-white/[0.05]">

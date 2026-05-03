@@ -102,7 +102,7 @@ function CertFlipCard({ cert, index }: { cert: Certificate; index: number }) {
 
   return (
     <div
-      className="group h-[300px] [perspective:1200px] cursor-pointer"
+      className="group h-[260px] sm:h-[300px] [perspective:1200px] cursor-pointer"
       onClick={() => setFlipped((f) => !f)}
     >
       <div
@@ -245,7 +245,7 @@ export function CertificatesSection() {
     >
       <SectionGradientBg />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-6 md:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-4 sm:px-6 md:px-8">
 
         {/* HEADER */}
         <motion.div
