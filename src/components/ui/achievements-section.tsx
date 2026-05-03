@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Trophy, Star, GraduationCap, Code2, Zap, BookOpen } from "lucide-react";
+import { Trophy, Star, GraduationCap, Code2, Zap, BookOpen, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
@@ -25,6 +25,7 @@ interface Achievement {
   desc: string;
   Icon: React.ElementType;
   highlight?: boolean;
+  url?: string;
 }
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -37,19 +38,11 @@ const ACHIEVEMENTS: Achievement[] = [
     desc: "Won SELU's hackathon by building DollarPilot — a finance app that makes money management fun and brutal — from zero to shipped in 6 hours.",
     Icon: Trophy,
     highlight: true,
-  },
-  {
-    id: 2,
-    date: "Nov 2024",
-    title: "Dean's List — Fall 2024",
-    org: "Southeastern Louisiana University",
-    category: "Academic",
-    desc: "Recognized for academic excellence with a semester GPA of 3.5 — consistent academic performance throughout the semester.",
-    Icon: GraduationCap,
+    url: "https://devpost.com/software/dollarpilot",
   },
   {
     id: 3,
-    date: "Aug 2023",
+    date: "Fall 2024",
     title: "Honors Scholarship",
     org: "Southeastern Louisiana University",
     category: "Academic",
@@ -64,6 +57,7 @@ const ACHIEVEMENTS: Achievement[] = [
     category: "Certification",
     desc: "Demonstrated expertise in problem-solving, REST API design, full-stack architecture, and data structures.",
     Icon: Code2,
+    url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
   },
   {
     id: 5,
@@ -73,6 +67,7 @@ const ACHIEVEMENTS: Achievement[] = [
     category: "Certification",
     desc: "Validated advanced SQL skills including complex queries, joins, subqueries, indexing, and performance tuning.",
     Icon: Zap,
+    url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
   },
   {
     id: 6,
@@ -82,6 +77,7 @@ const ACHIEVEMENTS: Achievement[] = [
     category: "Certification",
     desc: "Completed CFI's program covering financial modeling, pivot tables, Excel formulas, and data analysis for finance.",
     Icon: BookOpen,
+    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
   },
 ];
 
@@ -235,6 +231,17 @@ export function AchievementsSection() {
                           <p className="text-sm text-white/45 leading-relaxed">
                             {item.desc}
                           </p>
+                          {item.url && (
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 mt-3 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-white/35 hover:text-white/70 transition-colors duration-200"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              View Credential
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>
