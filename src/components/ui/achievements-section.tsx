@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Trophy, Star, GraduationCap } from "lucide-react";
+import { Trophy, Star, GraduationCap, Code2, Zap, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
@@ -11,7 +11,7 @@ const STATS = [
   { value: "10+", label: "Projects Shipped" },
   { value: "3.5+",label: "GPA"              },
   { value: "1/1", label: "Hackathon Win Rate"},
-  { value: "2",   label: "Honors Awards"    },
+  { value: "3",   label: "Certifications"   },
 ];
 
 type Category = "Academic" | "Certification" | "Competition" | "Project";
@@ -55,6 +55,33 @@ const ACHIEVEMENTS: Achievement[] = [
     category: "Academic",
     desc: "Awarded the Honors Scholarship at Southeastern Louisiana University in recognition of outstanding academic achievement and potential.",
     Icon: Star,
+  },
+  {
+    id: 4,
+    date: "2025",
+    title: "Software Engineer Certificate",
+    org: "HackerRank",
+    category: "Certification",
+    desc: "Demonstrated expertise in problem-solving, REST API design, full-stack architecture, and data structures.",
+    Icon: Code2,
+  },
+  {
+    id: 5,
+    date: "2025",
+    title: "SQL (Advanced) Certificate",
+    org: "HackerRank",
+    category: "Certification",
+    desc: "Validated advanced SQL skills including complex queries, joins, subqueries, indexing, and performance tuning.",
+    Icon: Zap,
+  },
+  {
+    id: 6,
+    date: "2024",
+    title: "Excel Fundamentals – Finance",
+    org: "Corporate Finance Institute®",
+    category: "Certification",
+    desc: "Completed CFI's program covering financial modeling, pivot tables, Excel formulas, and data analysis for finance.",
+    Icon: BookOpen,
   },
 ];
 
