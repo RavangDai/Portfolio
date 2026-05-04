@@ -40,57 +40,81 @@ function plainTextForSpeech(text: string): string {
         .trim();
 }
 
-/* ─── Puter.js loader (free neural TTS, no API key) ─── */
-type PuterTTSOpts = {
-    provider?: string;
-    voice?: string;
-    engine?: string;
-    model?: string;
-    language?: string;
-};
-type PuterAPI = {
-    ai?: {
-        txt2speech?: (text: string, opts?: PuterTTSOpts) => Promise<HTMLAudioElement>;
-    };
-};
-let puterLoadPromise: Promise<boolean> | null = null;
-let currentPuterAudio: HTMLAudioElement | null = null;
-
-function loadPuter(): Promise<boolean> {
-    if (typeof window === "undefined") return Promise.resolve(false);
-    const w = window as Window & { puter?: PuterAPI };
-    if (w.puter?.ai?.txt2speech) return Promise.resolve(true);
-    if (puterLoadPromise) return puterLoadPromise;
-
-    puterLoadPromise = new Promise<boolean>((resolve) => {
-        const existing = document.querySelector('script[src="https://js.puter.com/v2/"]');
-        if (existing) {
-            existing.addEventListener("load", () => resolve(!!w.puter?.ai?.txt2speech));
-            existing.addEventListener("error", () => resolve(false));
-            return;
-        }
-        const script = document.createElement("script");
-        script.src = "https://js.puter.com/v2/";
-        script.async = true;
-        script.onload = () => resolve(!!w.puter?.ai?.txt2speech);
-        script.onerror = () => resolve(false);
-        document.head.appendChild(script);
-        // Hard timeout so we don't hang if Puter is slow/down
-        setTimeout(() => resolve(!!w.puter?.ai?.txt2speech), 4000);
-    });
-    return puterLoadPromise;
-}
+/* ─── Free natural TTS via StreamElements (Amazon Polly "Matthew", no API key) ─── */
+let currentAudio: HTMLAudioElement | null = null;
+let speechAbortToken = 0;
 
 function stopAllSpeech() {
     if (typeof window === "undefined") return;
-    if (currentPuterAudio) {
+    speechAbortToken++;
+    if (currentAudio) {
         try {
-            currentPuterAudio.pause();
-            currentPuterAudio.src = "";
+            currentAudio.pause();
+            currentAudio.src = "";
         } catch {}
-        currentPuterAudio = null;
+        currentAudio = null;
     }
     window.speechSynthesis?.cancel();
+}
+
+function chunkForTTS(text: string, maxLen = 480): string[] {
+    if (text.length <= maxLen) return [text];
+    const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+    const chunks: string[] = [];
+    let buf = "";
+    for (const s of sentences) {
+        if ((buf + s).length > maxLen) {
+            if (buf) chunks.push(buf.trim());
+            buf = s;
+        } else {
+            buf += s;
+        }
+    }
+    if (buf.trim()) chunks.push(buf.trim());
+    return chunks;
+}
+
+async function speakViaStreamElements(chunks: string[], token: number): Promise<boolean> {
+    for (const chunk of chunks) {
+        if (token !== speechAbortToken) return true; // user stopped, treat as success
+        // Brian = Amazon Polly UK male, the most natural-sounding free Polly voice
+        const url = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodeURIComponent(chunk)}`;
+        const audio = new Audio(url);
+        audio.preload = "auto";
+        currentAudio = audio;
+        try {
+            await new Promise<void>((resolve, reject) => {
+                audio.onended = () => resolve();
+                audio.onerror = () => reject(new Error("audio error"));
+                audio.play().catch(reject);
+            });
+        } catch {
+            return false;
+        }
+    }
+    return true;
+}
+
+function isNeuralVoice(v: SpeechSynthesisVoice | null): boolean {
+    if (!v) return false;
+    return /Online \(Natural\)|Neural|Premium|Enhanced/i.test(v.name);
+}
+
+function speakWithBrowser(text: string, voice: SpeechSynthesisVoice | null) {
+    if (!window.speechSynthesis) return;
+    const neural = isNeuralVoice(voice);
+    const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+    for (const raw of sentences) {
+        const chunk = raw.trim();
+        if (!chunk) continue;
+        const utter = new SpeechSynthesisUtterance(chunk);
+        if (voice) utter.voice = voice;
+        // Neural voices sound best near defaults; classic ones need slight slowdown
+        utter.rate = neural ? 1.0 : 0.96;
+        utter.pitch = neural ? 1.0 : 0.95;
+        utter.volume = 1.0;
+        window.speechSynthesis.speak(utter);
+    }
 }
 
 function pickBestVoice(): SpeechSynthesisVoice | null {
@@ -140,47 +164,31 @@ function ensureVoicesLoaded(): Promise<void> {
     });
 }
 
-// Antoni — natural American male voice on ElevenLabs (good fit for casual dev voice)
-const ELEVENLABS_VOICE_ID = "ErXwobaYiN019PkySvjV";
-
 async function speakText(text: string) {
     if (typeof window === "undefined" || !text) return;
     stopAllSpeech();
+    const token = speechAbortToken;
 
-    // Try Puter + ElevenLabs first (highest quality, free, no API key)
-    const puterReady = await loadPuter();
-    const w = window as Window & { puter?: PuterAPI };
-    if (puterReady && w.puter?.ai?.txt2speech) {
-        try {
-            const audio = await w.puter.ai.txt2speech(text, {
-                provider: "elevenlabs",
-                voice: ELEVENLABS_VOICE_ID,
-                model: "eleven_multilingual_v2",
-            });
-            currentPuterAudio = audio;
-            await audio.play();
+    // Path 1 — browser Neural voice (Edge ships "Christopher Online (Natural)" etc.,
+    // sounds genuinely human, no network round-trip)
+    if (window.speechSynthesis) {
+        await ensureVoicesLoaded();
+        const voice = pickBestVoice();
+        if (isNeuralVoice(voice)) {
+            speakWithBrowser(text, voice);
             return;
-        } catch (err) {
-            console.warn("Puter ElevenLabs TTS failed, falling back to browser TTS:", err);
-            currentPuterAudio = null;
         }
     }
 
-    // Fallback: browser SpeechSynthesis
-    if (!window.speechSynthesis) return;
-    await ensureVoicesLoaded();
-    const voice = pickBestVoice();
-    const isNeural = voice ? /Online|Neural|Google|Daniel|Alex/i.test(voice.name) : false;
-    const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
-    for (const raw of chunks) {
-        const chunk = raw.trim();
-        if (!chunk) continue;
-        const utter = new SpeechSynthesisUtterance(chunk);
-        if (voice) utter.voice = voice;
-        utter.rate = isNeural ? 1.02 : 0.95;
-        utter.pitch = isNeural ? 0.98 : 0.92;
-        utter.volume = 1.0;
-        window.speechSynthesis.speak(utter);
+    // Path 2 — StreamElements "Brian" (free Polly UK male, more natural than Matthew)
+    const chunks = chunkForTTS(text);
+    const ok = await speakViaStreamElements(chunks, token);
+    if (ok || token !== speechAbortToken) return;
+    currentAudio = null;
+
+    // Path 3 — last-resort browser voice (best available, even if classic)
+    if (window.speechSynthesis) {
+        speakWithBrowser(text, pickBestVoice());
     }
 }
 
