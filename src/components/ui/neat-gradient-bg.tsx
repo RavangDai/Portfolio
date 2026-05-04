@@ -11,7 +11,7 @@ const config = {
     { color: "#F0F0F0", enabled: true },
     { color: "#E0E0E0", enabled: true },
   ],
-  speed: 2,
+  speed: 3,
   horizontalPressure: 4,
   verticalPressure: 5,
   waveFrequencyX: 4,
@@ -28,13 +28,13 @@ const config = {
   grainScale: 100,
   grainSparsity: 0,
   grainIntensity: 0.06,
-  grainSpeed: 0.3,
+  grainSpeed: 0.15,
   resolution: 0.5,
   yOffset: 0,
-  yOffsetWaveMultiplier: 5,
-  yOffsetColorMultiplier: 4.5,
-  yOffsetFlowMultiplier: 5.5,
-  flowDistortionA: 0.4,
+  yOffsetWaveMultiplier: 6,
+  yOffsetColorMultiplier: 5.5,
+  yOffsetFlowMultiplier: 6,
+  flowDistortionA: 0.9,
   flowDistortionB: 3,
   flowScale: 3.3,
   flowEase: 0.53,
@@ -47,7 +47,7 @@ const config = {
   textureColorBlending: 0.06,
   textureSeed: 333,
   textureEase: 0.48,
-  proceduralBackgroundColor: "#000000",
+  proceduralBackgroundColor: "#080808",
   textureShapeTriangles: 20,
   textureShapeCircles: 15,
   textureShapeBars: 15,
@@ -60,7 +60,7 @@ const config = {
   fresnelEnabled: false,
   fresnelPower: 2,
   fresnelIntensity: 0.5,
-  fresnelColor: "#FFFFFF",
+  fresnelColor: "#c8c2c2",
   iridescenceEnabled: false,
   iridescenceIntensity: 0.5,
   iridescenceSpeed: 1,
@@ -78,14 +78,26 @@ export function NeatGradientBg() {
 
     gradientRef.current = new NeatGradient({ ref: ref.current, ...config });
 
+    // Smooth scroll-driven yOffset: lerp toward window.scrollY each frame so
+    // wheel ticks don't yank the gradient.
+    let targetY = window.scrollY;
+    let currentY = window.scrollY;
+    let rafId = 0;
+
+    const tick = () => {
+      currentY += (targetY - currentY) * 0.06;
+      if (gradientRef.current) gradientRef.current.yOffset = currentY;
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
     const handleScroll = () => {
-      if (gradientRef.current) {
-        gradientRef.current.yOffset = window.scrollY;
-      }
+      targetY = window.scrollY;
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
+      cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", handleScroll);
       gradientRef.current?.destroy();
     };
