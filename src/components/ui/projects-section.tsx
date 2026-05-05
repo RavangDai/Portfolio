@@ -7,7 +7,7 @@ import {
   motion, AnimatePresence,
   useMotionValue, useSpring, useTransform,
 } from "framer-motion";
-import { Play, X, ArrowUpRight, Sparkles, RotateCcw, Loader2 } from "lucide-react";
+import { Play, X, ArrowUpRight, RotateCcw, Loader2 } from "lucide-react";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 import { cn } from "@/lib/utils";
 
@@ -101,7 +101,7 @@ const projects: Project[] = [
   {
     name: "TickTickFocus",
     tag: "Productivity · PWA",
-    description: "Minimal Pomodoro timer PWA — no distractions, just focus.",
+    description: "Minimal Pomodoro timer PWA. No distractions, just focus.",
     tech: ["React", "Tailwind", "PWA"],
     github: "https://github.com/RavangDai/TickTickFocus",
     live: "https://tick-tick-focus.vercel.app/",
@@ -220,35 +220,60 @@ function JDMirrorPanel({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-12 md:mb-16 relative overflow-hidden rounded-2xl border border-white/[0.10] bg-[#0a0a0c]"
+      className={cn(
+        "group/glass mb-12 md:mb-16 relative overflow-hidden rounded-3xl",
+        "border border-white/[0.09]",
+        "bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-white/[0.005]",
+        "backdrop-blur-2xl",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.07),inset_0_-1px_0_rgba(255,255,255,0.025),0_28px_70px_-30px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.015)]",
+      )}
     >
-      {/* Scanning ambient when analyzing */}
+      {/* Top-edge refraction highlight (the "lens cap" line) */}
+      <div className="pointer-events-none absolute top-0 inset-x-[14%] h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
+
+      {/* Soft corner blooms */}
+      <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/[0.025] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-white/[0.018] blur-3xl" />
+
+      {/* Inner specular wash that brightens subtly on hover */}
+      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-transparent via-transparent to-white/[0.02] opacity-60 transition-opacity duration-700 group-hover/glass:opacity-100" />
+
+      {/* Scanning glass shimmer when analyzing */}
       <AnimatePresence>
         {isAnalyzing && (
           <motion.div
             key="scan"
-            initial={{ x: "-20%", opacity: 0 }}
-            animate={{ x: "120%", opacity: [0, 0.6, 0] }}
+            initial={{ x: "-25%", opacity: 0 }}
+            animate={{ x: "120%", opacity: [0, 0.7, 0] }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 w-[35%]"
+            className="pointer-events-none absolute inset-y-0 w-[40%]"
             style={{
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.07) 60%, transparent)",
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.04) 35%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 65%, transparent)",
             }}
           />
         )}
       </AnimatePresence>
 
       {/* Header bar */}
-      <div className="flex items-center justify-between gap-4 px-5 py-3.5 border-b border-white/[0.06]">
+      <div className="relative flex items-center justify-between gap-4 px-5 py-3.5 border-b border-white/[0.05]">
         <div className="flex items-center gap-2.5">
-          <Sparkles className="h-3.5 w-3.5 text-white/40" />
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-white/50">
+          <span className="relative flex h-1.5 w-1.5 shrink-0">
+            <span
+              className={cn(
+                "absolute inline-flex h-full w-full rounded-full",
+                isAnalyzing ? "animate-ping bg-white/50" : "bg-white/25",
+              )}
+            />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/60" />
+          </span>
+          <span className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-white/55">
             JD Mirror
           </span>
           <span className="hidden sm:block text-[0.6rem] text-white/25 tracking-wide">
-            — paste any job description to see your match
+            paste a role, see what fits
           </span>
         </div>
 
@@ -256,7 +281,7 @@ function JDMirrorPanel({
           {isAnalyzing && (
             <span className="flex items-center gap-1.5 text-[0.62rem] text-white/40 font-mono">
               <Loader2 className="h-3 w-3 animate-spin" />
-              analyzing {wordCount} words
+              reading {wordCount} words
             </span>
           )}
           {hasContent && !isAnalyzing && (
@@ -271,7 +296,7 @@ function JDMirrorPanel({
         </div>
       </div>
 
-      {/* Results banner — shown when analysis is done */}
+      {/* Results banner shown when analysis is done */}
       <AnimatePresence>
         {jdMode === "results" && matchResult && (
           <motion.div
@@ -279,19 +304,15 @@ function JDMirrorPanel({
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-b border-white/[0.06]"
+            className="relative overflow-hidden border-b border-white/[0.05]"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 px-5 py-5">
-              {/* Big match number */}
+            <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 px-5 py-5">
               <div className="flex items-baseline gap-2 shrink-0">
                 <motion.span
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className={cn(
-                    "font-mono font-black leading-none",
-                    scoreColor,
-                  )}
+                  className={cn("font-mono font-black leading-none", scoreColor)}
                   style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)" }}
                 >
                   {matchResult.overallMatch}
@@ -301,16 +322,14 @@ function JDMirrorPanel({
                 </span>
               </div>
 
-              {/* Thin vertical divider */}
               <div className="hidden sm:block h-10 w-px bg-white/[0.08] shrink-0" />
 
-              {/* Summary + hint */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white/75 leading-relaxed">
                   &ldquo;{matchResult.summary}&rdquo;
                 </p>
                 <p className="mt-1.5 text-[0.6rem] text-white/30 font-mono tracking-wide">
-                  projects re-ranked by relevance below · scroll to explore
+                  projects re-sorted by relevance, scroll to explore
                 </p>
               </div>
             </div>
@@ -318,26 +337,26 @@ function JDMirrorPanel({
         )}
       </AnimatePresence>
 
-      {/* Textarea */}
-      <div className="relative px-5 py-4">
+      {/* Textarea section. Subtle engraved-channel feel with darker recess + top hairline */}
+      <div className="relative px-5 py-4 bg-black/[0.18]">
+        <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-white/[0.04]" />
         <textarea
           ref={taRef}
           value={jdText}
           onChange={(e) => setJdText(e.target.value)}
           disabled={isAnalyzing}
-          placeholder="Paste a job description here — I'll re-rank my projects by relevance and tell you exactly which requirements each one covers."
+          placeholder="Paste a job description. I'll rank my projects by relevance and surface the requirements each one already covers."
           rows={3}
           className={cn(
             "w-full resize-none bg-transparent text-[0.82rem] leading-relaxed outline-none transition-colors duration-200",
-            "text-white/70 placeholder:text-white/20",
+            "text-white/75 placeholder:text-white/25",
             "disabled:opacity-50 disabled:cursor-wait",
           )}
           style={{ minHeight: 72, maxHeight: 220 }}
         />
-        {/* Footer hint */}
         {!hasContent && (
-          <p className="text-[0.58rem] font-mono text-white/20 tracking-wide mt-1">
-            powered by Gemini · your JD is never stored
+          <p className="text-[0.58rem] font-mono text-white/25 tracking-wide mt-1">
+            your job description stays on this page
           </p>
         )}
       </div>
