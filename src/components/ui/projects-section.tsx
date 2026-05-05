@@ -719,6 +719,9 @@ export function ProjectsSection() {
   const [jdMode, setJdMode]               = useState<JDMode>("idle");
   const [matchResult, setMatchResult]     = useState<MatchResult | null>(null);
   const debounceRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const errorResetRef                     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastAnalyzedRef                   = useRef<string>("");
+  const inFlightRef                       = useRef<boolean>(false);
 
   const activeProject = projects.find((p) => p.name === activeVideo);
 
@@ -745,7 +748,13 @@ export function ProjectsSection() {
   }, [jdMode, matchResult]);
 
   const analyzeJD = useCallback(async (text: string) => {
-    if (text.trim().length < 30) return;
+    const trimmed = text.trim();
+    if (trimmed.length < 30) return;
+    if (inFlightRef.current) return;
+    if (trimmed === lastAnalyzedRef.current) return;
+
+    inFlightRef.current = true;
+    lastAnalyzedRef.current = trimmed;
     setJdMode("analyzing");
     try {
       const res = await fetch("/api/jd-match", {
@@ -758,24 +767,42 @@ export function ProjectsSection() {
       setMatchResult(data);
       setJdMode("results");
     } catch {
+      lastAnalyzedRef.current = "";
       setJdMode("error");
-      setTimeout(() => setJdMode("idle"), 3000);
+      if (errorResetRef.current) clearTimeout(errorResetRef.current);
+      errorResetRef.current = setTimeout(() => setJdMode("idle"), 3000);
+    } finally {
+      inFlightRef.current = false;
     }
   }, []);
 
-  // Debounce JD text changes
+  // Debounce JD text changes. Only depends on jdText so state changes inside
+  // analyzeJD never re-trigger this effect.
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (jdText.trim().length < 30) {
-      if (jdMode !== "idle") { setJdMode("idle"); setMatchResult(null); }
+    const trimmed = jdText.trim();
+    if (trimmed.length < 30) {
+      lastAnalyzedRef.current = "";
+      setJdMode((m) => (m === "idle" ? m : "idle"));
+      setMatchResult((r) => (r === null ? r : null));
       return;
     }
-    debounceRef.current = setTimeout(() => analyzeJD(jdText), 900);
+    if (trimmed === lastAnalyzedRef.current) return;
+    debounceRef.current = setTimeout(() => analyzeJD(jdText), 1500);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [jdText, analyzeJD, jdMode]);
+  }, [jdText, analyzeJD]);
+
+  // Cleanup pending error-reset timer on unmount
+  useEffect(() => {
+    return () => {
+      if (errorResetRef.current) clearTimeout(errorResetRef.current);
+    };
+  }, []);
 
   const handleClear = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (errorResetRef.current) clearTimeout(errorResetRef.current);
+    lastAnalyzedRef.current = "";
     setJdText("");
     setJdMode("idle");
     setMatchResult(null);
