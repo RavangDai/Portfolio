@@ -8,10 +8,10 @@ import { motion } from "framer-motion";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const NAV_LINKS = [
-  { name: "Home",         href: "#home"         },
-  { name: "Projects",     href: "#projects"     },
-  { name: "Certificates", href: "#certificates" },
-  { name: "Contact",      href: "#contact"      },
+  { name: "Home",         href: "/#home"         },
+  { name: "Projects",     href: "/#projects"     },
+  { name: "Certificates", href: "/#certificates" },
+  { name: "Contact",      href: "/#contact"      },
 ];
 
 const SOCIALS = [
