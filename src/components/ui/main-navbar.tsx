@@ -54,13 +54,12 @@ function NavLink({
           }}
         />
       )}
-      <span className="relative z-10 overflow-hidden leading-none">
-        <span className="block transition-transform duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:-translate-y-full">
-          {label}
-        </span>
-        <span className="absolute inset-0 translate-y-full transition-transform duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:translate-y-0">
-          {label}
-        </span>
+      <span className="relative z-10 flex flex-col items-center gap-0.5">
+        {label}
+        <span
+          className="h-px w-0 rounded-full bg-white/50 transition-[width] duration-[250ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-full"
+          aria-hidden
+        />
       </span>
     </Link>
   );
