@@ -1,42 +1,151 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 
-const PROJECT_CONTEXT = `
-KaryaAI | 2026 | Shipped
-Task manager with JWT auth, MongoDB syncing, and AI-powered task sorting.
-Tech: React, Node.js, MongoDB, Express, Tailwind CSS
-Domains: MERN Stack, Productivity, Full-stack, REST APIs, Authentication, AI
+// ── Project knowledge base ────────────────────────────────────────────────────
 
-CrumbCraft | 2026 | Shipped
-Two AI dev tools in one. Crumb compresses messy conversations into structured docs. Craft engineers precise prompts with guided templates.
-Tech: Next.js, React, Tailwind CSS, Gemini 2.5, Framer Motion
-Domains: Full-stack, AI/LLM, Developer Tools, Prompt Engineering, Productivity
+type Profile = {
+  name: string;
+  tech: string[];     // exact tool/library names — weight 3
+  domains: string[];  // concept/domain terms   — weight 2
+  keywords: string[]; // descriptive phrases     — weight 1
+};
 
-WatchThis!AI | 2026 | In Progress
-AI-powered movie and TV show recommender.
-Tech: Next.js, FastAPI, PostgreSQL, Docker
-Domains: Full-stack, AI, Recommendation Systems, Python, REST APIs, Docker
+const PROFILES: Profile[] = [
+  {
+    name: "KaryaAI",
+    tech: ["react", "node.js", "mongodb", "express", "tailwind", "jwt", "typescript", "javascript"],
+    domains: ["full-stack", "mern", "rest api", "authentication", "ai", "productivity"],
+    keywords: ["task manager", "task management", "crud", "database", "web app", "sync"],
+  },
+  {
+    name: "CrumbCraft",
+    tech: ["next.js", "react", "tailwind", "gemini", "typescript", "javascript"],
+    domains: ["full-stack", "ai", "llm", "generative ai", "developer tools", "prompt engineering", "saas"],
+    keywords: ["ai tools", "document generation", "template", "workflow", "developer productivity"],
+  },
+  {
+    name: "WatchThis!AI",
+    tech: ["next.js", "fastapi", "python", "postgresql", "docker", "react", "typescript"],
+    domains: ["full-stack", "ai", "recommendation system", "machine learning", "rest api", "devops"],
+    keywords: ["recommendation", "streaming", "api", "containerization"],
+  },
+  {
+    name: "VectorVance",
+    tech: ["python", "opencv", "flask", "numpy", "raspberry pi", "mobilenet", "tensorflow"],
+    domains: ["computer vision", "robotics", "embedded systems", "machine learning", "deep learning", "real-time systems", "iot", "autonomous systems"],
+    keywords: ["lane detection", "obstacle detection", "object detection", "autonomous driving", "sensor", "gpio", "edge computing", "hardware"],
+  },
+  {
+    name: "GridNavigator",
+    tech: ["typescript", "react", "vite", "javascript"],
+    domains: ["algorithms", "data structures", "visualization", "frontend"],
+    keywords: ["pathfinding", "graph algorithms", "a*", "dijkstra", "bfs", "dfs", "interactive ui"],
+  },
+  {
+    name: "TickTickFocus",
+    tech: ["react", "tailwind", "javascript", "pwa"],
+    domains: ["frontend", "progressive web app", "offline-first", "productivity"],
+    keywords: ["pomodoro", "timer", "focus", "service worker", "lightweight"],
+  },
+  {
+    name: "Quotex",
+    tech: ["javascript", "react", "tailwind"],
+    domains: ["frontend", "api integration", "ui design", "animations"],
+    keywords: ["quote", "theme switching", "responsive design"],
+  },
+];
 
-VectorVance | 2025 | Shipped
-Raspberry Pi autonomous car with lane-following PID controller, SSD MobileNet obstacle and traffic-sign detection, colour-coded fork navigation, and a live Flask web dashboard with MJPEG stream.
-Tech: Python, OpenCV, Flask, SSD MobileNet v2, NumPy, lgpio, gpiozero
-Domains: Computer Vision, Robotics, Embedded Systems, Python, Real-time Systems, Hardware, PID Control
+// Display names for matched terms shown in the UI
+const DISPLAY: Record<string, string> = {
+  "react": "React", "next.js": "Next.js", "typescript": "TypeScript",
+  "python": "Python", "node.js": "Node.js", "fastapi": "FastAPI",
+  "postgresql": "PostgreSQL", "mongodb": "MongoDB", "docker": "Docker",
+  "opencv": "OpenCV", "flask": "Flask", "tensorflow": "TensorFlow",
+  "numpy": "NumPy", "express": "Express", "tailwind": "Tailwind CSS",
+  "vite": "Vite", "jwt": "JWT", "pwa": "PWA", "gemini": "Gemini AI",
+  "raspberry pi": "Raspberry Pi", "mobilenet": "MobileNet",
+  "full-stack": "full-stack", "mern": "MERN stack", "rest api": "REST API",
+  "machine learning": "machine learning", "deep learning": "deep learning",
+  "computer vision": "computer vision", "ai": "AI", "llm": "LLM",
+  "generative ai": "Generative AI", "developer tools": "developer tooling",
+  "prompt engineering": "prompt engineering", "saas": "SaaS",
+  "recommendation system": "recommendation systems", "devops": "DevOps",
+  "robotics": "robotics", "embedded systems": "embedded systems",
+  "real-time systems": "real-time systems", "iot": "IoT",
+  "autonomous systems": "autonomous systems", "algorithms": "algorithms",
+  "data structures": "data structures", "visualization": "visualization",
+  "progressive web app": "PWA",
+};
 
-GridNavigator | 2025 | Shipped
-Interactive visualizer for pathfinding algorithms (A*, Dijkstra, BFS, DFS) on live grids.
-Tech: TypeScript, React, Vite
-Domains: Algorithms, Data Structures, Visualization, TypeScript, Frontend
+function displayTerm(term: string): string {
+  return DISPLAY[term] ?? term
+    .split(" ")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
 
-TickTickFocus | 2025 | Shipped
-Minimal Pomodoro timer PWA. Fully offline-capable, no distractions.
-Tech: React, Tailwind CSS, PWA, Service Workers
-Domains: Frontend, PWA, Offline-first, Productivity
+// ── Stop words ────────────────────────────────────────────────────────────────
 
-Quotex | 2024 | Shipped
-Random quote generator with theme switching and smooth animations.
-Tech: JavaScript, React, Tailwind CSS
-Domains: Frontend, API Integration, UI/UX, Animations
-`.trim();
+const STOP = new Set([
+  "a","an","the","and","or","but","in","on","at","to","for","of","with",
+  "by","from","as","is","are","was","were","be","been","being","have","has",
+  "had","do","does","did","will","would","could","should","may","might","you",
+  "we","our","your","they","their","this","that","these","those","it","its",
+  "not","no","so","up","out","if","about","who","which","what","when","where",
+  "how","all","also","just","than","then","into","through","including","work",
+  "working","strong","good","excellent","well","experience","experienced",
+  "years","year","team","role","position","candidate","required","requirements",
+  "preferred","plus","ability","skills","skill","knowledge","understanding",
+  "familiarity","looking","seeking","join","help","build","building","create",
+  "using","use","used","new","within","across","both","any","each","every",
+  "some","other","another","more","most","many","much","very","highly",
+]);
+
+// ── Matching logic ────────────────────────────────────────────────────────────
+
+function termHitsJD(term: string, jdLower: string): boolean {
+  const esc = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // Multi-word phrases: substring match is sufficient
+  if (term.includes(" ")) return jdLower.includes(term);
+  // Single tokens: require word boundaries so "react" doesn't match "reactive"
+  return new RegExp(`\\b${esc}\\b`).test(jdLower);
+}
+
+function scoreProject(
+  profile: Profile,
+  jdLower: string
+): { score: number; matched: string[] } {
+  const matched: string[] = [];
+  let raw = 0;
+  let maxRaw = 0;
+
+  for (const t of profile.tech) {
+    maxRaw += 3;
+    if (termHitsJD(t, jdLower)) { raw += 3; matched.push(t); }
+  }
+  for (const d of profile.domains) {
+    maxRaw += 2;
+    if (termHitsJD(d, jdLower)) { raw += 2; matched.push(d); }
+  }
+  for (const k of profile.keywords) {
+    maxRaw += 1;
+    if (termHitsJD(k, jdLower)) { raw += 1; matched.push(k); }
+  }
+
+  const score = maxRaw === 0 ? 0 : Math.min(100, Math.round((raw / maxRaw) * 100));
+  return { score, matched };
+}
+
+function computeOverall(scores: number[]): number {
+  if (scores.every((s) => s === 0)) return 8;
+  // Weight top projects more heavily: top 45%, 2nd 28%, 3rd 15%, rest split
+  const sorted = [...scores].sort((a, b) => b - a);
+  const weights = [0.45, 0.28, 0.15, 0.08, 0.04, 0, 0];
+  const weighted = sorted.reduce((sum, v, i) => sum + v * (weights[i] ?? 0), 0);
+  return Math.min(95, Math.round(weighted));
+}
+
+// ── Route ─────────────────────────────────────────────────────────────────────
 
 export async function POST(req: Request) {
   try {
@@ -49,75 +158,93 @@ export async function POST(req: Request) {
       return Response.json({ error: "JD too short" }, { status: 400 });
     }
 
-    const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
+    const jdLower = jd.toLowerCase();
 
-    const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
-      maxRetries: 0,
-      prompt: `You are analyzing a job description to match it against a developer's portfolio projects.
-
-DEVELOPER: Bibek Pathak, Full-Stack Engineer focused on AI and data.
-Core skills: React, Next.js, TypeScript, Python, FastAPI, MongoDB, Tailwind CSS, REST APIs.
-
-HIS PROJECTS:
-${PROJECT_CONTEXT}
-
-JOB DESCRIPTION:
-${jd.slice(0, 5000)}
-
-Instructions:
-- Score each project 0 to 100 for how relevant it is to this specific job description
-- Extract up to 3 short phrases (2 to 6 words each) that appear verbatim or near-verbatim in the JD and are satisfied by that project
-- Be honest: if a project is irrelevant, score it 0 to 15 with empty matchedRequirements
-- overallMatch is a holistic score of how well Bibek's full portfolio fits the role
-- All text should sound like Bibek speaking in first person (direct, confident, no hype words)
-- NEVER use em-dashes (—) or en-dashes (–) in any output text. Use periods, commas, colons, or parentheses instead.
-
-Return ONLY raw JSON, no markdown fences, no explanation, just the object:
-{
-  "overallMatch": <integer 0-100>,
-  "summary": "<one punchy sentence in first person as Bibek about the overall fit>",
-  "rankedProjects": [
-    {
-      "name": "<exact name: KaryaAI | CrumbCraft | WatchThis!AI | VectorVance | GridNavigator | TickTickFocus | Quotex>",
-      "score": <integer 0-100>,
-      "matchedRequirements": ["<short phrase from JD>"],
-      "whyItMatters": "<one sentence in first person explaining why this project is evidence for this role>"
-    }
-  ]
-}
-Include all 7 projects, sorted by score descending.`,
+    // ── Our own scoring — no AI involved ──────────────────────────────────────
+    const scored = PROFILES.map((profile) => {
+      const { score, matched } = scoreProject(profile, jdLower);
+      return { name: profile.name, score, matched };
     });
 
-    const clean = text
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```\s*$/i, "")
-      .trim();
+    const overallMatch = computeOverall(scored.map((p) => p.score));
+    const ranked = [...scored].sort((a, b) => b.score - a.score);
 
-    const result = JSON.parse(clean);
+    // ── Gemini writes prose only — scores are locked ──────────────────────────
+    const matchSummary = ranked
+      .map((p) => `${p.name}: score=${p.score}/100, matched=[${p.matched.map(displayTerm).join(", ")}]`)
+      .join("\n");
 
-    // Validate shape minimally
-    if (
-      typeof result.overallMatch !== "number" ||
-      !Array.isArray(result.rankedProjects)
-    ) {
-      throw new Error("Invalid response shape");
-    }
-
-    // Defense in depth: strip em/en dashes from any model-generated copy.
     const stripDashes = (s: unknown) =>
       typeof s === "string" ? s.replace(/[—–]/g, ",") : s;
-    if (typeof result.summary === "string") result.summary = stripDashes(result.summary);
-    if (Array.isArray(result.rankedProjects)) {
-      for (const p of result.rankedProjects) {
-        p.whyItMatters = stripDashes(p.whyItMatters);
-        if (Array.isArray(p.matchedRequirements)) {
-          p.matchedRequirements = p.matchedRequirements.map(stripDashes);
-        }
-      }
+
+    let prose: { summary?: string; whyItMatters?: Record<string, string> } = {};
+
+    try {
+      const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
+      const { text } = await generateText({
+        model: google("gemini-2.5-flash"),
+        maxRetries: 0,
+        prompt: `You are writing copy for Bibek Pathak's portfolio JD matcher.
+
+DEVELOPER: Bibek Pathak, Full-Stack Engineer. Core skills: React, Next.js, TypeScript, Python, FastAPI, AI/ML.
+
+JOB DESCRIPTION (excerpt):
+${jd.slice(0, 1500)}
+
+PRE-COMPUTED SCORES (do not change — these are final):
+Overall fit: ${overallMatch}/100
+${matchSummary}
+
+Write ONLY the human-readable copy based on the data above.
+Rules:
+- summary: one direct first-person sentence about overall fit, max 18 words
+- whyItMatters per project: one direct first-person sentence, max 18 words. If score < 20, be honest and brief.
+- Never use em-dashes or en-dashes. Use commas or periods instead.
+- Voice: Bibek speaking, direct and confident, no filler words or hype.
+
+Return ONLY raw JSON, no markdown:
+{
+  "summary": "...",
+  "whyItMatters": {
+    "KaryaAI": "...",
+    "CrumbCraft": "...",
+    "WatchThis!AI": "...",
+    "VectorVance": "...",
+    "GridNavigator": "...",
+    "TickTickFocus": "...",
+    "Quotex": "..."
+  }
+}`,
+      });
+
+      const clean = text
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```\s*$/i, "")
+        .trim();
+      prose = JSON.parse(clean);
+    } catch (proseErr) {
+      console.error("Gemini prose generation failed, using fallbacks:", proseErr);
     }
 
-    return Response.json(result);
+    const rankedProjects = ranked.map((p) => ({
+      name: p.name,
+      score: p.score,
+      matchedRequirements: p.matched.map(displayTerm).slice(0, 3),
+      whyItMatters: stripDashes(
+        prose.whyItMatters?.[p.name] ??
+          (p.score >= 20
+            ? `This project directly demonstrates skills relevant to this role.`
+            : `This project shows breadth but is less central to this role.`)
+      ) as string,
+    }));
+
+    return Response.json({
+      overallMatch,
+      summary: stripDashes(
+        prose.summary ?? `My portfolio matches ${overallMatch}% of this role based on tech and domain overlap.`
+      ),
+      rankedProjects,
+    });
   } catch (err) {
     console.error("JD match error:", err);
     return Response.json({ error: "Analysis failed" }, { status: 500 });
