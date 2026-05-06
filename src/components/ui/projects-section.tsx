@@ -87,6 +87,17 @@ const projects: Project[] = [
     image: "/watchthisai.png",
   },
   {
+    name: "VectorVance",
+    tag: "Raspberry Pi · Computer Vision · Robotics",
+    description:
+      "Autonomous car on Raspberry Pi that follows lanes, detects obstacles and traffic signs via SSD MobileNet, navigates colour-coded forks, and streams live telemetry to a web dashboard.",
+    tech: ["Python", "OpenCV", "Flask", "Raspberry Pi", "SSD MobileNet", "PID Control", "NumPy", "lgpio"],
+    github: "https://github.com/RavangDai/VectorVance",
+    year: 2025,
+    status: "Completed",
+    image: "/vvdash.png",
+  },
+  {
     name: "GridNavigator",
     tag: "Algorithms · Visualization",
     description:

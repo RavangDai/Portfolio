@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
@@ -9,9 +9,7 @@ import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
-const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%";
-
-function ScrambleLink({
+function NavLink({
   text,
   href,
   isActive,
@@ -22,35 +20,11 @@ function ScrambleLink({
   isActive: boolean;
   onClick?: () => void;
 }) {
-  const upper = text.toUpperCase();
-  const [display, setDisplay] = useState(upper);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const scramble = useCallback(() => {
-    let iter = 0;
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setDisplay(
-        upper.split("").map((char, i) => {
-          if (i < iter) return char;
-          return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-        }).join("")
-      );
-      iter += 0.7;
-      if (iter > upper.length) {
-        clearInterval(timerRef.current!);
-        setDisplay(upper);
-      }
-    }, 35);
-  }, [upper]);
-
-  useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
-
+  const label = text.toUpperCase();
   return (
     <Link
       href={href}
       onClick={onClick}
-      onMouseEnter={scramble}
       className={cn(
         "group relative flex items-center px-4 py-2 text-[0.72rem] font-semibold tracking-[0.1em] uppercase transition-colors duration-300 select-none",
         isActive ? "text-white" : "text-white/55 hover:text-white"
@@ -80,7 +54,14 @@ function ScrambleLink({
           }}
         />
       )}
-      <span className="relative z-10">{display}</span>
+      <span className="relative z-10 overflow-hidden leading-none">
+        <span className="block transition-transform duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:-translate-y-full">
+          {label}
+        </span>
+        <span className="absolute inset-0 translate-y-full transition-transform duration-[240ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:translate-y-0">
+          {label}
+        </span>
+      </span>
     </Link>
   );
 }
@@ -212,7 +193,7 @@ export function MainNavbar() {
             {/* ── Desktop nav links ── */}
             <div className="hidden md:flex items-center gap-1">
               {links.map((link) => (
-                <ScrambleLink
+                <NavLink
                   key={link.href}
                   text={link.name}
                   href={link.href}

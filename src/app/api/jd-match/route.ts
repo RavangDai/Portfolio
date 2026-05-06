@@ -17,6 +17,11 @@ AI-powered movie and TV show recommender.
 Tech: Next.js, FastAPI, PostgreSQL, Docker
 Domains: Full-stack, AI, Recommendation Systems, Python, REST APIs, Docker
 
+VectorVance | 2025 | Shipped
+Raspberry Pi autonomous car with lane-following PID controller, SSD MobileNet obstacle and traffic-sign detection, colour-coded fork navigation, and a live Flask web dashboard with MJPEG stream.
+Tech: Python, OpenCV, Flask, SSD MobileNet v2, NumPy, lgpio, gpiozero
+Domains: Computer Vision, Robotics, Embedded Systems, Python, Real-time Systems, Hardware, PID Control
+
 GridNavigator | 2025 | Shipped
 Interactive visualizer for pathfinding algorithms (A*, Dijkstra, BFS, DFS) on live grids.
 Tech: TypeScript, React, Vite
@@ -74,14 +79,14 @@ Return ONLY raw JSON, no markdown fences, no explanation, just the object:
   "summary": "<one punchy sentence in first person as Bibek about the overall fit>",
   "rankedProjects": [
     {
-      "name": "<exact name: KaryaAI | CrumbCraft | WatchThis!AI | GridNavigator | TickTickFocus | Quotex>",
+      "name": "<exact name: KaryaAI | CrumbCraft | WatchThis!AI | VectorVance | GridNavigator | TickTickFocus | Quotex>",
       "score": <integer 0-100>,
       "matchedRequirements": ["<short phrase from JD>"],
       "whyItMatters": "<one sentence in first person explaining why this project is evidence for this role>"
     }
   ]
 }
-Include all 6 projects, sorted by score descending.`,
+Include all 7 projects, sorted by score descending.`,
     });
 
     const clean = text
