@@ -15,7 +15,7 @@ import {
   Download,
 } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
-import { NeatGradientBg } from "@/components/ui/neat-gradient-bg";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const TECH_STACK = [
@@ -87,7 +87,9 @@ export function NewHero() {
     >
 
       {/* ── Background ── */}
-      <NeatGradientBg />
+      <AuroraBackground className="!absolute !inset-0 !h-full !bg-transparent !justify-start">
+        <></>
+      </AuroraBackground>
 
       {/* LEFT TEXT SHIELD — critical for readability: dark gradient covers the copy column */}
       <div className="pointer-events-none absolute inset-0"
