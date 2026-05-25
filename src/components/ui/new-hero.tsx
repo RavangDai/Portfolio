@@ -334,7 +334,7 @@ export function NewHero() {
                   minWidth: "140px",
                 }}
               >
-                <p className="text-[0.58rem] font-mono mb-1.5 leading-none" style={{ color: "#98c379", textShadow: "0 0 10px rgba(152,195,121,0.45)" }}>// stack.ts</p>
+                <p className="text-[0.58rem] font-mono mb-1.5 leading-none" style={{ color: "#98c379", textShadow: "0 0 10px rgba(152,195,121,0.45)" }}>{"// stack.ts"}</p>
                 <div className="font-mono space-y-[3px]" style={{ fontSize: "0.62rem", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
                   <p>
                     <span style={{ color: "#c678dd" }}>const </span>
@@ -373,7 +373,7 @@ export function NewHero() {
               >
                 <p className="text-[0.68rem] font-semibold uppercase tracking-widest mb-2.5 leading-none" style={{ color: "rgba(255,255,255,0.65)" }}>Projects</p>
                 <div className="flex items-end gap-2">
-                  <span className="text-[2rem] font-black text-white leading-none">20+</span>
+                  <span className="text-[2rem] font-black text-white leading-none">10+</span>
                   <span className="text-[0.7rem] font-semibold mb-1.5" style={{ color: "rgba(255,255,255,0.55)" }}>built</span>
                 </div>
               </motion.div>

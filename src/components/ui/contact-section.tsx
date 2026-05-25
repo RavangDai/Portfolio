@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
@@ -11,6 +11,8 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export function ContactSection() {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
 
@@ -20,17 +22,40 @@ export function ContactSection() {
     setTimeout(() => setCopied(false), 2200);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
+
     const form = e.currentTarget;
     const fd      = new FormData(form);
     const name    = (fd.get("name")    as string)?.trim() || "";
+    const email   = (fd.get("email")   as string)?.trim() || "";
     const subject = (fd.get("subject") as string)?.trim() || "New message";
     const message = (fd.get("message") as string)?.trim() || "";
-    window.location.href = `mailto:bibekg2029@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\n\n${message}`)}`;
-    setFormSubmitted(true);
-    form.reset();
-    setTimeout(() => setFormSubmitted(false), 5000);
+
+    setSubmitting(true);
+    setErrorMsg(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Couldn't send the message. Please try again.");
+      }
+
+      form.reset();
+      setFormSubmitted(true);
+      setTimeout(() => setFormSubmitted(false), 5000);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -234,7 +259,7 @@ export function ContactSection() {
                       transition={{ duration: 0.5, delay: 0.65, ease }}
                       className="text-2xl font-bold tracking-tighter text-white"
                     >
-                      Message queued.
+                      Message sent.
                     </motion.h3>
                     <motion.p
                       initial={{ opacity: 0, y: 10 }}
@@ -242,7 +267,7 @@ export function ContactSection() {
                       transition={{ duration: 0.5, delay: 0.78, ease }}
                       className="text-sm text-white/35 max-w-[260px] leading-relaxed"
                     >
-                      Your mail client should be opening now. I&apos;ll get back to you soon.
+                      Thanks for reaching out. It landed in my inbox and I&apos;ll get back to you soon.
                     </motion.p>
                   </div>
 
@@ -312,14 +337,38 @@ export function ContactSection() {
                     />
                   </MinimalField>
 
-                  <div className="flex items-center gap-4 pt-2">
-                    <LiquidButton
-                      type="submit"
-                      size="lg"
-                      className="rounded-full font-semibold"
-                    >
-                      Send Message
-                    </LiquidButton>
+                  <div className="flex flex-col gap-3 pt-2">
+                    <div className="flex items-center gap-4">
+                      <LiquidButton
+                        type="submit"
+                        size="lg"
+                        disabled={submitting}
+                        className="rounded-full font-semibold disabled:opacity-60 disabled:cursor-wait"
+                      >
+                        {submitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          "Send Message"
+                        )}
+                      </LiquidButton>
+                    </div>
+                    <AnimatePresence>
+                      {errorMsg && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.25, ease }}
+                          className="text-xs text-red-300/80 leading-relaxed"
+                          role="alert"
+                        >
+                          {errorMsg}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </motion.form>
               )}
