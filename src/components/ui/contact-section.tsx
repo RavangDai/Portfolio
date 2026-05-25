@@ -385,7 +385,7 @@ export function ContactSection() {
 
 const minimalInput = cn(
   "w-full bg-transparent border-0 border-b border-white/[0.07] py-3 px-0",
-  "text-sm text-white/80 placeholder-white/[0.1]",
+  "text-sm text-white/80 placeholder-white/40",
   "transition-all duration-300",
   "focus:border-white/30 focus:outline-none",
   "hover:border-white/[0.14]"
