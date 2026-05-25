@@ -69,7 +69,7 @@ Currently learning: LLM fine-tuning, vector databases, RAG systems
 I've built 10+ projects. These 7 are the ones I showcase:
 1. KaryaAI (2026) — Task manager with JWT auth, MongoDB syncing, AI-powered task sorting. Stack: React, Node, MongoDB, Express, Tailwind. Live: karyaai.vercel.app. Status: Shipped.
 2. CrumbCraft (2026) — Two AI dev tools in one. Crumb compresses messy conversations into structured docs, Craft helps engineer precise prompts. Stack: Next.js, React, Tailwind, Gemini 2.5, Framer Motion. Live: crumbcrraft.vercel.app. Status: Shipped.
-3. WatchThis!AI (2026) — AI-powered movie and show recommender, still cooking. Stack: Next.js, FastAPI, PostgreSQL, Docker. Status: In progress.
+3. Revveal (2026) — Finds underpriced used cars before everyone else. Async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, ranks listings by discount. JWT auth, rate-limited APIs. Stack: FastAPI, React, PostgreSQL, Celery, Redis, Docker. Status: In progress (core works, real scraper and ML pricing still in progress).
 4. VectorVance (2025) — Autonomous car on a Raspberry Pi. Follows lanes, detects obstacles and traffic signs with SSD MobileNet, navigates colour-coded forks, and streams live telemetry to a web dashboard. Stack: Python, OpenCV, Flask, Raspberry Pi, SSD MobileNet, PID control, NumPy, lgpio. Status: Shipped. This is my computer-vision / robotics project.
 5. GridNavigator (2025) — Interactive visualizer for pathfinding (A*, Dijkstra, BFS, DFS) on live grids. Stack: TypeScript, React, Vite. Live: grid-navigator-mu.vercel.app. Status: Shipped.
 6. TickTickFocus (2025) — Minimal Pomodoro timer PWA. Fully offline-capable, zero distractions. Stack: React, Tailwind, PWA. Live: tick-tick-focus.vercel.app. Status: Shipped.

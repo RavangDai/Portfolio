@@ -77,14 +77,15 @@ const projects: Project[] = [
     image: "/CrumbCraft.png",
   },
   {
-    name: "WatchThis!AI",
-    tag: "Full-stack · AI",
-    description: "Movie/show recommender powered by AI. Still cooking.",
-    tech: ["Next.js", "FastAPI", "PostgreSQL", "Docker"],
-    github: "https://github.com/RavangDai/WatchThisAI",
+    name: "Revveal",
+    tag: "Full-stack · AI · Data",
+    description:
+      "Finds underpriced used cars before everyone else. An async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, and ranks listings by discount, behind JWT auth and rate-limited APIs.",
+    tech: ["FastAPI", "React", "PostgreSQL", "Celery", "Redis", "Docker"],
+    github: "https://github.com/RavangDai/car-deal",
     year: 2026,
     status: "In progress",
-    image: "/watchthisai.png",
+    image: "/revveal.png",
   },
   {
     name: "VectorVance",

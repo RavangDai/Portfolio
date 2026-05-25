@@ -24,10 +24,10 @@ const PROFILES: Profile[] = [
     keywords: ["ai tools", "document generation", "template", "workflow", "developer productivity"],
   },
   {
-    name: "WatchThis!AI",
-    tech: ["next.js", "fastapi", "python", "postgresql", "docker", "react", "typescript"],
-    domains: ["full-stack", "ai", "recommendation system", "machine learning", "rest api", "devops"],
-    keywords: ["recommendation", "streaming", "api", "containerization"],
+    name: "Revveal",
+    tech: ["fastapi", "python", "react", "typescript", "postgresql", "celery", "redis", "docker", "sqlalchemy"],
+    domains: ["full-stack", "ai", "machine learning", "rest api", "devops", "web scraping", "async", "background jobs", "authentication"],
+    keywords: ["used cars", "price prediction", "marketplace", "scraping", "task queue", "jwt", "rate limiting", "data pipeline"],
   },
   {
     name: "VectorVance",
@@ -63,6 +63,9 @@ const DISPLAY: Record<string, string> = {
   "opencv": "OpenCV", "flask": "Flask", "tensorflow": "TensorFlow",
   "numpy": "NumPy", "express": "Express", "tailwind": "Tailwind CSS",
   "vite": "Vite", "jwt": "JWT", "pwa": "PWA", "gemini": "Gemini AI",
+  "celery": "Celery", "redis": "Redis", "sqlalchemy": "SQLAlchemy",
+  "web scraping": "web scraping", "background jobs": "background jobs",
+  "async": "async", "authentication": "authentication",
   "raspberry pi": "Raspberry Pi", "mobilenet": "MobileNet",
   "full-stack": "full-stack", "mern": "MERN stack", "rest api": "REST API",
   "machine learning": "machine learning", "deep learning": "deep learning",
@@ -208,7 +211,7 @@ Return ONLY raw JSON, no markdown:
   "whyItMatters": {
     "KaryaAI": "...",
     "CrumbCraft": "...",
-    "WatchThis!AI": "...",
+    "Revveal": "...",
     "VectorVance": "...",
     "GridNavigator": "...",
     "TickTickFocus": "...",

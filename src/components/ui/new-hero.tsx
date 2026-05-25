@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
@@ -63,19 +62,19 @@ function TechMarquee() {
 
 export function NewHero() {
   // Mouse parallax — direct DOM manipulation, zero re-renders
-  const photoRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const photo = photoRef.current;
-    if (!photo) return;
+    const panel = panelRef.current;
+    if (!panel) return;
     const { innerWidth: w, innerHeight: h } = window;
     const x = (e.clientX / w - 0.5) * 2;   // -1 to 1
     const y = (e.clientY / h - 0.5) * 2;   // -1 to 1
-    photo.style.transform = `translate(${x * -10}px, ${y * -7}px)`;
+    panel.style.transform = `translate(${x * -10}px, ${y * -7}px)`;
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    if (photoRef.current) photoRef.current.style.transform = "translate(0px, 0px)";
+    if (panelRef.current) panelRef.current.style.transform = "translate(0px, 0px)";
   }, []);
 
   return (
@@ -253,117 +252,127 @@ export function NewHero() {
             </motion.div>
           </div>
 
-          {/* ═══════════════ RIGHT — Photo ═══════════════ */}
+          {/* ═══════════════ RIGHT — Code panel ═══════════════ */}
           <motion.div
             initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: 0.35, ease }}
-            className="hidden lg:flex lg:w-[48%] relative justify-center"
+            className="hidden lg:flex lg:w-[48%] relative items-center justify-center"
           >
             {/* Ambient glass blobs */}
             <div className="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-white/8 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-56 h-56 rounded-full bg-white/5 blur-3xl pointer-events-none" />
 
-            {/* Photo card — parallax wrapper */}
+            {/* Parallax wrapper */}
             <div
-              ref={photoRef}
-              className="relative w-full max-w-[480px]"
+              ref={panelRef}
+              className="relative w-full max-w-[460px]"
               style={{ transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1)", willChange: "transform" }}
             >
-              {/* Ambient glow under photo */}
+              {/* Ambient glow under panel */}
               <div
                 className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none"
                 style={{ background: "radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(180,180,180,0.2) 50%, transparent 90%)" }}
               />
 
-              {/* Cutout image */}
-              <div className="group relative mx-auto">
-                <Image
-                  src="/bibekdai.png"
-                  alt="Bibek Pathak"
-                  width={480}
-                  height={560}
-                  priority
-                  className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02] drop-shadow-2xl"
-                  style={{ filter: "drop-shadow(0 20px 60px rgba(0,0,0,0.8))" }}
-                />
+              {/* ── T-shaped skill map ── */}
+              <div className="relative mx-auto flex flex-col items-center py-2">
 
-                {/* Hover speech-bubble */}
-                <div
-                  className="absolute top-8 -right-4 w-[210px] -translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-350 ease-out pointer-events-none"
+                {/* Breadth caption */}
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.55, ease }}
+                  className="mb-3 flex items-center gap-3 text-[0.55rem] font-semibold uppercase tracking-[0.32em] text-white/35"
+                >
+                  <span className="h-px w-7 bg-gradient-to-r from-transparent to-white/25" />
+                  Breadth
+                  <span className="h-px w-7 bg-gradient-to-l from-transparent to-white/25" />
+                </motion.div>
+
+                {/* Roof — horizontal bar (SWE · Data) */}
+                <motion.div
+                  initial={{ opacity: 0, y: -18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.65, ease }}
+                  className="relative z-10 flex h-[68px] w-[330px] items-center justify-between overflow-hidden rounded-2xl px-9"
                   style={{
-                    background: "rgba(10, 10, 10, 0.75)",
-                    backdropFilter: "blur(24px)",
-                    WebkitBackdropFilter: "blur(24px)",
-                    border: "1px solid rgba(255,255,255,0.14)",
-                    borderTopColor: "rgba(255,255,255,0.25)",
-                    borderRadius: "14px 14px 14px 2px",
-                    padding: "13px 15px",
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15), 0 16px 48px rgba(0,0,0,0.6)",
+                    background: "linear-gradient(145deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0.06) 100%)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderTopColor: "rgba(255,255,255,0.24)",
+                    backdropFilter: "blur(32px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 24px 70px rgba(0,0,0,0.55)",
                   }}
                 >
-                  <p className="text-white/80 text-[0.75rem] leading-relaxed font-medium">
-                    A full-stack developer &amp; AI engineer passionate about performance, clean code, and exceptional UX.
-                  </p>
-                  <span className="block mt-2 text-white/45 text-[0.68rem] tracking-wide font-semibold">
-                    From concept to clean code.
-                  </span>
-                  <span
-                    className="absolute -bottom-[9px] left-5 w-0 h-0"
-                    style={{
-                      borderLeft: "9px solid transparent",
-                      borderRight: "9px solid transparent",
-                      borderTop: "9px solid rgba(10,10,10,0.75)",
-                    }}
+                  <div className="pointer-events-none absolute top-0 inset-x-[10%] h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                  <span className="text-xl font-black tracking-tight text-white">SWE</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
+                  <span className="text-xl font-black tracking-tight text-white">Data</span>
+                  {/* traveling light across the roof */}
+                  <motion.span
+                    aria-hidden
+                    className="pointer-events-none absolute top-1/2 h-12 w-12 -translate-y-1/2 rounded-full"
+                    style={{ background: "radial-gradient(circle, rgba(255,255,255,0.22), transparent 70%)" }}
+                    animate={{ x: [-48, 330], opacity: [0, 1, 0] }}
+                    transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut", delay: 1.6 }}
                   />
-                </div>
+                </motion.div>
+
+                {/* Stem — vertical bar (AI / ML) */}
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.85, ease }}
+                  className="relative -mt-px flex h-[200px] w-[86px] flex-col items-center justify-center gap-1.5 overflow-hidden rounded-b-2xl"
+                  style={{
+                    background: "linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 70%, rgba(255,255,255,0.05) 100%)",
+                    borderLeft: "1px solid rgba(255,255,255,0.12)",
+                    borderRight: "1px solid rgba(255,255,255,0.12)",
+                    borderBottom: "1px solid rgba(255,255,255,0.12)",
+                    backdropFilter: "blur(32px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10), 0 24px 70px rgba(0,0,0,0.5)",
+                  }}
+                >
+                  <span className="text-lg font-black leading-none tracking-tight text-white">AI</span>
+                  <span className="text-sm leading-none text-white/30">/</span>
+                  <span className="text-lg font-black leading-none tracking-tight text-white">ML</span>
+                  {/* traveling light down the stem */}
+                  <motion.span
+                    aria-hidden
+                    className="pointer-events-none absolute left-1/2 h-10 w-10 -translate-x-1/2 rounded-full"
+                    style={{ background: "radial-gradient(circle, rgba(255,255,255,0.20), transparent 70%)" }}
+                    animate={{ y: [-40, 200], opacity: [0, 1, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                  />
+                  {/* vertical DEPTH label */}
+                  <span
+                    className="pointer-events-none absolute -right-7 top-1/2 -translate-y-1/2 text-[0.5rem] font-semibold uppercase tracking-[0.3em] text-white/30"
+                    style={{ writingMode: "vertical-rl" }}
+                  >
+                    Depth
+                  </span>
+                </motion.div>
+
+                {/* Concept label */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 1.05, ease }}
+                  className="mt-4 text-[0.58rem] font-semibold uppercase tracking-[0.3em] text-white/40"
+                >
+                  T-shaped engineer
+                </motion.div>
               </div>
 
-              {/* Floating code card — liquid glass */}
-              <motion.div
-                animate={{ y: [-6, 8, -6], x: [-2, 3, -2], rotate: [-0.6, 0.5, -0.6] }}
-                transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-12 top-14 px-3.5 py-2.5 rounded-2xl"
-                style={{
-                  background: "linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderTopColor: "rgba(255,255,255,0.22)",
-                  backdropFilter: "blur(32px) saturate(180%)",
-                  WebkitBackdropFilter: "blur(32px) saturate(180%)",
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 20px 60px rgba(0,0,0,0.6)",
-                  minWidth: "140px",
-                }}
-              >
-                <p className="text-[0.58rem] font-mono mb-1.5 leading-none" style={{ color: "#98c379", textShadow: "0 0 10px rgba(152,195,121,0.45)" }}>{"// stack.ts"}</p>
-                <div className="font-mono space-y-[3px]" style={{ fontSize: "0.62rem", lineHeight: 1.6, textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
-                  <p>
-                    <span style={{ color: "#c678dd" }}>const </span>
-                    <span style={{ color: "#61afef" }}>skills</span>
-                    <span style={{ color: "#abb2bf" }}> = </span>
-                    <span style={{ color: "#e5c07b" }}>[</span>
-                  </p>
-                  <p className="pl-4">
-                    <span style={{ color: "#98c379" }}>&quot;React&quot;</span>
-                    <span style={{ color: "#abb2bf" }}>, </span>
-                    <span style={{ color: "#98c379" }}>&quot;Next.js&quot;</span>
-                    <span style={{ color: "#abb2bf" }}>,</span>
-                  </p>
-                  <p className="pl-4">
-                    <span style={{ color: "#98c379" }}>&quot;Python&quot;</span>
-                    <span style={{ color: "#abb2bf" }}>, </span>
-                    <span style={{ color: "#98c379" }}>&quot;AI/ML&quot;</span>
-                  </p>
-                  <p><span style={{ color: "#e5c07b" }}>]</span></p>
-                </div>
-              </motion.div>
-
-              {/* Floating stats card — liquid glass */}
+              {/* Floating stat card — liquid glass */}
               <motion.div
                 animate={{ y: [8, -5, 8], x: [3, -3, 3], rotate: [0.5, -0.7, 0.5] }}
                 transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
-                className="absolute -right-8 bottom-24 px-5 py-3.5 rounded-2xl"
+                className="absolute -right-7 -bottom-7 px-5 py-3.5 rounded-2xl"
                 style={{
-                  background: "linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)",
+                  background: "linear-gradient(145deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 100%)",
                   border: "1px solid rgba(255,255,255,0.12)",
                   borderTopColor: "rgba(255,255,255,0.22)",
                   backdropFilter: "blur(32px) saturate(180%)",
@@ -371,10 +380,10 @@ export function NewHero() {
                   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 20px 60px rgba(0,0,0,0.6)",
                 }}
               >
-                <p className="text-[0.68rem] font-semibold uppercase tracking-widest mb-2.5 leading-none" style={{ color: "rgba(255,255,255,0.65)" }}>Projects</p>
+                <p className="text-[0.62rem] font-semibold uppercase tracking-widest mb-2 leading-none" style={{ color: "rgba(255,255,255,0.6)" }}>Projects</p>
                 <div className="flex items-end gap-2">
                   <span className="text-[2rem] font-black text-white leading-none">10+</span>
-                  <span className="text-[0.7rem] font-semibold mb-1.5" style={{ color: "rgba(255,255,255,0.55)" }}>built</span>
+                  <span className="text-[0.7rem] font-semibold mb-1.5" style={{ color: "rgba(255,255,255,0.55)" }}>shipped</span>
                 </div>
               </motion.div>
             </div>
