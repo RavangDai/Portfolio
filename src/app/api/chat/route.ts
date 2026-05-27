@@ -212,8 +212,16 @@ async function getRepos(): Promise<GHRepo[]> {
   const now = Date.now();
   if (ghCache && now - ghCache.fetchedAt < GH_TTL) return ghCache.data;
   try {
+    const headers: Record<string, string> = {
+      Accept: "application/vnd.github.v3+json",
+      "User-Agent": "portfolio-chatbot",
+    };
+    // Authenticated requests get 5000 req/hr instead of 60 req/hr (per IP)
+    if (process.env.GITHUB_TOKEN) {
+      headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    }
     const res = await fetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=pushed`, {
-      headers: { Accept: "application/vnd.github.v3+json", "User-Agent": "portfolio-chatbot" },
+      headers,
       signal: AbortSignal.timeout(3500),
     });
     if (!res.ok) return ghCache?.data ?? [];
