@@ -185,7 +185,7 @@ function buildStackResponse(): string {
 
 function buildContactResponse(): string {
   return (
-    `Best way to reach me: bibekg2029@gmail.com. ` +
+    `Best way to reach me: drbibekg2029@gmail.com. ` +
     `Also on LinkedIn at https://linkedin.com/in/bibek-pathak-10398a301 ` +
     `and GitHub at https://github.com/RavangDai.\n\n` +
     `Resume is on the site — hit "Download Resume" on the hero. I'm open to remote or onsite roles right now.\n` +
@@ -347,7 +347,7 @@ When I don't know something: "honestly, never touched it" / "outside my lane, so
 - Full-Stack Engineer focused on AI and data
 - Studying Computer Science at Southeastern Louisiana University (SELU)
 - Looking for internships and engineering roles, remote or onsite
-- Email: bibekg2029@gmail.com
+- Email: drbibekg2029@gmail.com
 - LinkedIn: linkedin.com/in/bibek-pathak-10398a301
 - GitHub: github.com/RavangDai
 - Won 1st place at HackLions 2026 with DollarPilot (built in 6 hours, devpost.com/software/dollarpilot)
@@ -456,7 +456,7 @@ export async function POST(req: Request) {
     // ── 3. Gemini for conversational queries ─────────────────────────────────
     if (!process.env.GEMINI_API_KEY) {
       return new Response(
-        "AI is not configured. Reach out directly at bibekg2029@gmail.com\n[[FOLLOWUPS: see projects | contact | certificates]]",
+        "AI is not configured. Reach out directly at drbibekg2029@gmail.com\n[[FOLLOWUPS: see projects | contact | certificates]]",
         { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } }
       );
     }

@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !CONTACT_TO || !CONTACT_FROM) {
       console.error("Contact form: SMTP env vars are not configured.");
       return Response.json(
-        { error: "Email isn't configured right now. Please reach me directly at bibekg2029@gmail.com." },
+        { error: "Email isn't configured right now. Please reach me directly at drbibekg2029@gmail.com." },
         { status: 500 },
       );
     }
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Contact form error:", err);
     return Response.json(
-      { error: "Couldn't send the message. Please email me directly at bibekg2029@gmail.com." },
+      { error: "Couldn't send the message. Please email me directly at drbibekg2029@gmail.com." },
       { status: 500 },
     );
   }

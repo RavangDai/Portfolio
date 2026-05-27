@@ -17,7 +17,7 @@ export function ContactSection() {
 
 
   const handleCopy = () => {
-    navigator.clipboard.writeText("bibekg2029@gmail.com");
+    navigator.clipboard.writeText("drbibekg2029@gmail.com");
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);
   };
@@ -124,7 +124,7 @@ export function ContactSection() {
                           transition={{ duration: 0.22, ease }}
                           className="text-base font-medium text-white/60 hover:text-white transition-colors select-all block"
                         >
-                          bibekg2029@gmail.com
+                          drbibekg2029@gmail.com
                         </motion.span>
                       )}
                     </AnimatePresence>
