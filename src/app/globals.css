@@ -5,22 +5,8 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ===== Respect the user's reduced-motion preference ===== */
-/* Framer Motion transforms are handled via <MotionConfig reducedMotion="user">.
-   This neutralizes the CSS keyframe animations (aurora, shimmer, grain, float, etc.). */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-}
-
+/* Animations always play, regardless of the OS "reduce motion" setting.
+   (Framer Motion is forced on via <MotionConfig reducedMotion="never">.) */
 
 @custom-variant dark (&:is(.dark *));
 

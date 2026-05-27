@@ -62,7 +62,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark scroll-smooth ${raleway.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-[#080808] text-white antialiased min-h-screen" suppressHydrationWarning>
-        <MotionConfig reducedMotion="user">
+        <MotionConfig reducedMotion="never">
           <ScrollProgress />
           <MainNavbar />
           {children}
