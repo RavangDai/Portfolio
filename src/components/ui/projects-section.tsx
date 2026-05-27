@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  useState, useCallback, useEffect, useRef, useMemo,
+  useState, useCallback, useEffect, useRef,
 } from "react";
 import {
   motion, AnimatePresence,
   useMotionValue, useSpring, useTransform,
 } from "framer-motion";
-import { Play, X, ArrowUpRight, RotateCcw, Loader2 } from "lucide-react";
+import { Play, X, ArrowUpRight } from "lucide-react";
 import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 import { cn } from "@/lib/utils";
 
@@ -34,19 +34,6 @@ type Project = {
   status: ProjectStatus;
   image: string;
   video?: string;
-};
-
-type ProjectMatch = {
-  name: string;
-  score: number;
-  matchedRequirements: string[];
-  whyItMatters: string;
-};
-
-type MatchResult = {
-  overallMatch: number;
-  summary: string;
-  rankedProjects: ProjectMatch[];
 };
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -163,219 +150,6 @@ function BuildingBadge() {
   );
 }
 
-// ─── JD Mirror Panel ──────────────────────────────────────────────────────────
-
-type JDMode = "idle" | "analyzing" | "results" | "error";
-
-function ScoreRing({ score }: { score: number }) {
-  const r = 20;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (score / 100) * circ;
-  const bright = score >= 70 ? "rgba(255,255,255,0.9)" : score >= 40 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.25)";
-  return (
-    <svg width="52" height="52" viewBox="0 0 52 52" className="shrink-0">
-      <circle cx="26" cy="26" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5" />
-      <motion.circle
-        cx="26" cy="26" r={r}
-        fill="none"
-        stroke={bright}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        initial={{ strokeDashoffset: circ }}
-        animate={{ strokeDashoffset: offset }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        transform="rotate(-90 26 26)"
-      />
-      <text x="26" y="30" textAnchor="middle" fontSize="11" fontWeight="700"
-        fill={bright} fontFamily="monospace">
-        {score}
-      </text>
-    </svg>
-  );
-}
-
-function JDMirrorPanel({
-  jdText, setJdText, jdMode, matchResult, wordCount, onClear,
-}: {
-  jdText: string;
-  setJdText: (v: string) => void;
-  jdMode: JDMode;
-  matchResult: MatchResult | null;
-  wordCount: number;
-  onClear: () => void;
-}) {
-  const taRef = useRef<HTMLTextAreaElement>(null);
-
-  // Auto-resize textarea
-  useEffect(() => {
-    const ta = taRef.current;
-    if (!ta) return;
-    ta.style.height = "auto";
-    ta.style.height = Math.min(ta.scrollHeight, 220) + "px";
-  }, [jdText]);
-
-  const hasContent = jdText.trim().length > 0;
-  const isAnalyzing = jdMode === "analyzing";
-
-  const scoreColor = matchResult
-    ? matchResult.overallMatch >= 70
-      ? "text-white"
-      : matchResult.overallMatch >= 40
-      ? "text-white/60"
-      : "text-white/35"
-    : "text-white";
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "group/glass mb-12 md:mb-16 relative overflow-hidden rounded-3xl",
-        "border border-white/[0.09]",
-        "bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-white/[0.005]",
-        "backdrop-blur-2xl",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.07),inset_0_-1px_0_rgba(255,255,255,0.025),0_28px_70px_-30px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.015)]",
-      )}
-    >
-      {/* Top-edge refraction highlight (the "lens cap" line) */}
-      <div className="pointer-events-none absolute top-0 inset-x-[14%] h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
-
-      {/* Soft corner blooms */}
-      <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/[0.025] blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-white/[0.018] blur-3xl" />
-
-      {/* Inner specular wash that brightens subtly on hover */}
-      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-tr from-transparent via-transparent to-white/[0.02] opacity-60 transition-opacity duration-700 group-hover/glass:opacity-100" />
-
-      {/* Scanning glass shimmer when analyzing */}
-      <AnimatePresence>
-        {isAnalyzing && (
-          <motion.div
-            key="scan"
-            initial={{ x: "-25%", opacity: 0 }}
-            animate={{ x: "120%", opacity: [0, 0.7, 0] }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 w-[40%]"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(255,255,255,0.04) 35%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 65%, transparent)",
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Header bar */}
-      <div className="relative flex items-center justify-between gap-4 px-5 py-3.5 border-b border-white/[0.05]">
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-1.5 w-1.5 shrink-0">
-            <span
-              className={cn(
-                "absolute inline-flex h-full w-full rounded-full",
-                isAnalyzing ? "animate-ping bg-white/50" : "bg-white/25",
-              )}
-            />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/60" />
-          </span>
-          <span className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-white/55">
-            JD Mirror
-          </span>
-          <span className="hidden sm:block text-[0.6rem] text-white/25 tracking-wide">
-            paste a role, see what fits
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          {isAnalyzing && (
-            <span className="flex items-center gap-1.5 text-[0.62rem] text-white/40 font-mono">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              reading {wordCount} words
-            </span>
-          )}
-          {hasContent && !isAnalyzing && (
-            <button
-              onClick={onClear}
-              className="flex items-center gap-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/35 hover:text-white/70 transition-colors duration-200"
-            >
-              <RotateCcw className="h-3 w-3" />
-              Clear
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Results banner shown when analysis is done */}
-      <AnimatePresence>
-        {jdMode === "results" && matchResult && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="relative overflow-hidden border-b border-white/[0.05]"
-          >
-            <div className="relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 px-5 py-5">
-              <div className="flex items-baseline gap-2 shrink-0">
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                  className={cn("font-mono font-black leading-none", scoreColor)}
-                  style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)" }}
-                >
-                  {matchResult.overallMatch}
-                </motion.span>
-                <span className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/30 leading-none">
-                  %<br />match
-                </span>
-              </div>
-
-              <div className="hidden sm:block h-10 w-px bg-white/[0.08] shrink-0" />
-
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-white/75 leading-relaxed">
-                  &ldquo;{matchResult.summary}&rdquo;
-                </p>
-                <p className="mt-1.5 text-[0.6rem] text-white/30 font-mono tracking-wide">
-                  projects re-sorted by relevance, scroll to explore
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Textarea section. Subtle engraved-channel feel with darker recess + top hairline */}
-      <div className="relative px-5 py-4 bg-black/[0.18]">
-        <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-white/[0.04]" />
-        <textarea
-          ref={taRef}
-          value={jdText}
-          onChange={(e) => setJdText(e.target.value)}
-          disabled={isAnalyzing}
-          placeholder="Paste a job description. I'll rank my projects by relevance and surface the requirements each one already covers."
-          rows={3}
-          className={cn(
-            "w-full resize-none bg-transparent text-[0.82rem] leading-relaxed outline-none transition-colors duration-200",
-            "text-white/75 placeholder:text-white/25",
-            "disabled:opacity-50 disabled:cursor-wait",
-          )}
-          style={{ minHeight: 72, maxHeight: 220 }}
-        />
-        {!hasContent && (
-          <p className="text-[0.58rem] font-mono text-white/25 tracking-wide mt-1">
-            your job description stays on this page
-          </p>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
 // ─── Screenshot card with 3-D tilt ────────────────────────────────────────────
 
 function ScreenshotCard({
@@ -461,24 +235,14 @@ function ScreenshotCard({
 // ─── Project info card ─────────────────────────────────────────────────────────
 
 function ProjectCard({
-  project, index, total, hovered, onPlay, matchData,
+  project, index, total, onPlay,
 }: {
   project: Project;
   index: number;
   total: number;
   hovered: boolean;
   onPlay: (name: string) => void;
-  matchData?: ProjectMatch;
 }) {
-  const hasMatch = !!matchData;
-  const scoreColor = hasMatch
-    ? matchData.score >= 70
-      ? "text-white"
-      : matchData.score >= 40
-      ? "text-white/55"
-      : "text-white/30"
-    : null;
-
   return (
     <motion.div className="w-full max-w-[400px]">
       {/* Index row */}
@@ -486,16 +250,6 @@ function ProjectCard({
         <span className="font-mono text-[0.6rem] font-bold tracking-[0.25em] text-white/20 uppercase">
           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
-        {hasMatch && (
-          <motion.span
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className={cn("font-mono text-[0.65rem] font-bold tracking-[0.1em]", scoreColor)}
-          >
-            {matchData.score}% match
-          </motion.span>
-        )}
       </div>
 
       {/* Name */}
@@ -532,43 +286,6 @@ function ProjectCard({
 
       {/* Description */}
       <p className="text-sm text-white/50 leading-relaxed mb-3 max-w-sm">{project.description}</p>
-
-      {/* JD match: why this project matters */}
-      <AnimatePresence>
-        {hasMatch && matchData.whyItMatters && (
-          <motion.p
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, delay: 0.1 }}
-            className="text-[0.75rem] text-white/40 italic leading-relaxed mb-3 max-w-sm border-l border-white/[0.12] pl-3"
-          >
-            &ldquo;{matchData.whyItMatters}&rdquo;
-          </motion.p>
-        )}
-      </AnimatePresence>
-
-      {/* JD match: requirement chips */}
-      <AnimatePresence>
-        {hasMatch && matchData.matchedRequirements.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, delay: 0.15 }}
-            className="flex flex-wrap gap-1.5 mb-3"
-          >
-            {matchData.matchedRequirements.map((req) => (
-              <span
-                key={req}
-                className="text-[0.6rem] font-semibold px-2.5 py-1 rounded-md border border-white/[0.18] bg-white/[0.06] text-white/65 tracking-wide"
-              >
-                ✓ {req}
-              </span>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Tech pills */}
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -609,14 +326,12 @@ function ProjectCard({
 // ─── Desktop tree row ──────────────────────────────────────────────────────────
 
 function ProjectRow({
-  project, index, total, onPlay, matchData, dimmed,
+  project, index, total, onPlay,
 }: {
   project: Project;
   index: number;
   total: number;
   onPlay: (name: string) => void;
-  matchData?: ProjectMatch;
-  dimmed?: boolean;
 }) {
   const isLeft = index % 2 === 0;
   const [hovered, setHovered] = useState(false);
@@ -627,7 +342,6 @@ function ProjectRow({
       initial={{ opacity: 0, y: 48 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.18 }}
-      animate={{ opacity: dimmed ? 0.35 : 1 }}
       transition={{ duration: 0.55, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -636,7 +350,7 @@ function ProjectRow({
       {/* Left slot */}
       <div className={cn("flex min-h-[180px] items-center", isLeft ? "justify-end pr-6 md:pr-10" : "justify-start pl-6 md:pl-10")}>
         {isLeft ? (
-          <ProjectCard project={project} index={index} total={total} hovered={hovered} onPlay={onPlay} matchData={matchData} />
+          <ProjectCard project={project} index={index} total={total} hovered={hovered} onPlay={onPlay} />
         ) : (
           <div className="flex justify-end w-full">
             <ScreenshotCard project={project} visible={hovered} onPlay={onPlay} side="left" />
@@ -666,7 +380,7 @@ function ProjectRow({
       {/* Right slot */}
       <div className={cn("flex min-h-[180px] items-center", !isLeft ? "justify-start pl-6 md:pl-10" : "justify-start pl-6 md:pl-10")}>
         {!isLeft ? (
-          <ProjectCard project={project} index={index} total={total} hovered={hovered} onPlay={onPlay} matchData={matchData} />
+          <ProjectCard project={project} index={index} total={total} hovered={hovered} onPlay={onPlay} />
         ) : (
           <ScreenshotCard project={project} visible={hovered} onPlay={onPlay} side="right" />
         )}
@@ -678,14 +392,12 @@ function ProjectRow({
 // ─── Mobile card ───────────────────────────────────────────────────────────────
 
 function MobileProjectCard({
-  project, index, total, onPlay, matchData, dimmed,
+  project, index, total, onPlay,
 }: {
   project: Project;
   index: number;
   total: number;
   onPlay: (name: string) => void;
-  matchData?: ProjectMatch;
-  dimmed?: boolean;
 }) {
   return (
     <motion.article
@@ -693,7 +405,6 @@ function MobileProjectCard({
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
-      animate={{ opacity: dimmed ? 0.35 : 1 }}
       transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
       className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden p-5"
     >
@@ -710,14 +421,7 @@ function MobileProjectCard({
             </button>
           )}
         </div>
-        {/* Score ring in JD mode */}
-        {matchData && (
-          <div className="flex items-center gap-3">
-            <ScoreRing score={matchData.score} />
-            <span className="text-[0.6rem] font-mono text-white/35">{matchData.score >= 70 ? "strong match" : matchData.score >= 40 ? "partial match" : "low relevance"}</span>
-          </div>
-        )}
-        <ProjectCard project={project} index={index} total={total} hovered={false} onPlay={onPlay} matchData={matchData} />
+        <ProjectCard project={project} index={index} total={total} hovered={false} onPlay={onPlay} />
       </div>
     </motion.article>
   );
@@ -726,99 +430,9 @@ function MobileProjectCard({
 // ─── Main Section ─────────────────────────────────────────────────────────────
 
 export function ProjectsSection() {
-  const [activeVideo, setActiveVideo]     = useState<string | null>(null);
-  const [jdText, setJdText]               = useState("");
-  const [jdMode, setJdMode]               = useState<JDMode>("idle");
-  const [matchResult, setMatchResult]     = useState<MatchResult | null>(null);
-  const debounceRef                       = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const errorResetRef                     = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastAnalyzedRef                   = useRef<string>("");
-  const inFlightRef                       = useRef<boolean>(false);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   const activeProject = projects.find((p) => p.name === activeVideo);
-
-  const wordCount = useMemo(() =>
-    jdText.trim() ? jdText.trim().split(/\s+/).length : 0,
-    [jdText]
-  );
-
-  // Build a map from project name → matchData for O(1) lookup
-  const matchMap = useMemo<Record<string, ProjectMatch>>(() => {
-    if (!matchResult) return {};
-    return Object.fromEntries(matchResult.rankedProjects.map((m) => [m.name, m]));
-  }, [matchResult]);
-
-  // Projects sorted by JD score when in results mode
-  const displayProjects = useMemo(() => {
-    if (jdMode !== "results" || !matchResult) return projects;
-    const order = matchResult.rankedProjects.map((m) => m.name);
-    return [...projects].sort((a, b) => {
-      const ai = order.indexOf(a.name);
-      const bi = order.indexOf(b.name);
-      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-    });
-  }, [jdMode, matchResult]);
-
-  const analyzeJD = useCallback(async (text: string) => {
-    const trimmed = text.trim();
-    if (trimmed.length < 30) return;
-    if (inFlightRef.current) return;
-    if (trimmed === lastAnalyzedRef.current) return;
-
-    inFlightRef.current = true;
-    lastAnalyzedRef.current = trimmed;
-    setJdMode("analyzing");
-    try {
-      const res = await fetch("/api/jd-match", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jd: text }),
-      });
-      if (!res.ok) throw new Error("API error");
-      const data: MatchResult = await res.json();
-      setMatchResult(data);
-      setJdMode("results");
-    } catch {
-      lastAnalyzedRef.current = "";
-      setJdMode("error");
-      if (errorResetRef.current) clearTimeout(errorResetRef.current);
-      errorResetRef.current = setTimeout(() => setJdMode("idle"), 3000);
-    } finally {
-      inFlightRef.current = false;
-    }
-  }, []);
-
-  // Debounce JD text changes. Only depends on jdText so state changes inside
-  // analyzeJD never re-trigger this effect.
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    const trimmed = jdText.trim();
-    if (trimmed.length < 30) {
-      lastAnalyzedRef.current = "";
-      setJdMode((m) => (m === "idle" ? m : "idle"));
-      setMatchResult((r) => (r === null ? r : null));
-      return;
-    }
-    if (trimmed === lastAnalyzedRef.current) return;
-    debounceRef.current = setTimeout(() => analyzeJD(jdText), 1500);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [jdText, analyzeJD]);
-
-  // Cleanup pending error-reset timer on unmount
-  useEffect(() => {
-    return () => {
-      if (errorResetRef.current) clearTimeout(errorResetRef.current);
-    };
-  }, []);
-
-  const handleClear = useCallback(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (errorResetRef.current) clearTimeout(errorResetRef.current);
-    lastAnalyzedRef.current = "";
-    setJdText("");
-    setJdMode("idle");
-    setMatchResult(null);
-  }, []);
 
   const handlePlayVideo  = useCallback((name: string) => setActiveVideo(name), []);
   const handleCloseVideo = useCallback(() => setActiveVideo(null), []);
@@ -829,8 +443,6 @@ export function ProjectsSection() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [activeVideo, handleCloseVideo]);
-
-  const isJDMode = jdMode === "results";
 
   return (
     <section id="projects" className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden">
@@ -858,56 +470,36 @@ export function ProjectsSection() {
           </h2>
         </motion.div>
 
-        {/* ── JD Mirror Panel ── */}
-        <JDMirrorPanel
-          jdText={jdText}
-          setJdText={setJdText}
-          jdMode={jdMode}
-          matchResult={matchResult}
-          wordCount={wordCount}
-          onClear={handleClear}
-        />
-
         {/* ── Desktop tree layout ── */}
         <div className="hidden md:block relative">
           <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 flex flex-col items-center pointer-events-none">
             <div className="w-px flex-1" style={{ background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.10) 8%, rgba(255,255,255,0.06) 90%, transparent)" }} />
           </div>
           <AnimatePresence mode="popLayout">
-            {displayProjects.map((project, index) => {
-              const md = matchMap[project.name];
-              return (
-                <ProjectRow
-                  key={project.name}
-                  project={project}
-                  index={index}
-                  total={displayProjects.length}
-                  onPlay={handlePlayVideo}
-                  matchData={isJDMode ? md : undefined}
-                  dimmed={isJDMode && !!md && md.score < 25}
-                />
-              );
-            })}
+            {projects.map((project, index) => (
+              <ProjectRow
+                key={project.name}
+                project={project}
+                index={index}
+                total={projects.length}
+                onPlay={handlePlayVideo}
+              />
+            ))}
           </AnimatePresence>
         </div>
 
         {/* ── Mobile stacked layout ── */}
         <div className="md:hidden space-y-5">
           <AnimatePresence mode="popLayout">
-            {displayProjects.map((project, index) => {
-              const md = matchMap[project.name];
-              return (
-                <MobileProjectCard
-                  key={project.name}
-                  project={project}
-                  index={index}
-                  total={displayProjects.length}
-                  onPlay={handlePlayVideo}
-                  matchData={isJDMode ? md : undefined}
-                  dimmed={isJDMode && !!md && md.score < 25}
-                />
-              );
-            })}
+            {projects.map((project, index) => (
+              <MobileProjectCard
+                key={project.name}
+                project={project}
+                index={index}
+                total={projects.length}
+                onPlay={handlePlayVideo}
+              />
+            ))}
           </AnimatePresence>
         </div>
 

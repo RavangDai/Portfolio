@@ -282,6 +282,17 @@ html {
   }
 }
 
+/* ===== Tech stack marquee ===== */
+@keyframes tech-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-tech-marquee {
+  animation: tech-marquee 38s linear infinite;
+  will-change: transform;
+}
+
 /* ===== Slow spin (glowing input send button border) ===== */
 @keyframes spin-slow {
   from { transform: translate(-50%, -50%) rotate(0deg); }

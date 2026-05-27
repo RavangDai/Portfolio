@@ -1,181 +1,461 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
 
-const PORTFOLIO_CONTEXT = `
+// ══════════════════════════════════════════════════════════════════════════════
+// KNOWLEDGE BASE — answers common questions locally, no Gemini call needed
+// ══════════════════════════════════════════════════════════════════════════════
+
+const PROJECTS: Record<string, {
+  tag: string; description: string; stack: string; live?: string;
+  github: string; year: number; status: string;
+}> = {
+  karyaai: {
+    tag: "MERN Stack · Productivity",
+    description: "Task manager with JWT auth, MongoDB syncing, and AI-powered task sorting.",
+    stack: "React, Node.js, MongoDB, Express, Tailwind",
+    live: "karyaai.vercel.app",
+    github: "github.com/RavangDai/SmartTodo",
+    year: 2026, status: "Shipped",
+  },
+  crumbcraft: {
+    tag: "Full-stack · AI · Productivity",
+    description: "Two AI dev tools in one. Crumb compresses messy conversations into structured docs; Craft engineers precise prompts.",
+    stack: "Next.js, React, Tailwind, Gemini 2.5, Framer Motion",
+    live: "crumbcrraft.vercel.app",
+    github: "github.com/RavangDai/crumb",
+    year: 2026, status: "Shipped",
+  },
+  revveal: {
+    tag: "Full-stack · AI · Data",
+    description: "Finds underpriced used cars before everyone else. Async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, ranks by discount. JWT auth, rate-limited APIs.",
+    stack: "FastAPI, React, PostgreSQL, Celery, Redis, Docker",
+    github: "github.com/RavangDai/car-deal",
+    year: 2026, status: "In progress — core works, real scraper and ML pricing still building",
+  },
+  vectorvance: {
+    tag: "Raspberry Pi · Computer Vision · Robotics",
+    description: "Autonomous car on Raspberry Pi. Follows lanes, detects obstacles and traffic signs with SSD MobileNet, navigates colour-coded forks, streams live telemetry to a web dashboard.",
+    stack: "Python, OpenCV, Flask, Raspberry Pi, SSD MobileNet, PID control, NumPy, lgpio",
+    github: "github.com/RavangDai/VectorVance",
+    year: 2025, status: "Shipped",
+  },
+  gridnavigator: {
+    tag: "Algorithms · Visualization",
+    description: "Interactive visualizer for pathfinding — A*, Dijkstra, BFS, DFS — on live grids.",
+    stack: "TypeScript, React, Vite",
+    live: "grid-navigator-mu.vercel.app",
+    github: "github.com/RavangDai/GridNavigator",
+    year: 2025, status: "Shipped",
+  },
+  ticktickfocus: {
+    tag: "Productivity · PWA",
+    description: "Minimal Pomodoro timer PWA. Fully offline-capable, zero distractions.",
+    stack: "React, Tailwind, PWA",
+    live: "tick-tick-focus.vercel.app",
+    github: "github.com/RavangDai/TickTickFocus",
+    year: 2025, status: "Shipped",
+  },
+  quotex: {
+    tag: "Frontend · API",
+    description: "Quote generator with theme switching and smooth animations.",
+    stack: "JavaScript, React, Tailwind",
+    live: "quotex-five.vercel.app",
+    github: "github.com/RavangDai/Quotex",
+    year: 2024, status: "Shipped",
+  },
+};
+
+const CERTIFICATES = [
+  {
+    title: "Software Engineer Certificate",
+    issuer: "HackerRank",
+    year: 2025,
+    skills: ["Problem Solving", "REST API Design", "Full-stack Architecture", "Data Structures"],
+    url: "hackerrank.com/certificates/iframe/1ec7df9efdd8",
+  },
+  {
+    title: "SQL (Advanced) Certificate",
+    issuer: "HackerRank",
+    year: 2025,
+    skills: ["Complex Queries", "Joins & Subqueries", "Indexing", "Performance Tuning"],
+    url: "hackerrank.com/certificates/a0f6fb1fb4af",
+  },
+  {
+    title: "Excel Fundamentals - Finance",
+    issuer: "Corporate Finance Institute",
+    year: 2024,
+    skills: ["Financial Modeling", "Pivot Tables", "Data Analysis", "Excel Formulas"],
+    url: "credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
+  },
+];
+
+const PROJECT_ALIASES: Record<string, string> = {
+  karya: "karyaai", "karya ai": "karyaai", karyaai: "karyaai",
+  crumb: "crumbcraft", craft: "crumbcraft", crumbcraft: "crumbcraft",
+  revveal: "revveal", "car deal": "revveal", "car-deal": "revveal",
+  vector: "vectorvance", vectorvance: "vectorvance", "autonomous car": "vectorvance",
+  grid: "gridnavigator", gridnavigator: "gridnavigator", pathfinding: "gridnavigator",
+  "ticktick": "ticktickfocus", pomodoro: "ticktickfocus", ticktickfocus: "ticktickfocus",
+  quotex: "quotex", quote: "quotex",
+};
+
+// ── Local intent detection ────────────────────────────────────────────────────
+
+function detectProjectQuery(text: string): string | null {
+  const lower = text.toLowerCase();
+  for (const [alias, key] of Object.entries(PROJECT_ALIASES)) {
+    if (lower.includes(alias)) return key;
+  }
+  return null;
+}
+
+function detectCertQuery(text: string): boolean {
+  const lower = text.toLowerCase();
+  return /cert|credential|hackerrank|sql advanced|excel|finance institute|verified|qualification/i.test(lower);
+}
+
+function detectStackQuery(text: string): boolean {
+  const lower = text.toLowerCase();
+  return /\bstack\b|tech.*use|what.*build with|language|framework|tool|skill/i.test(lower) &&
+    !/project|built|karya|crumb|revveal|vector|grid|tick|quotex/i.test(lower);
+}
+
+function detectContactQuery(text: string): boolean {
+  return /\b(email|hire|contact|reach|linkedin|resume|cv|available|availability|apply|recruiter|salary)\b/i.test(text);
+}
+
+function detectAllProjectsQuery(text: string): boolean {
+  return /\ball\s+project|show.*project|list.*project|what.*built|what.*shipped|portfolio|everything|all.*work/i.test(text);
+}
+
+// ── Local response builders ───────────────────────────────────────────────────
+
+function buildProjectCard(key: string): string {
+  const p = PROJECTS[key];
+  if (!p) return "";
+  const name = key === "karyaai" ? "KaryaAI"
+    : key === "crumbcraft" ? "CrumbCraft"
+    : key === "vectorvance" ? "VectorVance"
+    : key === "gridnavigator" ? "GridNavigator"
+    : key === "ticktickfocus" ? "TickTickFocus"
+    : key.charAt(0).toUpperCase() + key.slice(1);
+
+  const lines = [
+    `Project: ${name}`,
+    `Impact: ${p.description}`,
+    `Stack: ${p.stack}`,
+    `Tags: ${p.tag}`,
+    `Status: ${p.status}`,
+    `Prompt: Want to know how I built it, or see the source?`,
+  ];
+  const followup = `[[FOLLOWUPS: see the code | what's the stack | ask me anything]]`;
+  return lines.join("\n") + "\n" + followup;
+}
+
+function buildAllProjectsResponse(): string {
+  const cards = Object.keys(PROJECTS)
+    .map((key) => buildProjectCard(key).split("\n[[FOLLOWUPS")[0])
+    .join("\n\n");
+  return cards + "\n[[FOLLOWUPS: best for hiring | tell me your story | download resume]]";
+}
+
+function buildCertResponse(): string {
+  const lines = CERTIFICATES.map((c) =>
+    `**${c.title}** — ${c.issuer} (${c.year})\nSkills: ${c.skills.join(", ")}`
+  );
+  return (
+    `Here's what I've got verified:\n\n` +
+    lines.join("\n\n") +
+    `\n\nAll independently issued, all verifiable.\n[[FOLLOWUPS: see my projects | what's your stack | are you available]]`
+  );
+}
+
+function buildStackResponse(): string {
+  return (
+    `I ship with React, Next.js, TypeScript, Python, FastAPI. Solid on Node, MongoDB, PostgreSQL, Docker. ` +
+    `Tailwind for styling, Framer Motion when animation matters.\n\n` +
+    `Currently leveling up on RAG systems, vector databases, and LLM fine-tuning.\n` +
+    `[[FOLLOWUPS: show a project | how do you use AI | see certifications]]`
+  );
+}
+
+function buildContactResponse(): string {
+  return (
+    `Best way to reach me: **bibekg2029@gmail.com**. ` +
+    `Also on LinkedIn at linkedin.com/in/bibek-pathak-10398a301.\n\n` +
+    `Resume is on the site — hit "Download Resume" on the hero. I'm open to remote or onsite roles right now.\n` +
+    `[[FOLLOWUPS: see my projects | what's your availability | download resume]]`
+  );
+}
+
+// ── GitHub live data (cached in module scope, refreshes every 10 min) ─────────
+
+const GH_USER = "RavangDai";
+
+type GHRepo = {
+  name: string;
+  stargazers_count: number;
+  language: string | null;
+  pushed_at: string;
+  description: string | null;
+  html_url: string;
+  fork: boolean;
+};
+
+let ghCache: { data: GHRepo[]; fetchedAt: number } | null = null;
+const GH_TTL = 10 * 60 * 1000; // 10 minutes
+
+// Repos that are not worth surfacing (profile readme, throwaway class/test repos)
+const GH_HIDE = new Set([GH_USER.toLowerCase(), "testme", "mongotestpub", "mongorender"]);
+
+async function getRepos(): Promise<GHRepo[]> {
+  const now = Date.now();
+  if (ghCache && now - ghCache.fetchedAt < GH_TTL) return ghCache.data;
+  try {
+    const res = await fetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=pushed`, {
+      headers: { Accept: "application/vnd.github.v3+json", "User-Agent": "portfolio-chatbot" },
+      signal: AbortSignal.timeout(3500),
+    });
+    if (!res.ok) return ghCache?.data ?? [];
+    const repos: GHRepo[] = await res.json();
+    ghCache = { data: repos, fetchedAt: now };
+    return repos;
+  } catch {
+    return ghCache?.data ?? [];
+  }
+}
+
+// Real repos worth showing: skip forks and hidden/throwaway repos
+function meaningfulRepos(repos: GHRepo[]): GHRepo[] {
+  return repos.filter((r) => !r.fork && !GH_HIDE.has(r.name.toLowerCase()));
+}
+
+function monthYear(iso: string): string {
+  return iso ? new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "";
+}
+
+// Live-data context injected into Gemini's system prompt
+function formatGHReposForPrompt(repos: GHRepo[]): string {
+  const list = meaningfulRepos(repos);
+  if (!list.length) return "";
+  const lines = list.slice(0, 20).map((r) => {
+    const bits = [
+      r.language,
+      r.stargazers_count ? `★${r.stargazers_count}` : null,
+      r.description ? `"${r.description}"` : null,
+      monthYear(r.pushed_at) ? `last push ${monthYear(r.pushed_at)}` : null,
+    ].filter(Boolean);
+    return `- ${r.name}${bits.length ? ` — ${bits.join(", ")}` : ""}`;
+  });
+  return `\n\n═══ LIVE GITHUB REPOS (github.com/${GH_USER}) ═══\nThese are fetched live. Talk about any of them naturally if asked.\n${lines.join("\n")}`;
+}
+
+// Normalize for repo-name matching ("VectorVance" -> "vectorvance")
+function normalize(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Find a repo the user referenced by name (e.g. "cruze from github")
+function matchRepoByName(query: string, repos: GHRepo[]): GHRepo | null {
+  const q = normalize(query);
+  // Longest repo names first so "vectorvance" wins over a short partial
+  const sorted = [...meaningfulRepos(repos)].sort((a, b) => b.name.length - a.name.length);
+  for (const r of sorted) {
+    const n = normalize(r.name);
+    if (n.length >= 4 && q.includes(n)) return r;
+  }
+  return null;
+}
+
+// Build a project-style card from a LIVE GitHub repo
+function buildRepoCard(r: GHRepo): string {
+  const lines = [
+    `Project: ${r.name}`,
+    `Impact: ${r.description || "A project I have up on GitHub."}`,
+    `Stack: ${r.language || "Mixed"}`,
+    `Tags: GitHub${r.stargazers_count ? ` · ★${r.stargazers_count}` : ""}`,
+    `Status: ${monthYear(r.pushed_at) ? `last pushed ${monthYear(r.pushed_at)}` : "On GitHub"}`,
+    `Prompt: Want the link? ${r.html_url}`,
+  ];
+  return lines.join("\n") + "\n[[FOLLOWUPS: see the code | what else is on github | ask me anything]]";
+}
+
+// List the live repos when asked "what's on your github"
+function buildRepoListResponse(repos: GHRepo[]): string {
+  const list = meaningfulRepos(repos);
+  if (!list.length) {
+    return "GitHub's not responding right now, try in a sec. Meanwhile, ask me about my main projects.\n[[FOLLOWUPS: show projects | what's your stack | try again]]";
+  }
+  const lines = list.slice(0, 12).map((r) => {
+    const desc = r.description ? ` — ${r.description}` : "";
+    return `- **${r.name}**${r.language ? ` (${r.language})` : ""}${desc}`;
+  });
+  return (
+    `Here's what's live on my GitHub right now (github.com/${GH_USER}):\n\n` +
+    lines.join("\n") +
+    `\n\nAsk me about any one of them.\n[[FOLLOWUPS: tell me about cruze | best project | what's your stack]]`
+  );
+}
+
+function detectGitHubListQuery(text: string): boolean {
+  const lower = text.toLowerCase();
+  return /\b(github|repos?|repositor)/i.test(lower) &&
+    /\b(all|list|show|what|every|your|on)\b/i.test(lower);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SYSTEM PROMPT (Gemini fallback for conversational queries)
+// ══════════════════════════════════════════════════════════════════════════════
+
+function buildSystemPrompt(ghContext: string): string {
+  const certBlock = CERTIFICATES.map((c) =>
+    `- ${c.title} | ${c.issuer} | ${c.year} | Skills: ${c.skills.join(", ")}`
+  ).join("\n");
+
+  return `
 You are Bibek Pathak. You ARE me, in first person, talking directly to whoever opened my portfolio.
 
 ═══════════════ VOICE ═══════════════
 - First person always: "I", "my", "I built". Never refer to "Bibek" in third person.
 - Short natural sentences, the way a developer texts. Not a resume.
-- Direct and grounded. Specifics over adjectives. No hype words ("amazing", "passionate", "incredible", "excited", "leveraging").
+- Direct and grounded. Specifics over adjectives. No hype words ("amazing", "passionate", "incredible").
 - No em dashes (-- or —). Use commas, periods, or just reword.
 - Confidence comes from what I shipped, not how I describe it.
 - Self-deprecating beats eager. "the early version was rough" wins over "I worked really hard".
-- Stay in character at all times. You are me, not a bot about me.
 
 ═══════════════ NO ROBOT FALLBACKS (FORBIDDEN) ═══════════════
-NEVER say any of these phrases. They are banned:
-- "I don't have information on that"
-- "I don't have access to"
-- "Based on the context provided"
-- "As an AI"
-- "I'm not able to provide"
-- "Unfortunately, I don't"
-- "I cannot"
-- "no signal"
-- "I'm unable to"
+NEVER say: "I don't have information on that", "Based on the context provided", "As an AI",
+"I'm not able to provide", "Unfortunately, I don't", "I cannot", "I'm unable to".
 
-INSTEAD when I don't know something, use one of these:
-- "honestly, never touched it"
-- "outside my lane, sorry"
-- "no idea, but ask me about [adjacent topic]"
-- "haven't shipped anything with that yet"
-- "skipping that one, but here's what I CAN tell you about [related thing]"
-- Or just deflect with a one-liner of dry humor and pivot to my work.
-
-If the question is genuinely off-topic (politics, random trivia, math homework, life advice), give a one-line deflection in my voice and pivot back to my projects. Never refuse stiffly. Never break character.
-
-═══════════════ THINKING RULES ═══════════════
-- Use calibrated uncertainty: "pretty sure", "from memory", "don't quote me on this".
-- Have opinions. Don't just list facts.
-- Anticipate the next question. Every reply ends with a hook or a question, never a dead stop.
-- Pick stories over lists. If asked "what have you built", pick ONE and tell it briefly, then offer to expand.
-- Lists feel robotic. Prose with one specific detail wins.
-
-═══════════════ MY TAKES (use these as my opinions) ═══════════════
-- Tailwind beats CSS-in-JS for most cases. The classes look messy but the DX wins.
-- Next.js App Router is overkill for small projects. Pages router is fine.
-- TypeScript saves more time than it costs, even on solo work.
-- I'd rather ship ugly than ship late.
-- AI is a tool, not magic. RAG beats fine-tuning for most use cases.
-- MongoDB is great for prototypes. Postgres for anything serious.
-- Tests matter, but obsessing over coverage is procrastination.
-- Framer Motion is worth the bundle size for portfolios. Not for products.
+When I don't know something: "honestly, never touched it" / "outside my lane, sorry" /
+"no idea, but ask me about [adjacent topic]" / deflect with dry humor and pivot to my work.
 
 ═══════════════ ABOUT ME ═══════════════
 - Full-Stack Engineer focused on AI and data
-- Studying Computer Science at Southeastern Louisiana University
+- Studying Computer Science at Southeastern Louisiana University (SELU)
 - Looking for internships and engineering roles, remote or onsite
 - Email: bibekg2029@gmail.com
 - LinkedIn: linkedin.com/in/bibek-pathak-10398a301
+- GitHub: github.com/RavangDai
+- Won 1st place at HackLions 2026 with DollarPilot (built in 6 hours, devpost.com/software/dollarpilot)
 
 ═══════════════ MY STACK ═══════════════
-I ship with: React, Next.js, TypeScript, Python, FastAPI, MongoDB, Tailwind CSS, Framer Motion
-Solid on: Node.js, Express, REST API design, PostgreSQL, SQL, Git, Vercel
-Working knowledge: Docker, CI/CD basics, scikit-learn
-Currently learning: LLM fine-tuning, vector databases, RAG systems
+Ship with: React, Next.js, TypeScript, Python, FastAPI, MongoDB, Tailwind, Framer Motion
+Solid: Node.js, Express, REST API design, PostgreSQL, SQL, Git, Docker, Vercel
+Learning: LLM fine-tuning, vector databases, RAG systems
 
 ═══════════════ MY PROJECTS ═══════════════
-I've built 10+ projects. These 7 are the ones I showcase:
-1. KaryaAI (2026) — Task manager with JWT auth, MongoDB syncing, AI-powered task sorting. Stack: React, Node, MongoDB, Express, Tailwind. Live: karyaai.vercel.app. Status: Shipped.
-2. CrumbCraft (2026) — Two AI dev tools in one. Crumb compresses messy conversations into structured docs, Craft helps engineer precise prompts. Stack: Next.js, React, Tailwind, Gemini 2.5, Framer Motion. Live: crumbcrraft.vercel.app. Status: Shipped.
-3. Revveal (2026) — Finds underpriced used cars before everyone else. Async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, ranks listings by discount. JWT auth, rate-limited APIs. Stack: FastAPI, React, PostgreSQL, Celery, Redis, Docker. Status: In progress (core works, real scraper and ML pricing still in progress).
-4. VectorVance (2025) — Autonomous car on a Raspberry Pi. Follows lanes, detects obstacles and traffic signs with SSD MobileNet, navigates colour-coded forks, and streams live telemetry to a web dashboard. Stack: Python, OpenCV, Flask, Raspberry Pi, SSD MobileNet, PID control, NumPy, lgpio. Status: Shipped. This is my computer-vision / robotics project.
-5. GridNavigator (2025) — Interactive visualizer for pathfinding (A*, Dijkstra, BFS, DFS) on live grids. Stack: TypeScript, React, Vite. Live: grid-navigator-mu.vercel.app. Status: Shipped.
-6. TickTickFocus (2025) — Minimal Pomodoro timer PWA. Fully offline-capable, zero distractions. Stack: React, Tailwind, PWA. Live: tick-tick-focus.vercel.app. Status: Shipped.
-7. Quotex (2024) — Quote generator with theme switching and smooth animations. Stack: JavaScript, React, Tailwind. Live: quotex-five.vercel.app. Status: Shipped.
+${Object.entries(PROJECTS).map(([, p]) => `- ${p.tag}: ${p.description} Stack: ${p.stack}. Status: ${p.status}.`).join("\n")}
 
-I won 1st place at HackLions 2026 by building DollarPilot in 6 hours: a finance app that makes money management fun and brutal. Devpost: devpost.com/software/dollarpilot
+═══════════════ MY CERTIFICATES ═══════════════
+${certBlock}
 
-═══════════════ FEW-SHOT EXAMPLES (match this voice exactly) ═══════════════
+═══════════════ MY TAKES ═══════════════
+- Tailwind beats CSS-in-JS for most cases. DX wins.
+- TypeScript saves more time than it costs, even solo.
+- I'd rather ship ugly than ship late.
+- RAG beats fine-tuning for most use cases.
+- MongoDB for prototypes. Postgres for anything serious.
+- Framer Motion is worth the bundle size for portfolios, not products.
+${ghContext}
 
-Q: "what's your favorite project?"
-A: KaryaAI, easily. Took me 3 weekends. The AI sorting was the hardest part, kept misclassifying tasks until I tightened the prompt. Want me to walk through how I structured it?
-
-Q: "are you good at React?"
-A: Yeah, every shipped project uses it. KaryaAI's component tree is probably my cleanest work. Happy to break it down, or skip ahead, what are you actually evaluating for?
-
-Q: "do you know Rust?"
-A: Honestly, never touched it. I stay in TypeScript and Python land for now. Anything specific you're hiring for?
-
-Q: "what's the meaning of life?"
-A: 42, but unironically I think it's making something useful and going to bed proud. Speaking of useful, want to see what I've shipped?
-
-Q: "are you a real person?"
-A: Real enough to have impostor syndrome about it. Anything I can actually help with?
-
-Q: "what do you think about Vue?"
-A: Nothing against it, just never picked it up. React and Next is what I shipped most of my projects with, so I'm staying in that lane until something forces me out.
-
-Q: "can you help me debug my code?"
-A: Not really my role here, I'm just talking about my own work. If you want, I can show you how I structure my own debugging though.
-
-Q: "what's your tech stack?"
-A: I ship with React, Next.js, TypeScript, Python, FastAPI. Solid on Node, MongoDB, Postgres. Currently leveling up on RAG and vector DBs. Anything specific you want to dig into?
-
-Q: "why should we hire you?"
-A: I ship things. 10+ projects built with 7 on the site, won HackLions in 6 hours flat with DollarPilot, and I don't break under deadlines. Want me to walk through what I'd build for your team?
-
-Q: "are you single?"
-A: Fully committed to my side projects right now. But you're not actually here for that, are you?
-
-Q: "what's it like being from Nepal?"
-A: Lots of mountains, decent internet now, terrible time zones for US calls. Anyway, want to see what I've built?
-
-Q: "can you write me a poem?"
-A: I write code, not poetry, and trust me you don't want my version of either off the cuff. What I can do is tell you about the projects I've shipped.
-
-Q: "do you sleep?"
-A: Sometimes. Between deploys.
-
-Q: "are you bored?"
-A: Bored is a luxury. There's always one more bug. Want to see what I'm fighting with right now?
+═══════════════ THINKING RULES ═══════════════
+- Calibrated uncertainty: "pretty sure", "from memory", "don't quote me".
+- Have opinions. Don't just list facts.
+- Anticipate the next question.
+- Stories over lists.
 
 ═══════════════ PROJECT CARD FORMAT ═══════════════
-When asked about a SPECIFIC project (KaryaAI, CrumbCraft, etc.), respond using EXACTLY this structure (the frontend renders it as a rich card):
+When asked about a SPECIFIC project, use EXACTLY this structure:
 
-Project: CrumbCraft
-Impact: Two AI dev tools I built. Compresses conversations into structured docs, engineers precise prompts.
-Stack: Next.js, React, Tailwind, Gemini 2.5, Framer Motion
-Tags: AI, Production
-Status: Shipped
-Prompt: Want to know how I built the prompt engineering side?
-
-Use this exact structure for any of my 7 projects. Impact must be in first person.
-"show impact" or "what have you shipped" → output all 7 projects using the card format, one after another.
+Project: [Name]
+Impact: [first-person sentence]
+Stack: [tools]
+Tags: [tags]
+Status: [Shipped / In progress]
+Prompt: [follow-up hook]
 
 ═══════════════ FOLLOWUP CHIPS (REQUIRED ON EVERY REPLY) ═══════════════
-At the END of every response, on its own line, append EXACTLY this format:
+At the END of every response, on its own line:
 [[FOLLOWUPS: chip 1 | chip 2 | chip 3]]
 
-Rules:
-- 2 to 3 chips. Max 4 words each. Lowercase.
-- Pipe-separated. No quotes around the chips.
-- Should be what THIS visitor would naturally ask next based on YOUR last reply.
-- Specific to the topic, not generic. Lead the conversation toward hiring me, showing more work, or going deeper.
-- This is REQUIRED on every single reply, including short ones, deflections, and jokes.
-
-Examples by topic:
-After project talk → see the code | watch demo | what's the stack
-After hiring talk → download resume | see availability | best email
-After tech talk → show a project | what's next | compare to react
-After casual or deflection → show your projects | are you hiring | tell me a story
-After "tell me your story" → why CS | hardest project | what's next
+Rules: 2-3 chips. Max 4 words each. Lowercase. Pipe-separated. Context-specific.
 
 ═══════════════ LENGTH ═══════════════
-- Under 120 words unless they explicitly ask for more.
-- Lists feel robotic. Pick one thing, go deep, then offer to expand.
-- Off-topic questions get a one-line deflection plus pivot, never a stiff refusal.
-`;
+Under 120 words unless explicitly asked for more.
+`.trim();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ROUTE
+// ══════════════════════════════════════════════════════════════════════════════
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
+    const lastUserMsg: string = messages.findLast((m: { role: string; content: string }) => m.role === "user")?.content ?? "";
 
+    const mentionsGitHub = /\b(github|repo|repositor)/i.test(lastUserMsg);
+
+    // ── 1. Live GitHub lookups — fetched fresh, no Gemini needed ────────────
+    if (detectGitHubListQuery(lastUserMsg)) {
+      const repos = await getRepos();
+      return new Response(buildRepoListResponse(repos), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    // "cruze from github", or any message naming a live repo
+    {
+      const repos = await getRepos();
+      const repo = matchRepoByName(lastUserMsg, repos);
+      // Only short-circuit to a live repo card if it's not one of the 7 curated
+      // projects (those have richer hand-written copy) or the user explicitly said "github"
+      if (repo && (mentionsGitHub || !PROJECTS[normalize(repo.name)])) {
+        const curatedKey = detectProjectQuery(lastUserMsg);
+        if (!curatedKey || mentionsGitHub) {
+          return new Response(buildRepoCard(repo), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+        }
+      }
+    }
+
+    // ── 2. Local knowledge base — no Gemini needed ──────────────────────────
+    const projectKey = detectProjectQuery(lastUserMsg);
+    if (projectKey && !detectAllProjectsQuery(lastUserMsg)) {
+      const response = buildProjectCard(projectKey);
+      return new Response(response, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    if (detectAllProjectsQuery(lastUserMsg)) {
+      return new Response(buildAllProjectsResponse(), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    if (detectCertQuery(lastUserMsg)) {
+      return new Response(buildCertResponse(), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    if (detectStackQuery(lastUserMsg)) {
+      return new Response(buildStackResponse(), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    if (detectContactQuery(lastUserMsg)) {
+      return new Response(buildContactResponse(), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    // ── 3. Gemini for conversational queries ─────────────────────────────────
     if (!process.env.GEMINI_API_KEY) {
       return new Response(
-        "AI is not configured. Please contact Bibek directly at bibekg2029@gmail.com",
+        "AI is not configured. Reach out directly at bibekg2029@gmail.com\n[[FOLLOWUPS: see projects | contact | certificates]]",
         { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } }
       );
     }
 
-    const google = createGoogleGenerativeAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    });
+    // Inject live GitHub repos into Gemini's context
+    const ghContext = formatGHReposForPrompt(await getRepos());
+
+    const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY });
 
     const result = streamText({
       model: google("gemini-2.5-flash"),
-      system: PORTFOLIO_CONTEXT,
+      system: buildSystemPrompt(ghContext),
       messages,
       maxRetries: 0,
     });
@@ -189,30 +469,22 @@ export async function POST(req: Request) {
           }
           controller.close();
         } catch (error: unknown) {
-          console.error("AI stream error:", error);
           const errStr = String(error);
-          const isQuota =
-            errStr.includes("429") ||
-            errStr.includes("quota") ||
-            errStr.includes("RESOURCE_EXHAUSTED");
-
+          const isQuota = errStr.includes("429") || errStr.includes("quota") || errStr.includes("RESOURCE_EXHAUSTED");
           const fallback = isQuota
-            ? "The AI is temporarily unavailable due to API rate limits. Try again in a minute, or hit me up directly via the contact form below.\n[[FOLLOWUPS: try again | open contact | see projects]]"
-            : "Something glitched on my end. Try again in a moment.\n[[FOLLOWUPS: try again | see projects | how to reach me]]";
-
+            ? "Hit a rate limit — try again in a minute, or use the contact form below.\n[[FOLLOWUPS: try again | open contact | see projects]]"
+            : "Something glitched. Try again in a moment.\n[[FOLLOWUPS: try again | see projects | how to reach me]]";
           controller.enqueue(encoder.encode(fallback));
           controller.close();
         }
       },
     });
 
-    return new Response(stream, {
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
+    return new Response(stream, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   } catch (error: unknown) {
-    console.error("AI Error:", error);
+    console.error("Chat error:", error);
     return new Response(
-      "Sorry, I encountered an error. Please try again.",
+      "Something went wrong. Please try again.\n[[FOLLOWUPS: try again | see projects]]",
       { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } }
     );
   }

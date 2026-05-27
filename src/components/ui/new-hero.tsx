@@ -36,11 +36,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 function TechMarquee() {
   return (
     <div className="relative flex w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-      <motion.div
-        className="flex"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ x: { repeat: Infinity, repeatType: "loop", duration: 38, ease: "linear" } }}
-      >
+      <div className="flex animate-tech-marquee">
         {[...TECH_STACK, ...TECH_STACK].map((tech, i) => {
           const Icon = tech.icon;
           return (
@@ -55,7 +51,7 @@ function TechMarquee() {
             </div>
           );
         })}
-      </motion.div>
+      </div>
     </div>
   );
 }
