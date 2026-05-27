@@ -140,15 +140,19 @@ function buildProjectCard(key: string): string {
     : key === "ticktickfocus" ? "TickTickFocus"
     : key.charAt(0).toUpperCase() + key.slice(1);
 
+  const links = [
+    p.live ? `Live: https://${p.live}` : null,
+    `Source: https://${p.github}`,
+  ].filter(Boolean).join("  ·  ");
   const lines = [
     `Project: ${name}`,
     `Impact: ${p.description}`,
     `Stack: ${p.stack}`,
     `Tags: ${p.tag}`,
     `Status: ${p.status}`,
-    `Prompt: Want to know how I built it, or see the source?`,
+    `Prompt: ${links}`,
   ];
-  const followup = `[[FOLLOWUPS: see the code | what's the stack | ask me anything]]`;
+  const followup = `[[FOLLOWUPS: how did you build it | what's the stack | ask me anything]]`;
   return lines.join("\n") + "\n" + followup;
 }
 
@@ -161,7 +165,7 @@ function buildAllProjectsResponse(): string {
 
 function buildCertResponse(): string {
   const lines = CERTIFICATES.map((c) =>
-    `**${c.title}** — ${c.issuer} (${c.year})\nSkills: ${c.skills.join(", ")}`
+    `**${c.title}** — ${c.issuer} (${c.year})\nSkills: ${c.skills.join(", ")}\nVerify: https://${c.url}`
   );
   return (
     `Here's what I've got verified:\n\n` +
@@ -181,8 +185,9 @@ function buildStackResponse(): string {
 
 function buildContactResponse(): string {
   return (
-    `Best way to reach me: **bibekg2029@gmail.com**. ` +
-    `Also on LinkedIn at linkedin.com/in/bibek-pathak-10398a301.\n\n` +
+    `Best way to reach me: bibekg2029@gmail.com. ` +
+    `Also on LinkedIn at https://linkedin.com/in/bibek-pathak-10398a301 ` +
+    `and GitHub at https://github.com/RavangDai.\n\n` +
     `Resume is on the site — hit "Download Resume" on the hero. I'm open to remote or onsite roles right now.\n` +
     `[[FOLLOWUPS: see my projects | what's your availability | download resume]]`
   );

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Volume2, VolumeX } from "lucide-react";
 import GlowingChatInput from "./animated-glowing-search-bar";
 import { cn } from "@/lib/utils";
-import { parseMessageToCards, MessageCard } from "./MessageCard";
+import { parseMessageToCards, MessageCard, linkify } from "./MessageCard";
 import { ShiningText } from "./shining-text";
 
 /* ─── Follow-up chip parser ─── */
@@ -274,7 +274,7 @@ function InlineFormatted({ text }: { text: string }) {
             {parts.map((p, i) =>
                 p.type === "bold" ? <span key={i} className="font-semibold text-white/90">{p.text}</span>
                 : p.type === "code" ? <span key={i} className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-white/[0.08] text-white/70">{p.text}</span>
-                : <span key={i}>{p.text}</span>
+                : <span key={i}>{linkify(p.text)}</span>
             )}
         </>
     );

@@ -1,6 +1,49 @@
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Code2, TrendingUp } from "lucide-react";
+
+// --- Linkify: turn URLs, bare domains, and emails into clickable anchors ---
+// Bare-domain TLD whitelist deliberately excludes js/ts so "Next.js"/"Node.js"
+// are never mistaken for links.
+const LINK_RE =
+    /(https?:\/\/[^\s<>]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(www\.[^\s<>]+)|((?:[a-z0-9-]+\.)+(?:com|app|dev|io|org|net|ai|co|me|xyz|tech|page|gg|so)(?:\/[^\s<>]*)?)/gi;
+
+export function linkify(text: string): ReactNode[] {
+    const out: ReactNode[] = [];
+    let last = 0;
+    let key = 0;
+    for (const m of text.matchAll(LINK_RE)) {
+        const idx = m.index ?? 0;
+        if (idx > last) out.push(text.slice(last, idx));
+        let token = m[0];
+        // Strip trailing punctuation that isn't part of the link
+        let trail = "";
+        const tm = token.match(/[.,!?;:'")\]]+$/);
+        if (tm) { trail = tm[0]; token = token.slice(0, -trail.length); }
+        const isEmail = !!m[2];
+        const href = isEmail
+            ? `mailto:${token}`
+            : token.startsWith("http")
+            ? token
+            : `https://${token}`;
+        out.push(
+            <a
+                key={`lnk-${key++}`}
+                href={href}
+                target={isEmail ? undefined : "_blank"}
+                rel="noreferrer"
+                className="text-white underline decoration-white/40 underline-offset-2 hover:decoration-white/90 transition-colors break-words"
+            >
+                {token}
+            </a>
+        );
+        if (trail) out.push(trail);
+        last = idx + m[0].length;
+    }
+    if (last < text.length) out.push(text.slice(last));
+    return out.length ? out : [text];
+}
 
 // --- Card Types ---
 export interface ProjectCardData {
@@ -102,7 +145,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
             {data.impact && (
                 <div className="flex items-center gap-2 text-[13px]">
                     <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-slate-300">{data.impact}</span>
+                    <span className="text-slate-300">{linkify(data.impact)}</span>
                 </div>
             )}
 
@@ -127,14 +170,14 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 
             {/* Status */}
             {data.status && (
-                <p className="text-[11px] text-white/40 italic">{data.status}</p>
+                <p className="text-[11px] text-white/40 italic">{linkify(data.status)}</p>
             )}
 
             {/* Prompt for more info */}
             {data.prompt && (
-                <div className="flex items-center gap-1.5 text-[12px] text-emerald-400 pt-1">
-                    <ArrowRight className="h-3 w-3" />
-                    <span>{data.prompt}</span>
+                <div className="flex items-start gap-1.5 text-[12px] text-emerald-400 pt-1">
+                    <ArrowRight className="h-3 w-3 mt-0.5 shrink-0" />
+                    <span>{linkify(data.prompt)}</span>
                 </div>
             )}
         </motion.div>
@@ -169,7 +212,7 @@ function TextCard({ content }: { content: string }) {
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="text-[13px] leading-relaxed text-slate-300"
         >
-            {content}
+            {linkify(content)}
         </motion.div>
     );
 }
