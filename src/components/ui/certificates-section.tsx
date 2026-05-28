@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Check } from "lucide-react";
-import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -230,8 +229,6 @@ export function CertificatesSection() {
             id="certificates"
             className="relative w-full overflow-hidden bg-[#080808] py-20 md:py-28"
         >
-            <SectionGradientBg />
-
             <div className="relative z-10 mx-auto w-full max-w-4xl px-4 sm:px-6 md:px-8">
                 {/* HEADER */}
                 <motion.div

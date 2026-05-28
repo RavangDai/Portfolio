@@ -618,6 +618,47 @@ html {
   animation: gradient-flow-x 7s ease infinite;
 }
 
+/* ===== Molten-platinum rotating conic sheen ===== */
+@keyframes platinum-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-platinum-rotate {
+  animation: platinum-rotate 44s linear infinite;
+  will-change: transform;
+}
+
+/* ===== Liquid edge shimmer — light streak sweeping a border like glass refraction =====
+   Applied to liquid-glass panels (e.g. the T-shaped skill map). Uses the mask-composite
+   border trick so only the ~1px edge is painted. */
+@keyframes edge-sweep {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+.liquid-edge {
+  position: relative;
+}
+.liquid-edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.85) 50%,
+    transparent 62%
+  );
+  background-size: 300% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: edge-sweep 5s linear infinite;
+  z-index: 4;
+}
+
 /* ===== Button System ===== */
 
 /* Primary — white fill, black text, glass shimmer */
@@ -755,48 +796,76 @@ html {
   mix-blend-mode: screen;
 }
 
-/* ===== Glass Card — premium liquid glass ===== */
+/* ===== Glass Card — true refractive liquid glass =====
+   Refraction comes from the shared #liquid-distort SVG filter (mounted once in layout).
+   The first backdrop-filter line is a blur-only fallback for browsers without SVG
+   backdrop support (e.g. Firefox); the second upgrades it where supported. */
 .glass-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.07) 0%,
-    rgba(255, 255, 255, 0.02) 40%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-top-color: rgba(255, 255, 255, 0.20);
-  border-left-color: rgba(255, 255, 255, 0.14);
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border: none;
   border-radius: 1.5rem;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-    0 24px 64px rgba(0, 0, 0, 0.55),
-    0 8px 24px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+    0 0 6px rgba(0, 0, 0, 0.03),
+    0 4px 14px rgba(0, 0, 0, 0.18),
+    inset 3px 3px 0.5px -3px rgba(255, 255, 255, 0.12),
+    inset -3px -3px 0.5px -3px rgba(255, 255, 255, 0.06),
+    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.16),
+    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.09),
+    inset 0 0 6px 6px rgba(255, 255, 255, 0.03),
+    inset 0 0 2px 2px rgba(255, 255, 255, 0.05),
+    0 0 16px rgba(255, 255, 255, 0.06);
+  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
+  backdrop-filter: blur(6px) saturate(150%);
+  -webkit-backdrop-filter: blur(6px) saturate(150%);
+  backdrop-filter: url(#liquid-distort) blur(3px) saturate(160%) brightness(104%);
+  -webkit-backdrop-filter: url(#liquid-distort) blur(3px) saturate(160%) brightness(104%);
+}
+/* Thin top-edge light catch */
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 12%);
+  z-index: 1;
 }
 
-/* ===== Liquid Glass — ultra-premium tier ===== */
+/* ===== Liquid Glass — true clear glass, modeled on LiquidButton =====
+   No milky fill, no heavy frost: the look comes from layered inset highlight shadows
+   that catch light on the edges + the shared #liquid-distort refraction filter. */
 .liquid-glass {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.10) 0%,
-    rgba(255, 255, 255, 0.03) 35%,
-    rgba(255, 255, 255, 0.07) 70%,
-    rgba(255, 255, 255, 0.02) 100%
-  );
-  border-style: solid;
-  border-width: 1px;
-  border-color: rgba(255,255,255,0.20) rgba(255,255,255,0.08) rgba(255,255,255,0.06) rgba(255,255,255,0.14);
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border: none;
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-    inset 2px 0 0 rgba(255, 255, 255, 0.10),
-    0 40px 100px rgba(0, 0, 0, 0.65),
-    0 12px 32px rgba(0, 0, 0, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(40px) saturate(200%) brightness(105%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(105%);
+    0 0 6px rgba(0, 0, 0, 0.03),
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 3px 3px 0.5px -3px rgba(255, 255, 255, 0.12),
+    inset -3px -3px 0.5px -3px rgba(255, 255, 255, 0.06),
+    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.18),
+    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.10),
+    inset 0 0 6px 6px rgba(255, 255, 255, 0.04),
+    inset 0 0 2px 2px rgba(255, 255, 255, 0.06),
+    0 0 16px rgba(255, 255, 255, 0.08);
+  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
+  backdrop-filter: blur(6px) saturate(160%);
+  -webkit-backdrop-filter: blur(6px) saturate(160%);
+  backdrop-filter: url(#liquid-distort) blur(3px) saturate(170%) brightness(105%);
+  -webkit-backdrop-filter: url(#liquid-distort) blur(3px) saturate(170%) brightness(105%);
+}
+/* Thin top-edge light catch — no milky sheen */
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 12%);
+  z-index: 1;
 }
 
 /* ===== PATHAK moving white/black gradient ===== */
@@ -817,6 +886,23 @@ html {
   -webkit-text-fill-color: transparent;
   animation: shimmer-sweep 5s linear infinite;
   will-change: background-position;
+}
+
+/* ===== Nav liquid lens — bends the content behind hovered/active nav links ===== */
+.nav-lens {
+  border-radius: 9999px;
+  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
+  backdrop-filter: blur(5px) saturate(150%);
+  -webkit-backdrop-filter: blur(5px) saturate(150%);
+  /* Refractive liquid bend */
+  backdrop-filter: url(#liquid-lens) brightness(108%);
+  -webkit-backdrop-filter: url(#liquid-lens) brightness(108%);
+  box-shadow:
+    inset 2px 2px 0.5px -2px rgba(255, 255, 255, 0.40),
+    inset -2px -2px 0.5px -2px rgba(255, 255, 255, 0.20),
+    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.30),
+    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.18),
+    0 0 12px rgba(255, 255, 255, 0.10);
 }
 
 /* ===== Role Badge ===== */

@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Trophy, Star, Code2, Zap, BookOpen, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -91,8 +90,6 @@ const CATEGORY_STYLE: Record<Category, string> = {
 export function AchievementsSection() {
   return (
     <div className="relative min-h-screen bg-[#080808] pt-32 pb-24 overflow-hidden">
-      <SectionGradientBg />
-
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 md:px-10">
 
         {/* ── Page header ── */}

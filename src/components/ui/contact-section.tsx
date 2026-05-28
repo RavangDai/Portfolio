@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
-import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -63,8 +62,6 @@ export function ContactSection() {
       id="contact"
       className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
     >
-      <SectionGradientBg />
-
       {/* ── Content ── */}
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
         <div className="grid gap-8 md:gap-12 lg:gap-20 xl:gap-28 lg:grid-cols-[1fr_1.3fr]">

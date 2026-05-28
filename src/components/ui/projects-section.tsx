@@ -8,7 +8,6 @@ import {
   useMotionValue, useSpring, useTransform,
 } from "framer-motion";
 import { Play, X, ArrowUpRight } from "lucide-react";
-import { SectionGradientBg } from "@/components/ui/section-gradient-bg";
 import { cn } from "@/lib/utils";
 
 function GithubIcon({ className }: { className?: string }) {
@@ -446,8 +445,6 @@ export function ProjectsSection() {
 
   return (
     <section id="projects" className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden">
-      <SectionGradientBg />
-
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
 
         {/* Header */}

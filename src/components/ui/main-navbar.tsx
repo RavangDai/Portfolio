@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring, useVelocity, useTransform } from "framer-motion";
 import { X, ArrowUpRight } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { cn } from "@/lib/utils";
@@ -33,25 +33,15 @@ function NavLink({
       {isActive && (
         <motion.span
           layoutId="nav-pill"
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: "rgba(255,255,255,0.08)",
-            border: "1px solid rgba(255,255,255,0.10)",
-            borderTopColor: "rgba(255,255,255,0.18)",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
-          }}
+          aria-hidden
+          className="nav-lens absolute inset-0"
           transition={{ type: "spring", stiffness: 400, damping: 35 }}
         />
       )}
       {!isActive && (
         <span
-          className="absolute inset-0 rounded-full opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-[opacity,transform] duration-[220ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-          style={{
-            background: "rgba(255,255,255,0.055)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderTopColor: "rgba(255,255,255,0.14)",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
-          }}
+          aria-hidden
+          className="nav-lens absolute inset-0 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
         />
       )}
       <span className="relative z-10 flex flex-col items-center gap-0.5">
@@ -78,8 +68,16 @@ export function MainNavbar() {
   const pathname = usePathname();
   const router   = useRouter();
 
-  const { scrollYProgress } = useScroll();
+  const { scrollYProgress, scrollY } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
+
+  // Subtle "liquid spell": scroll velocity drives a faint light-sheen that sweeps across the
+  // glass and a micro vertical jelly-squish — the bar stays put, just reacts while scrolling.
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVel = useSpring(scrollVelocity, { stiffness: 160, damping: 28, restDelta: 1 });
+  const sheenX = useTransform(smoothVel, [-2400, 0, 2400], ["115%", "45%", "-25%"]);
+  const sheenOpacity = useTransform(smoothVel, [-2400, -120, 0, 120, 2400], [0.7, 0, 0, 0, 0.7]);
+  const navScaleY = useTransform(smoothVel, [-3000, 0, 3000], [1.035, 1, 0.975]);
 
   // Lock body scroll when overlay is open
   useEffect(() => {
@@ -152,7 +150,12 @@ export function MainNavbar() {
 
   return (
     <>
-      <header className="fixed top-0 z-50 w-full">
+      <motion.header
+        className="fixed top-0 z-50 w-full"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
+      >
         {/* Scroll progress bar */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-[1.5px] origin-left z-10"
@@ -160,25 +163,29 @@ export function MainNavbar() {
         />
 
         <div className={cn("mx-auto max-w-7xl px-4 sm:px-8 transition-all duration-500", scrolled ? "pt-2" : "pt-4")}>
-          <nav
-            className={cn(
-              "relative flex items-center justify-between rounded-2xl border px-6 py-3 transition-all duration-500",
-              scrolled
-                ? "border-white/[0.10] border-t-white/[0.20] bg-black/75 backdrop-blur-[40px]"
-                : "border-white/[0.08] border-t-white/[0.15] bg-white/[0.04] backdrop-blur-[32px]"
-            )}
+          <motion.nav
+            className="liquid-glass relative flex items-center justify-between overflow-hidden rounded-2xl px-6 py-3 transition-[background] duration-500"
             style={{
-              boxShadow: scrolled
-                ? "inset 0 1px 0 rgba(255,255,255,0.12), 0 24px 64px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4)"
-                : "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.4)"
+              background: scrolled ? "rgba(8,8,8,0.30)" : "transparent",
+              scaleY: navScaleY,
+              transformOrigin: "top",
             }}
           >
-            <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.10] to-transparent" />
-
+            {/* Liquid sheen — a faint light streak that sweeps across as you scroll */}
+            <motion.span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 z-[2] w-1/2 -skew-x-[18deg]"
+              style={{
+                x: sheenX,
+                opacity: sheenOpacity,
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent)",
+              }}
+            />
             {/* ── Brand ── */}
             <button
               onClick={handleBrandClick}
-              className="group flex items-center gap-2.5 shrink-0"
+              className="group relative z-10 flex items-center gap-2.5 shrink-0"
             >
               <span className="relative flex h-2 w-2 shrink-0">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-40" />
@@ -190,7 +197,7 @@ export function MainNavbar() {
             </button>
 
             {/* ── Desktop nav links ── */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="relative z-10 hidden md:flex items-center gap-1">
               {links.map((link) => (
                 <NavLink
                   key={link.href}
@@ -203,7 +210,7 @@ export function MainNavbar() {
             </div>
 
             {/* ── Right: CTA + hamburger ── */}
-            <div className="flex items-center gap-2">
+            <div className="relative z-10 flex items-center gap-2">
               <LiquidButton
                 size="sm"
                 className="hidden md:inline-flex rounded-full text-[0.72rem] font-bold tracking-wide"
@@ -252,9 +259,9 @@ export function MainNavbar() {
                 </AnimatePresence>
               </button>
             </div>
-          </nav>
+          </motion.nav>
         </div>
-      </header>
+      </motion.header>
 
       {/* ── Full-screen mobile overlay ── */}
       <AnimatePresence>
