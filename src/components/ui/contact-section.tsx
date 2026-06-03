@@ -60,7 +60,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden"
+      className="relative w-full bg-[#080808]/72 py-20 md:py-28 overflow-hidden"
     >
       {/* ── Content ── */}
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
@@ -197,8 +197,8 @@ export function ContactSection() {
             transition={{ duration: 0.8, delay: 0.15, ease }}
             className="relative"
           >
-            {/* Soft blur behind inputs */}
-            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-3xl bg-black/15 backdrop-blur-[3px]" />
+            {/* Glass card behind the form */}
+            <div className="glass-panel pointer-events-none absolute -inset-6 -z-10 rounded-3xl" />
 
             <AnimatePresence mode="wait">
               {formSubmitted ? (

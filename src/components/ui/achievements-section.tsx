@@ -89,7 +89,7 @@ const CATEGORY_STYLE: Record<Category, string> = {
 
 export function AchievementsSection() {
   return (
-    <div className="relative min-h-screen bg-[#080808] pt-32 pb-24 overflow-hidden">
+    <div className="relative min-h-screen bg-[#080808]/72 pt-32 pb-24 overflow-hidden">
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 md:px-10">
 
         {/* ── Page header ── */}
@@ -122,10 +122,10 @@ export function AchievementsSection() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden mb-20 md:mb-24"
+          className="glass-panel grid grid-cols-2 md:grid-cols-4 rounded-2xl overflow-hidden mb-20 md:mb-24 [&>*]:border-white/[0.07] [&>*:nth-child(2n)]:border-l [&>*:nth-child(n+3)]:border-t md:[&>*]:border-l md:[&>*:first-child]:border-l-0 md:[&>*:nth-child(n+3)]:border-t-0"
         >
           {STATS.map((stat) => (
-            <div key={stat.label} className="flex flex-col gap-1.5 px-6 py-5 bg-[#080808]">
+            <div key={stat.label} className="relative z-10 flex flex-col gap-1.5 px-6 py-5">
               <span
                 className="font-black font-display text-white leading-none"
                 style={{ fontSize: "clamp(1.8rem, 4vw, 2.5rem)" }}

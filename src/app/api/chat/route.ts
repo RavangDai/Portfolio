@@ -130,15 +130,26 @@ function detectAllProjectsQuery(text: string): boolean {
 
 // ── Local response builders ───────────────────────────────────────────────────
 
+// Canonical display names (the app name, which can differ from the GitHub repo name —
+// e.g. the "car-deal" repo is the Revveal app).
+const DISPLAY_NAMES: Record<string, string> = {
+  karyaai: "KaryaAI",
+  crumbcraft: "CrumbCraft",
+  revveal: "Revveal",
+  vectorvance: "VectorVance",
+  gridnavigator: "GridNavigator",
+  ticktickfocus: "TickTickFocus",
+  quotex: "Quotex",
+};
+
+function displayName(key: string): string {
+  return DISPLAY_NAMES[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
+}
+
 function buildProjectCard(key: string): string {
   const p = PROJECTS[key];
   if (!p) return "";
-  const name = key === "karyaai" ? "KaryaAI"
-    : key === "crumbcraft" ? "CrumbCraft"
-    : key === "vectorvance" ? "VectorVance"
-    : key === "gridnavigator" ? "GridNavigator"
-    : key === "ticktickfocus" ? "TickTickFocus"
-    : key.charAt(0).toUpperCase() + key.slice(1);
+  const name = displayName(key);
 
   const links = [
     p.live ? `Live: https://${p.live}` : null,
@@ -252,11 +263,15 @@ function formatGHReposForPrompt(repos: GHRepo[]): string {
   const list = meaningfulRepos(repos);
   if (!list.length) return "";
   const lines = list.slice(0, 20).map((r) => {
+    const mappedKey = repoKeyFor(r.name);
     const bits = [
       r.language,
       r.stargazers_count ? `★${r.stargazers_count}` : null,
       r.description ? `"${r.description}"` : null,
       monthYear(r.pushed_at) ? `last push ${monthYear(r.pushed_at)}` : null,
+      mappedKey
+        ? `(this repo IS my ${displayName(mappedKey)} project — same thing, not a separate project)`
+        : null,
     ].filter(Boolean);
     return `- ${r.name}${bits.length ? ` — ${bits.join(", ")}` : ""}`;
   });
@@ -266,6 +281,17 @@ function formatGHReposForPrompt(repos: GHRepo[]): string {
 // Normalize for repo-name matching ("VectorVance" -> "vectorvance")
 function normalize(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+// Map a GitHub repo name back to its curated project key. Repo names don't always
+// match the app name: car-deal -> Revveal, SmartTodo -> KaryaAI, crumb -> CrumbCraft.
+// Derived from each project's `github` field so it stays in sync automatically.
+const REPO_KEY_BY_NAME: Record<string, string> = Object.fromEntries(
+  Object.entries(PROJECTS).map(([key, p]) => [normalize(p.github.split("/").pop() ?? ""), key])
+);
+
+function repoKeyFor(repoName: string): string | null {
+  return REPO_KEY_BY_NAME[normalize(repoName)] ?? null;
 }
 
 // Find a repo the user referenced by name (e.g. "cruze from github")
@@ -300,8 +326,14 @@ function buildRepoListResponse(repos: GHRepo[]): string {
     return "GitHub's not responding right now, try in a sec. Meanwhile, ask me about my main projects.\n[[FOLLOWUPS: show projects | what's your stack | try again]]";
   }
   const lines = list.slice(0, 12).map((r) => {
-    const desc = r.description ? ` — ${r.description}` : "";
-    return `- **${r.name}**${r.language ? ` (${r.language})` : ""}${desc}`;
+    const mappedKey = repoKeyFor(r.name);
+    const label = mappedKey ? displayName(mappedKey) : r.name;
+    const repoNote =
+      mappedKey && normalize(label) !== normalize(r.name) ? ` (repo: ${r.name})` : "";
+    const desc = mappedKey
+      ? ` — ${PROJECTS[mappedKey].description}`
+      : r.description ? ` — ${r.description}` : "";
+    return `- **${label}**${r.language ? ` (${r.language})` : ""}${repoNote}${desc}`;
   });
   return (
     `Here's what's live on my GitHub right now (github.com/${GH_USER}):\n\n` +
@@ -358,7 +390,13 @@ Solid: Node.js, Express, REST API design, PostgreSQL, SQL, Git, Docker, Vercel
 Learning: LLM fine-tuning, vector databases, RAG systems
 
 ═══════════════ MY PROJECTS ═══════════════
-${Object.entries(PROJECTS).map(([, p]) => `- ${p.tag}: ${p.description} Stack: ${p.stack}. Status: ${p.status}.`).join("\n")}
+${Object.entries(PROJECTS).map(([key, p]) => {
+  const repo = p.github.split("/").pop() ?? "";
+  const repoNote = repo && normalize(repo) !== normalize(key) ? ` [GitHub repo: ${repo}]` : "";
+  return `- ${displayName(key)} (${p.tag})${repoNote}: ${p.description} Stack: ${p.stack}. Status: ${p.status}.`;
+}).join("\n")}
+
+NAMING: some of my repos are named differently from the app. The "car-deal" repo on GitHub IS my Revveal project — same thing, one project. Likewise the "SmartTodo" repo is KaryaAI, and the "crumb" repo is CrumbCraft. Never describe a repo and its app as two separate projects, and always prefer the app name (Revveal, KaryaAI, CrumbCraft).
 
 ═══════════════ MY CERTIFICATES ═══════════════
 ${certBlock}
@@ -417,14 +455,20 @@ export async function POST(req: Request) {
     }
 
     // "cruze from github", or any message naming a live repo
-    {
+    if (!detectAllProjectsQuery(lastUserMsg)) {
       const repos = await getRepos();
       const repo = matchRepoByName(lastUserMsg, repos);
-      // Only short-circuit to a live repo card if it's not one of the 7 curated
-      // projects (those have richer hand-written copy) or the user explicitly said "github"
-      if (repo && (mentionsGitHub || !PROJECTS[normalize(repo.name)])) {
-        const curatedKey = detectProjectQuery(lastUserMsg);
-        if (!curatedKey || mentionsGitHub) {
+      if (repo) {
+        // If this repo is actually one of my curated projects (the repo name may differ
+        // from the app name, e.g. car-deal -> Revveal), always answer with the rich curated
+        // card so the bot never treats the repo and the app as two different projects.
+        const mappedKey = repoKeyFor(repo.name);
+        if (mappedKey) {
+          return new Response(buildProjectCard(mappedKey), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+        }
+        // Otherwise it's a non-curated repo — surface it only if they pointed at GitHub
+        // or didn't name a curated project.
+        if (mentionsGitHub || !detectProjectQuery(lastUserMsg)) {
           return new Response(buildRepoCard(repo), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
         }
       }

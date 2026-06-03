@@ -6,6 +6,7 @@ import { MainNavbar } from "@/components/ui/main-navbar";
 import { Footer } from "@/components/ui/footer";
 import { Chatbot } from "@/components/ui/Chatbot";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { SiteBackground } from "@/components/ui/site-background";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -62,6 +63,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark scroll-smooth ${raleway.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-[#080808] text-white antialiased min-h-screen" suppressHydrationWarning>
+        {/* Site-wide animated Spline gradient — fixed behind all content (z −10) */}
+        <SiteBackground />
+
         {/* Shared liquid-glass refraction filter — referenced by .liquid-glass / .glass-card
             via backdrop-filter:url(#liquid-distort). Mounted once for the whole app. */}
         <svg

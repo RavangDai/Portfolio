@@ -1,299 +1,354 @@
 "use client";
 
-import { useMemo } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ExternalLink, Check } from "lucide-react";
+import {
+  ArrowUpRight,
+  Award,
+  CheckCircle2,
+  Code2,
+  Database,
+  ExternalLink,
+  Sparkles,
+  Table2,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/* -------------------------------------------------------------------------- */
-/* TYPES & DATA                                                               */
-/* -------------------------------------------------------------------------- */
-
 type Certificate = {
-    title: string;
-    issuer: string;
-    year: number;
-    tag: string;
-    highlight: string;
-    skills: string[];
-    url?: string;
+  title: string;
+  issuer: string;
+  year: number;
+  category: string;
+  summary: string;
+  skills: string[];
+  image: string;
+  url: string;
+  Icon: LucideIcon;
+  featured?: boolean;
 };
 
 const certificates: Certificate[] = [
-    {
-        title: "Software Engineer Certificate",
-        issuer: "HackerRank",
-        year: 2025,
-        tag: "Full-stack Engineering",
-        highlight: "Problem-solving, REST APIs, and full-stack architecture.",
-        skills: ["Problem Solving", "REST API Design", "Full-stack Arch", "Data Structures"],
-        url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
-    },
-    {
-        title: "SQL (Advanced) Certificate",
-        issuer: "HackerRank",
-        year: 2025,
-        tag: "Data / Backend",
-        highlight: "Complex queries, joins, indexing, and performance tuning.",
-        skills: ["Complex Queries", "Joins & Subqueries", "Indexing", "Performance Tuning"],
-        url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
-    },
-    {
-        title: "Excel Fundamentals - Finance",
-        issuer: "Corporate Finance Institute",
-        year: 2024,
-        tag: "Finance & Analysis",
-        highlight: "Financial modeling, formulas, and data analysis in Excel.",
-        skills: ["Financial Modeling", "Pivot Tables", "Data Analysis", "Excel Formulas"],
-        url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
-    },
+  {
+    title: "Software Engineer Certificate",
+    issuer: "HackerRank",
+    year: 2025,
+    category: "Full-stack Engineering",
+    summary: "Role certification covering problem solving, REST APIs, full-stack structure, and data structures.",
+    skills: ["Problem Solving", "REST APIs", "Full-stack", "Data Structures"],
+    image: "/certificates/software-engineer-crop.png",
+    url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
+    Icon: Code2,
+    featured: true,
+  },
+  {
+    title: "SQL (Advanced) Certificate",
+    issuer: "HackerRank",
+    year: 2025,
+    category: "Data / Backend",
+    summary: "Advanced SQL certification covering query optimization, indexing, joins, subqueries, and pivots.",
+    skills: ["Complex Queries", "Indexing", "Joins", "Performance"],
+    image: "/certificates/sql-advanced-crop.png",
+    url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
+    Icon: Database,
+  },
+  {
+    title: "Excel Fundamentals - Finance",
+    issuer: "Corporate Finance Institute",
+    year: 2024,
+    category: "Finance & Analysis",
+    summary: "Finance-focused Excel credential covering formulas, analysis workflows, and structured spreadsheet modeling.",
+    skills: ["Excel Formulas", "Financial Modeling", "Data Analysis", "Pivot Tables"],
+    image: "/certificates/excel-finance-crop.png",
+    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
+    Icon: Table2,
+  },
 ];
 
-/* -------------------------------------------------------------------------- */
-/* CREDENTIAL ROW                                                             */
-/* -------------------------------------------------------------------------- */
+const ease = [0.22, 1, 0.36, 1] as const;
 
-function CredentialRow({ cert, index, total }: { cert: Certificate; index: number; total: number }) {
-    return (
-        <motion.article
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0a0a0c] transition-colors duration-500 hover:border-white/20"
+function ProofPill() {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.09] bg-black/35 px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-white/62">
+      <CheckCircle2 className="h-3 w-3" />
+      Verified
+    </span>
+  );
+}
+
+function CertificateTile({
+  certificate,
+  index,
+  className,
+  imagePriority = false,
+  featured: featuredProp,
+}: {
+  certificate: Certificate;
+  index: number;
+  className?: string;
+  imagePriority?: boolean;
+  /** Override the data's `featured` flag (e.g. force uniform tiles in a row). */
+  featured?: boolean;
+}) {
+  const Icon = certificate.Icon;
+  const featured = featuredProp ?? certificate.featured;
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.22 }}
+      transition={{ duration: 0.55, delay: index * 0.06, ease }}
+      className={cn(
+        "group glass-panel relative overflow-hidden rounded-2xl border border-white/[0.08]",
+        "shadow-[0_22px_70px_rgba(0,0,0,0.42)] transition-[border-color,transform] duration-300",
+        "hover:-translate-y-1 hover:border-white/[0.18]",
+        className
+      )}
+    >
+      <a
+        href={certificate.url}
+        target="_blank"
+        rel="noreferrer"
+        className="block h-full"
+        aria-label={`View ${certificate.title}`}
+      >
+        <div
+          className={cn(
+            "relative border-b border-white/[0.06] bg-white/[0.04]",
+            featured ? "p-3 sm:p-4" : "p-3"
+          )}
         >
-            {/* One-shot verification scan that fires when row enters the viewport */}
-            <motion.div
-                aria-hidden
-                initial={{ x: "-30%", opacity: 0 }}
-                whileInView={{ x: "130%", opacity: [0, 0.9, 0] }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 1.4, delay: index * 0.12 + 0.15, ease: [0.4, 0, 0.2, 1] }}
-                className="pointer-events-none absolute inset-y-0 w-[180px]"
-                style={{
-                    background:
-                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.10) 40%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.10) 60%, transparent)",
-                    filter: "blur(0.5px)",
-                }}
+          <div className="overflow-hidden rounded-xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+            <Image
+              src={certificate.image}
+              alt={`${certificate.title} issued by ${certificate.issuer}`}
+              width={1000}
+              height={740}
+              priority={imagePriority}
+              sizes={featured ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 100vw"}
+              className={cn(
+                "block w-full object-cover object-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025]",
+                featured ? "aspect-[1.36/1]" : "aspect-[1.35/1]"
+              )}
             />
+          </div>
 
-            {/* Continuous slow scan on hover */}
-            <motion.div
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 w-[140px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                animate={{ x: ["-140px", "calc(100% + 140px)"] }}
-                transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
-                style={{
-                    background:
-                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)",
-                }}
-            />
-
-            {/* Left rail accent bar — fills on hover */}
-            <div className="absolute inset-y-0 left-0 w-[2px] overflow-hidden">
-                <div className="h-full w-full bg-white/[0.05]" />
-                <div
-                    className="absolute inset-x-0 top-0 h-full origin-top scale-y-0 bg-gradient-to-b from-white/70 via-white/40 to-transparent transition-transform duration-700 ease-out group-hover:scale-y-100"
-                />
-            </div>
-
-            <div className="relative px-6 py-7 sm:px-9 sm:py-8">
-                {/* TOP: serial / verified / year */}
-                <div className="mb-5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <span className="font-mono text-[0.6rem] tracking-[0.22em] text-white/30">
-                            {String(index + 1).padStart(3, "0")}
-                            <span className="mx-1.5 text-white/15">/</span>
-                            {String(total).padStart(3, "0")}
-                        </span>
-                        <span className="h-3 w-px bg-white/10" />
-                        <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5">
-                            <Check className="h-2.5 w-2.5 text-white/60" strokeWidth={3} />
-                            <span className="font-mono text-[0.55rem] uppercase tracking-[0.22em] text-white/45">
-                                verified
-                            </span>
-                        </span>
-                    </div>
-                    <span className="font-mono text-[0.65rem] tracking-[0.2em] text-white/35">
-                        {cert.year}
-                    </span>
-                </div>
-
-                {/* TITLE */}
-                <div className="flex items-baseline gap-3">
-                    <span
-                        aria-hidden
-                        className="mt-1 text-base leading-none text-white/45 transition-colors duration-500 group-hover:text-white/80"
-                    >
-                        ◆
-                    </span>
-                    <h3 className="font-display text-xl font-bold leading-tight tracking-tight text-white sm:text-[1.55rem]">
-                        {cert.title}
-                    </h3>
-                </div>
-
-                {/* ISSUER + TAG */}
-                <div className="ml-7 mt-1.5 flex flex-wrap items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.25em] text-white/40">
-                    <span>{cert.issuer}</span>
-                    <span className="text-white/15">·</span>
-                    <span className="text-white/35">{cert.tag}</span>
-                </div>
-
-                {/* HIGHLIGHT */}
-                <p className="ml-7 mt-5 max-w-2xl text-[0.92rem] leading-relaxed text-white/55">
-                    {cert.highlight}
-                </p>
-
-                {/* HAIRLINE DIVIDER */}
-                <div className="ml-7 my-6 h-px bg-gradient-to-r from-white/[0.10] via-white/[0.04] to-transparent" />
-
-                {/* SKILLS + VERIFY */}
-                <div className="ml-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-                    <ul className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                        {cert.skills.map((skill, i) => (
-                            <li key={skill} className="flex items-center gap-3">
-                                {i > 0 && <span aria-hidden className="text-white/15">·</span>}
-                                <span className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-white/55">
-                                    {skill}
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-
-                    {cert.url && (
-                        <a
-                            href={cert.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className={cn(
-                                "group/v shrink-0 inline-flex items-center gap-2",
-                                "rounded-full border border-white/15 bg-white/[0.03] px-4 py-1.5",
-                                "text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-white/55",
-                                "transition-all duration-300",
-                                "hover:border-white/35 hover:bg-white/[0.08] hover:text-white"
-                            )}
-                        >
-                            <span>verify</span>
-                            <ExternalLink
-                                className="h-3 w-3 transition-transform duration-200 group-hover/v:-translate-y-0.5 group-hover/v:translate-x-0.5"
-                            />
-                        </a>
-                    )}
-                </div>
-            </div>
-        </motion.article>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* TICKER-TAPE STAT HEADER                                                    */
-/* -------------------------------------------------------------------------- */
-
-function StatBlock({ value, label }: { value: string; label: string }) {
-    return (
-        <div className="flex items-baseline gap-2">
-            <span className="font-mono text-[0.95rem] font-semibold text-white/85">{value}</span>
-            <span className="font-mono text-[0.55rem] uppercase tracking-[0.25em] text-white/35">
-                {label}
-            </span>
+          <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
         </div>
-    );
+
+        <div className={cn("relative", featured ? "p-5 sm:p-6" : "p-5")}>
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.04] text-white/72">
+                <Icon className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-white/34">
+                  {certificate.issuer}
+                </p>
+                <p className="mt-1 text-xs font-medium text-white/46">{certificate.category}</p>
+              </div>
+            </div>
+            <ProofPill />
+          </div>
+
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3
+                className={cn(
+                  "font-black leading-tight tracking-tight text-white",
+                  featured ? "text-2xl sm:text-3xl" : "text-xl"
+                )}
+              >
+                {certificate.title}
+              </h3>
+              <p className={cn("mt-3 leading-relaxed text-white/52", featured ? "text-sm sm:text-base" : "text-sm")}>
+                {certificate.summary}
+              </p>
+            </div>
+            <span className="font-mono text-xs text-white/35">{certificate.year}</span>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {certificate.skills.map((skill) => (
+              <span
+                key={skill}
+                className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold text-white/54"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-6 flex items-center gap-1.5 text-sm font-semibold text-white/72 transition-colors duration-200 group-hover:text-white">
+            View credential
+            <ExternalLink className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </div>
+        </div>
+      </a>
+    </motion.article>
+  );
 }
 
-/* -------------------------------------------------------------------------- */
-/* SECTION                                                                    */
-/* -------------------------------------------------------------------------- */
+// ─── Flagship certificate — wide horizontal hero ──────────────────────────────
+
+function FeaturedCertificate({ certificate }: { certificate: Certificate }) {
+  const Icon = certificate.Icon;
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease }}
+      className="group glass-panel relative overflow-hidden rounded-3xl border border-white/[0.08] shadow-[0_28px_80px_rgba(0,0,0,0.5)] transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-white/[0.18]"
+    >
+      <a
+        href={certificate.url}
+        target="_blank"
+        rel="noreferrer"
+        className="grid lg:grid-cols-[1.25fr_1fr]"
+        aria-label={`View ${certificate.title}`}
+      >
+        {/* Media */}
+        <div className="relative border-b border-white/[0.06] bg-white/[0.04] p-4 sm:p-5 lg:border-b-0 lg:border-r">
+          <div className="overflow-hidden rounded-xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+            <Image
+              src={certificate.image}
+              alt={`${certificate.title} issued by ${certificate.issuer}`}
+              width={1000}
+              height={740}
+              priority
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              className="block aspect-[1.5/1] w-full object-cover object-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025]"
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+
+          <span className="absolute left-7 top-8 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/45 px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-[0.2em] text-white/78 backdrop-blur-sm">
+            <Sparkles className="h-3 w-3" />
+            Flagship
+          </span>
+        </div>
+
+        {/* Details */}
+        <div className="relative flex flex-col p-6 sm:p-8">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.04] text-white/72">
+                <Icon className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-white/34">
+                  {certificate.issuer}
+                </p>
+                <p className="mt-1 text-xs font-medium text-white/46">{certificate.category}</p>
+              </div>
+            </div>
+            <ProofPill />
+          </div>
+
+          <h3 className="font-black leading-tight tracking-tight text-white text-3xl sm:text-4xl">
+            {certificate.title}
+          </h3>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/52 sm:text-base">
+            {certificate.summary}
+          </p>
+
+          <div className="mt-6 flex flex-wrap gap-1.5">
+            {certificate.skills.map((skill) => (
+              <span
+                key={skill}
+                className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold text-white/54"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-auto flex items-center justify-between gap-4 pt-8">
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-white/72 transition-colors duration-200 group-hover:text-white">
+              View credential
+              <ExternalLink className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </span>
+            <span className="font-mono text-xs text-white/35">{certificate.year}</span>
+          </div>
+        </div>
+      </a>
+    </motion.article>
+  );
+}
 
 export function CertificatesSection() {
-    const sortedCertificates = useMemo(
-        () => [...certificates].sort((a, b) => b.year - a.year),
-        []
-    );
+  const featured = certificates[0];
 
-    const stats = useMemo(() => {
-        const years = certificates.map((c) => c.year);
-        const yearRange =
-            Math.min(...years) === Math.max(...years)
-                ? `${Math.min(...years)}`
-                : `${Math.min(...years)}–${Math.max(...years)}`;
-        const issuerCount = new Set(certificates.map((c) => c.issuer)).size;
-        return {
-            count: String(certificates.length).padStart(2, "0"),
-            yearRange,
-            issuers: String(issuerCount).padStart(2, "0"),
-        };
-    }, []);
+  return (
+    <section
+      id="certificates"
+      className="relative w-full overflow-hidden bg-[#080808]/72 py-20 md:py-28"
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
 
-    return (
-        <section
-            id="certificates"
-            className="relative w-full overflow-hidden bg-[#080808] py-20 md:py-28"
-        >
-            <div className="relative z-10 mx-auto w-full max-w-4xl px-4 sm:px-6 md:px-8">
-                {/* HEADER */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.2 }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="mb-12 md:mb-16"
-                >
-                    <p className="mb-5 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/35">
-                        Credentials Ledger
-                    </p>
-                    <h2
-                        className="font-display font-black leading-[0.9] tracking-tighter"
-                        style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)" }}
-                    >
-                        <span className="shimmer-text">Skills I&apos;ve</span>
-                        <br />
-                        <span className="text-white/20">proven.</span>
-                    </h2>
-
-                    {/* Ticker-tape stat row */}
-                    <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-y border-white/[0.06] py-4">
-                        <StatBlock value={stats.count} label="certificates" />
-                        <span className="h-3 w-px bg-white/10" />
-                        <StatBlock value={stats.yearRange} label="active range" />
-                        <span className="h-3 w-px bg-white/10" />
-                        <StatBlock value={stats.issuers} label="independent issuers" />
-                        <span className="h-3 w-px bg-white/10" />
-                        <div className="flex items-center gap-2">
-                            <motion.span
-                                className="h-1.5 w-1.5 rounded-full bg-white/70"
-                                animate={{ opacity: [0.35, 1, 0.35] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            />
-                            <span className="font-mono text-[0.55rem] uppercase tracking-[0.25em] text-white/45">
-                                live verifiable
-                            </span>
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* CREDENTIAL LIST */}
-                <div className="space-y-4">
-                    {sortedCertificates.map((cert, i) => (
-                        <CredentialRow
-                            key={cert.title}
-                            cert={cert}
-                            index={i}
-                            total={sortedCertificates.length}
-                        />
-                    ))}
-                </div>
-
-                {/* FOOTER NOTE */}
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                    className="mt-10 text-center font-mono text-[0.6rem] uppercase tracking-[0.28em] text-white/25"
-                >
-                    end of ledger · all credentials independently issued
-                </motion.p>
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
+        <div className="mb-12 flex flex-col gap-8 md:mb-14 lg:flex-row lg:items-end lg:justify-between">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.55, ease }}
+          >
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5">
+              <Award className="h-3.5 w-3.5 text-white/55" />
+              <span className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-white/40">
+                Certificates
+              </span>
             </div>
-        </section>
-    );
+
+            <h2 className="font-display text-5xl font-black leading-[0.95] tracking-tighter text-white md:text-7xl">
+              Proof wall.
+              <br />
+              <span className="text-white/22">Real receipts.</span>
+            </h2>
+
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/42">
+              A bento grid of issuer-backed certificates across engineering,
+              backend data, and finance workflows.
+            </p>
+          </motion.div>
+
+          <motion.a
+            href={featured.url}
+            target="_blank"
+            rel="noreferrer"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.5, delay: 0.08, ease }}
+            className="group inline-flex h-11 w-fit items-center gap-2 rounded-full border border-white/12 bg-white px-4 text-sm font-bold text-black transition-[transform,background-color] duration-200 hover:bg-white/86 active:scale-[0.97]"
+          >
+            Verify latest
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </motion.a>
+        </div>
+
+        {/* Asymmetric bento — flagship hero on top, supporting certs in a 2-up row */}
+        <div className="flex flex-col gap-4">
+          <FeaturedCertificate certificate={certificates[0]} />
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {certificates.slice(1).map((certificate, index) => (
+              <CertificateTile
+                key={certificate.title}
+                certificate={certificate}
+                index={index + 1}
+                featured={false}
+                className="h-full"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

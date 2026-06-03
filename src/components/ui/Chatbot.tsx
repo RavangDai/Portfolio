@@ -435,7 +435,7 @@ export function Chatbot() {
                         initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
                         whileHover={{ scale: 1.05, y: -1 }}
                         className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2 px-4 py-2.5 cursor-pointer focus:outline-none rounded-full"
-                        style={{ background: "rgba(10,12,20,0.95)", backdropFilter: "blur(24px)", border: `1px solid ${accent.primary}40`, boxShadow: `0 0 20px ${accent.glow}` }}
+                        style={{ background: "rgba(10,12,20,0.45)", backdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)", WebkitBackdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)", border: `1px solid ${accent.primary}40`, boxShadow: `0 0 20px ${accent.glow}` }}
                         aria-label="Reopen chat"
                     >
                         <motion.div className="h-1.5 w-1.5 rounded-full" style={{ background: accent.primary }}
@@ -457,11 +457,11 @@ export function Chatbot() {
                     className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden"
                     style={{
                         borderRadius: "999px",
-                        background: "rgba(8,8,8,0.92)",
+                        background: "rgba(10,10,12,0.42)",
                         border: "1px solid rgba(255,255,255,0.14)",
                         borderTopColor: "rgba(255,255,255,0.24)",
-                        backdropFilter: "blur(32px) saturate(180%)",
-                        WebkitBackdropFilter: "blur(32px) saturate(180%)",
+                        backdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)",
+                        WebkitBackdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)",
                         boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.7)",
                     }}
                     aria-label="Open AI chat"
@@ -504,7 +504,7 @@ export function Chatbot() {
                         )}
                         style={{
                             maxHeight: "min(82vh, calc(100dvh - 1.5rem))",
-                            background: "rgba(8, 10, 18, 0.98)",
+                            background: "rgba(10, 11, 16, 0.70)",
                             backdropFilter: "blur(48px) saturate(1.8)",
                             WebkitBackdropFilter: "blur(48px) saturate(1.8)",
                             border: "1px solid rgba(255,255,255,0.08)",

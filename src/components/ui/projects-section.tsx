@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  useState, useCallback, useEffect, useRef,
-} from "react";
-import {
-  motion, AnimatePresence,
-  useMotionValue, useSpring, useTransform,
-} from "framer-motion";
-import { Play, X, ArrowUpRight } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, X, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function GithubIcon({ className }: { className?: string }) {
@@ -120,6 +115,17 @@ const projects: Project[] = [
   },
 ];
 
+// Bento span per project index — featured (KaryaAI, VectorVance) are 2×2; tiles fit a 4-col mosaic.
+const SPANS = [
+  "col-span-2 row-span-2",                      // 0 KaryaAI    — featured
+  "col-span-2 md:col-span-2",                   // 1 CrumbCraft — wide
+  "col-span-2 md:col-span-2",                   // 2 Revveal    — wide
+  "col-span-2 row-span-2",                      // 3 VectorVance— featured
+  "col-span-2 md:col-span-2",                   // 4 GridNav    — wide
+  "col-span-1 md:col-span-1",                   // 5 TickTick   — small
+  "col-span-1 md:col-span-1",                   // 6 Quotex     — small
+];
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getYouTubeEmbedUrl(url: string): string | null {
@@ -139,7 +145,7 @@ function BuildingBadge() {
     return () => clearInterval(id);
   }, []);
   return (
-    <span className="text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/50 border-white/10 bg-white/[0.03] inline-flex items-center gap-1">
+    <span className="text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/60 border-white/15 bg-black/30 backdrop-blur-sm inline-flex items-center gap-1">
       <span className="relative flex h-1.5 w-1.5 shrink-0">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/40 opacity-75" />
         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/40" />
@@ -149,302 +155,245 @@ function BuildingBadge() {
   );
 }
 
-// ─── Screenshot card with 3-D tilt ────────────────────────────────────────────
+function StatusBadge({ status }: { status: ProjectStatus }) {
+  if (status === "In progress") return <BuildingBadge />;
+  return (
+    <span className="text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/75 border-white/20 bg-black/30 backdrop-blur-sm">
+      Shipped
+    </span>
+  );
+}
 
-function ScreenshotCard({
-  project, visible, onPlay, side,
+// ─── Bento tile ─────────────────────────────────────────────────────────────────
+
+function BentoTile({
+  project, index, featured, onOpen,
 }: {
   project: Project;
-  visible: boolean;
-  onPlay: (name: string) => void;
-  side: "left" | "right";
+  index: number;
+  featured: boolean;
+  onOpen: (i: number) => void;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const rotX = useSpring(useTransform(rawY, [-1, 1], [8, -8]), { stiffness: 260, damping: 26 });
-  const rotY = useSpring(useTransform(rawX, [-1, 1], [-8, 8]), { stiffness: 260, damping: 26 });
-
-  const handleMouse = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    rawX.set((e.clientX - rect.left) / rect.width * 2 - 1);
-    rawY.set((e.clientY - rect.top) / rect.height * 2 - 1);
-  }, [rawX, rawY]);
-
-  const handleLeave = useCallback(() => { rawX.set(0); rawY.set(0); }, [rawX, rawY]);
-
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          key="screenshot"
-          initial={{ opacity: 0, scale: 0.82, y: 16, x: side === "right" ? -24 : 24, filter: "blur(8px)" }}
-          animate={{ opacity: 1, scale: 1, y: 0, x: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, scale: 0.92, y: 6, filter: "blur(6px)", transition: { duration: 0.12, ease: "easeIn" } }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          style={{ perspective: 800 }}
-          className="w-full max-w-[320px] lg:max-w-[380px]"
-        >
-          <motion.div
-            ref={cardRef}
-            style={{ rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d" }}
-            onMouseMove={handleMouse}
-            onMouseLeave={handleLeave}
-            className="group/img relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.04)] cursor-default"
-          >
-            <div className="aspect-video overflow-hidden bg-black">
-              <img
-                src={project.image}
-                alt={project.name}
-                className="h-full w-full object-cover object-top transition-transform duration-700 group-hover/img:scale-[1.06]"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-white/[0.03] opacity-0 transition-opacity duration-500 group-hover/img:opacity-100" />
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <p className="text-xs font-semibold text-white/90">{project.name}</p>
-              <p className="text-[0.65rem] text-white/45 mt-0.5">{project.tag}</p>
-            </div>
-            {project.video && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onPlay(project.name); }}
-                aria-label={`Play ${project.name} demo`}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm text-white opacity-0 group-hover/img:opacity-100 transition-all duration-300 hover:bg-white/20 hover:border-white/40 hover:scale-110 active:scale-95">
-                  <Play className="h-4 w-4 fill-current ml-0.5" />
-                </span>
-              </button>
-            )}
-            <motion.div
-              initial={{ x: "-100%", opacity: 0.6 }}
-              animate={{ x: "200%", opacity: 0 }}
-              transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-              className="pointer-events-none absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/12 to-transparent skew-x-12"
-            />
-          </motion.div>
-        </motion.div>
+    <motion.button
+      type="button"
+      onClick={() => onOpen(index)}
+      initial={{ opacity: 0, y: 36, filter: "blur(8px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, delay: (index % 4) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      className={cn(
+        "bento-tile group relative overflow-hidden text-left",
+        SPANS[index]
       )}
-    </AnimatePresence>
-  );
-}
-
-// ─── Project info card ─────────────────────────────────────────────────────────
-
-function ProjectCard({
-  project, index, total, onPlay,
-}: {
-  project: Project;
-  index: number;
-  total: number;
-  hovered: boolean;
-  onPlay: (name: string) => void;
-}) {
-  return (
-    <motion.div className="w-full max-w-[400px]">
-      {/* Index row */}
-      <div className="flex items-center justify-between mb-3">
-        <span className="font-mono text-[0.6rem] font-bold tracking-[0.25em] text-white/20 uppercase">
-          {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-        </span>
-      </div>
-
-      {/* Name */}
-      <div className="flex items-center gap-2.5 mb-1.5">
-        <h3
-          className="text-2xl font-bold tracking-tight text-white/90 transition-colors duration-300"
-          style={{ fontSize: "clamp(1.25rem, 2.2vw, 1.6rem)" }}
-        >
-          {project.name}
-        </h3>
-        {project.video && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onPlay(project.name); }}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-white/15 text-white/35 hover:border-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200 flex-shrink-0"
-            aria-label={`Play ${project.name} demo`}
-          >
-            <Play className="h-2.5 w-2.5 fill-current ml-px" />
-          </button>
-        )}
-      </div>
-
-      {/* Tag + status */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <p className="text-[0.62rem] font-medium uppercase tracking-[0.2em] text-white/30">{project.tag}</p>
-        {project.status === "Completed" ? (
-          <span className="text-[0.58rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/70 border-white/15 bg-white/[0.05]">
-            Shipped
-          </span>
-        ) : (
-          <BuildingBadge />
-        )}
-        <span className="ml-auto font-mono text-[0.6rem] text-white/20">{project.year}</span>
-      </div>
-
-      {/* Description */}
-      <p className="text-sm text-white/50 leading-relaxed mb-3 max-w-sm">{project.description}</p>
-
-      {/* Tech pills */}
-      <div className="flex flex-wrap gap-1.5 mb-4">
-        {project.tech.slice(0, 5).map((t) => (
-          <span
-            key={t}
-            className="text-[0.62rem] font-medium px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.07] text-white/40 hover:text-white/65 hover:border-white/[0.14] transition-all duration-300"
-          >
-            {t}
-          </span>
-        ))}
-        {project.tech.length > 5 && (
-          <span className="text-[0.62rem] px-2.5 py-1 rounded-md bg-white/[0.02] border border-white/[0.05] text-white/25">
-            +{project.tech.length - 5}
-          </span>
-        )}
-      </div>
-
-      {/* Links */}
-      <div className="flex items-center gap-5">
-        <a href={project.github} target="_blank" rel="noreferrer"
-          className="flex items-center gap-1.5 text-[0.7rem] font-medium text-white/35 hover:text-white/80 transition-colors duration-200">
-          <GithubIcon className="h-3.5 w-3.5" />
-          Source
-        </a>
-        {project.live && (
-          <a href={project.live} target="_blank" rel="noreferrer"
-            className="group/live flex items-center gap-1 text-[0.7rem] font-medium text-white/50 hover:text-white transition-colors duration-200">
-            Live Demo
-            <ArrowUpRight className="h-3 w-3 transition-transform duration-200 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
-          </a>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Desktop tree row ──────────────────────────────────────────────────────────
-
-function ProjectRow({
-  project, index, total, onPlay,
-}: {
-  project: Project;
-  index: number;
-  total: number;
-  onPlay: (name: string) => void;
-}) {
-  const isLeft = index % 2 === 0;
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 48 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.55, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="relative grid grid-cols-[1fr_56px_1fr] items-center py-10 md:py-14"
+      aria-label={`Open ${project.name}`}
     >
-      {/* Left slot */}
-      <div className={cn("flex min-h-[180px] items-center", isLeft ? "justify-end pr-6 md:pr-10" : "justify-start pl-6 md:pl-10")}>
-        {isLeft ? (
-          <ProjectCard project={project} index={index} total={total} hovered={hovered} onPlay={onPlay} />
-        ) : (
-          <div className="flex justify-end w-full">
-            <ScreenshotCard project={project} visible={hovered} onPlay={onPlay} side="left" />
+      {/* Screenshot */}
+      <img
+        src={project.image}
+        alt={project.name}
+        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+      />
+
+      {/* Readability gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
+      {/* Hover sheen */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+      {/* Top row: badge + (video marker) */}
+      <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3.5">
+        <StatusBadge status={project.status} />
+        {project.video && (
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 border border-white/20 backdrop-blur-sm text-white transition-all duration-300 group-hover:bg-white/20 group-hover:border-white/40 group-hover:scale-110">
+            <Play className="h-3 w-3 fill-current ml-0.5" />
+          </span>
+        )}
+      </div>
+
+      {/* Bottom content */}
+      <div className="absolute inset-x-0 bottom-0 p-3.5 md:p-4">
+        <div className="flex items-end justify-between gap-2">
+          <div className="min-w-0">
+            <h3
+              className={cn(
+                "font-bold tracking-tight text-white truncate",
+                featured ? "text-xl md:text-2xl" : "text-sm md:text-base"
+              )}
+            >
+              {project.name}
+            </h3>
+            <p className="mt-0.5 text-[0.6rem] md:text-[0.65rem] font-medium uppercase tracking-[0.16em] text-white/45 truncate">
+              {project.tag}
+            </p>
+          </div>
+          <span className="font-mono text-[0.6rem] text-white/30 shrink-0">{project.year}</span>
+        </div>
+
+        {/* Featured-only: description + tech, revealed on hover */}
+        {featured && (
+          <div className="mt-2 max-h-0 overflow-hidden opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:max-h-28 group-hover:opacity-100">
+            <p className="text-xs text-white/60 leading-relaxed line-clamp-2">{project.description}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {project.tech.slice(0, 4).map((t) => (
+                <span key={t} className="text-[0.58rem] font-medium px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.10] text-white/55">
+                  {t}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Center spine node */}
-      <div className="flex flex-col items-center justify-center relative z-10">
-        <motion.div
-          className="absolute top-1/2 h-px origin-right"
-          animate={{ opacity: hovered ? 1 : 0.3, scaleX: hovered ? 1 : 0.7 }}
-          transition={{ duration: 0.3 }}
-          style={{ width: 40, right: "50%", background: "linear-gradient(to left, rgba(255,255,255,0.25), transparent)", display: isLeft ? undefined : "none", translateY: "-50%" }}
-        />
-        <motion.div
-          animate={{ scale: hovered ? 1.6 : 1, boxShadow: hovered ? "0 0 0 5px rgba(255,255,255,0.08), 0 0 24px rgba(255,255,255,0.20)" : "0 0 0 3px rgba(255,255,255,0.05)" }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="h-3 w-3 rounded-full bg-white/70 border border-white/40 relative z-10"
-        />
-        <div
-          className="absolute left-1/2 top-1/2 h-px -translate-y-1/2 transition-opacity duration-300"
-          style={{ width: 40, left: "50%", background: "linear-gradient(to right, rgba(255,255,255,0.25), transparent)", opacity: hovered ? 1 : 0.3, display: !isLeft ? undefined : "none" }}
-        />
-      </div>
-
-      {/* Right slot */}
-      <div className={cn("flex min-h-[180px] items-center", !isLeft ? "justify-start pl-6 md:pl-10" : "justify-start pl-6 md:pl-10")}>
-        {!isLeft ? (
-          <ProjectCard project={project} index={index} total={total} hovered={hovered} onPlay={onPlay} />
-        ) : (
-          <ScreenshotCard project={project} visible={hovered} onPlay={onPlay} side="right" />
-        )}
-      </div>
-    </motion.article>
+      {/* Click affordance */}
+      <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-white opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100">
+        <ArrowUpRight className="h-4 w-4" />
+      </span>
+    </motion.button>
   );
 }
 
-// ─── Mobile card ───────────────────────────────────────────────────────────────
+// ─── Gallery lightbox ────────────────────────────────────────────────────────────
 
-function MobileProjectCard({
-  project, index, total, onPlay,
+function GalleryLightbox({
+  index, onClose, onNavigate,
 }: {
-  project: Project;
   index: number;
-  total: number;
-  onPlay: (name: string) => void;
+  onClose: () => void;
+  onNavigate: (dir: 1 | -1) => void;
 }) {
+  const project = projects[index];
+
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden p-5"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+      onClick={onClose}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="relative space-y-4">
-        <div className="relative overflow-hidden rounded-xl aspect-video border border-white/[0.07]">
-          <img src={project.image} alt={project.name} className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-          {project.video && (
-            <button onClick={() => onPlay(project.name)} className="absolute inset-0 flex items-center justify-center">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm hover:bg-white/20 hover:border-white/40 transition-all duration-200">
-                <Play className="h-3.5 w-3.5 fill-white text-white ml-0.5" />
-              </span>
-            </button>
+      <div className="absolute inset-0 bg-black/85 backdrop-blur-xl" />
+
+      {/* Prev / Next */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onNavigate(-1); }}
+        aria-label="Previous project"
+        className="btn-icon absolute left-3 sm:left-6 top-1/2 z-20 h-11 w-11 -translate-y-1/2 !text-white/60 hover:!text-white"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button
+        onClick={(e) => { e.stopPropagation(); onNavigate(1); }}
+        aria-label="Next project"
+        className="btn-icon absolute right-3 sm:right-6 top-1/2 z-20 h-11 w-11 -translate-y-1/2 !text-white/60 hover:!text-white"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      <motion.div
+        key={project.name}
+        initial={{ scale: 0.94, opacity: 0, y: 18 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.96, opacity: 0, y: 10 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="liquid-glass relative z-10 grid w-full max-w-5xl overflow-hidden rounded-3xl lg:grid-cols-[1.4fr_1fr]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Media */}
+        <div className="relative aspect-video bg-black lg:aspect-auto">
+          {project.video ? (
+            <iframe
+              src={getYouTubeEmbedUrl(project.video) || project.video}
+              title={`${project.name} demo`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="h-full w-full bg-black"
+            />
+          ) : (
+            <img src={project.image} alt={project.name} className="h-full w-full object-cover object-top" />
           )}
         </div>
-        <ProjectCard project={project} index={index} total={total} hovered={false} onPlay={onPlay} />
-      </div>
-    </motion.article>
+
+        {/* Details */}
+        <div className="relative z-10 flex flex-col p-6 md:p-7">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h3 className="text-2xl font-bold tracking-tight text-white">{project.name}</h3>
+              <StatusBadge status={project.status} />
+            </div>
+            <button
+              onClick={onClose}
+              className="btn-icon h-9 w-9 shrink-0 !text-white/50 hover:!text-white"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <p className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/35">
+            {project.tag} <span className="text-white/20">· {project.year}</span>
+          </p>
+
+          <p className="mt-4 text-sm text-white/65 leading-relaxed">{project.description}</p>
+
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {project.tech.map((t) => (
+              <span
+                key={t}
+                className="text-[0.62rem] font-medium px-2.5 py-1 rounded-md bg-white/[0.06] border border-white/[0.12] text-white/60"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-auto flex items-center gap-5 pt-6">
+            <a href={project.github} target="_blank" rel="noreferrer"
+              className="flex items-center gap-1.5 text-[0.75rem] font-medium text-white/45 hover:text-white transition-colors duration-200">
+              <GithubIcon className="h-4 w-4" />
+              Source
+            </a>
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noreferrer"
+                className="group/live flex items-center gap-1 text-[0.75rem] font-semibold text-white/60 hover:text-white transition-colors duration-200">
+                Live Demo
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
+              </a>
+            )}
+            <span className="ml-auto font-mono text-[0.6rem] text-white/30">
+              {index + 1} / {projects.length}
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
 // ─── Main Section ─────────────────────────────────────────────────────────────
 
 export function ProjectsSection() {
-  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const activeProject = projects.find((p) => p.name === activeVideo);
-
-  const handlePlayVideo  = useCallback((name: string) => setActiveVideo(name), []);
-  const handleCloseVideo = useCallback(() => setActiveVideo(null), []);
+  const open = useCallback((i: number) => setActiveIndex(i), []);
+  const close = useCallback(() => setActiveIndex(null), []);
+  const navigate = useCallback((dir: 1 | -1) => {
+    setActiveIndex((cur) => (cur === null ? cur : (cur + dir + projects.length) % projects.length));
+  }, []);
 
   useEffect(() => {
-    if (!activeVideo) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") handleCloseVideo(); };
+    if (activeIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowRight") navigate(1);
+      else if (e.key === "ArrowLeft") navigate(-1);
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [activeVideo, handleCloseVideo]);
+  }, [activeIndex, close, navigate]);
 
   return (
-    <section id="projects" className="relative w-full bg-[#080808] py-20 md:py-28 overflow-hidden">
+    <section id="projects" className="relative w-full bg-[#080808]/72 py-20 md:py-28 overflow-hidden">
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
 
         {/* Header */}
@@ -467,96 +416,24 @@ export function ProjectsSection() {
           </h2>
         </motion.div>
 
-        {/* ── Desktop tree layout ── */}
-        <div className="hidden md:block relative">
-          <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 flex flex-col items-center pointer-events-none">
-            <div className="w-px flex-1" style={{ background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.10) 8%, rgba(255,255,255,0.06) 90%, transparent)" }} />
-          </div>
-          <AnimatePresence mode="popLayout">
-            {projects.map((project, index) => (
-              <ProjectRow
-                key={project.name}
-                project={project}
-                index={index}
-                total={projects.length}
-                onPlay={handlePlayVideo}
-              />
-            ))}
-          </AnimatePresence>
+        {/* Bento grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[148px] sm:auto-rows-[168px] gap-3 md:gap-4">
+          {projects.map((project, index) => (
+            <BentoTile
+              key={project.name}
+              project={project}
+              index={index}
+              featured={SPANS[index].includes("row-span-2")}
+              onOpen={open}
+            />
+          ))}
         </div>
-
-        {/* ── Mobile stacked layout ── */}
-        <div className="md:hidden space-y-5">
-          <AnimatePresence mode="popLayout">
-            {projects.map((project, index) => (
-              <MobileProjectCard
-                key={project.name}
-                project={project}
-                index={index}
-                total={projects.length}
-                onPlay={handlePlayVideo}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
-
       </div>
 
-      {/* ── Video modal ── */}
+      {/* Gallery lightbox */}
       <AnimatePresence>
-        {activeVideo && activeProject?.video && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center"
-            onClick={handleCloseVideo}
-          >
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="relative z-10 w-[92vw] max-w-5xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="mb-4 flex items-center justify-between px-1">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.08] border border-white/15">
-                    <Play className="h-4 w-4 fill-white text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white">{activeProject.name}</h3>
-                    <p className="text-xs text-white/40">{activeProject.tag}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleCloseVideo}
-                  className="btn-icon h-10 w-10 !text-white/50 hover:!border-white/30 hover:!bg-white/[0.08] hover:!text-white"
-                  aria-label="Close video"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
-                <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-br from-white/[0.04] to-transparent blur-xl" />
-                <iframe
-                  src={getYouTubeEmbedUrl(activeProject.video!) || activeProject.video}
-                  title={`${activeProject.name} demo`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="relative z-10 w-full aspect-video bg-black"
-                />
-              </div>
-              <p className="mt-3 text-center text-xs text-white/25">
-                Press{" "}
-                <kbd className="mx-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-white/40 border border-white/5">Esc</kbd>
-                or click outside to close
-              </p>
-            </motion.div>
-          </motion.div>
+        {activeIndex !== null && (
+          <GalleryLightbox index={activeIndex} onClose={close} onNavigate={navigate} />
         )}
       </AnimatePresence>
     </section>

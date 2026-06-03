@@ -164,9 +164,12 @@ export function MainNavbar() {
 
         <div className={cn("mx-auto max-w-7xl px-4 sm:px-8 transition-all duration-500", scrolled ? "pt-2" : "pt-4")}>
           <motion.nav
-            className="liquid-glass relative flex items-center justify-between overflow-hidden rounded-2xl px-6 py-3 transition-[background] duration-500"
+            className={cn(
+              "liquid-glass relative flex items-center justify-between overflow-hidden rounded-2xl px-6 py-3 transition-[background,backdrop-filter] duration-500",
+              scrolled && "nav-scrolled"
+            )}
             style={{
-              background: scrolled ? "rgba(8,8,8,0.30)" : "transparent",
+              background: scrolled ? "rgba(8,8,8,0.46)" : "transparent",
               scaleY: navScaleY,
               transformOrigin: "top",
             }}
