@@ -132,8 +132,8 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-                "rounded-lg border border-white/[0.1] bg-gradient-to-br from-white/[0.08] to-white/[0.04]",
-                "p-4 space-y-3 backdrop-blur-sm"
+                "glass-panel rounded-lg",
+                "p-4 space-y-3"
             )}
         >
             {/* Project Name */}

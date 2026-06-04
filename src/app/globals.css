@@ -911,6 +911,26 @@ html {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 12%);
 }
 
+/* ===== Glass Chip — small refractive liquid-glass pill for status labels / badges =====
+   Compact sibling of .glass-panel: same #liquid-distort refraction + dark tint for legibility,
+   lighter shadow, no real border (the inset highlights read as the glass edge). Pair with a
+   rounded-full / rounded-md utility + padding + text classes in the JSX. */
+.glass-chip {
+  position: relative;
+  isolation: isolate;
+  background: rgba(10, 10, 12, 0.45);
+  box-shadow:
+    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.16),
+    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.08),
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.04),
+    0 1px 4px rgba(0, 0, 0, 0.25);
+  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
+  backdrop-filter: blur(6px) saturate(150%);
+  -webkit-backdrop-filter: blur(6px) saturate(150%);
+  backdrop-filter: url(#liquid-distort) blur(4px) saturate(160%) brightness(103%);
+  -webkit-backdrop-filter: url(#liquid-distort) blur(4px) saturate(160%) brightness(103%);
+}
+
 /* ===== PATHAK moving white/black gradient ===== */
 .pathak-gradient {
   background: linear-gradient(
@@ -1079,12 +1099,33 @@ html {
 }
 
 .hero-beat-inner {
+  position: relative;
+  z-index: 1; /* sit above .hero-explore-scrim */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.1rem;
   max-width: min(92vw, 62rem);
   animation: hero-beat-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Beat-scoped dark pool for the EXPLORE finale — the cosmos blooms bright there, so this
+   keeps the cards/text legible while stars still peek at the edges. */
+/* Kept light on purpose: just enough to take the edge off the bloom so the title/subtitle
+   stay legible, but transparent enough that the cosmos still shows behind the cards — the
+   liquid-glass needs textured backdrop to actually refract (a flat dark pool looks frosted). */
+.hero-explore-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 66% 56% at 50% 46%,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 42%,
+    rgba(0, 0, 0, 0.1) 66%,
+    rgba(0, 0, 0, 0) 82%
+  );
 }
 
 @keyframes hero-beat-in {
@@ -1140,29 +1181,6 @@ html {
   gap: 0.7rem;
 }
 
-.hero-social {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 2.75rem;
-  width: 2.75rem;
-  border-radius: 9999px;
-  color: rgba(255, 255, 255, 0.7);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: color 0.25s ease, transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
-}
-
-.hero-social:hover {
-  color: #fff;
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.09);
-}
-
 /* ── EXPLORE beat — navigation hub that ends the cosmos scroll ── */
 .hero-explore-grid {
   pointer-events: auto;
@@ -1173,29 +1191,21 @@ html {
   width: min(92vw, 34rem);
 }
 
+/* Layout only — the true-liquid-glass look (refraction + dark fill) comes from the
+   .glass-panel class applied alongside this in the JSX. */
 .hero-explore-card {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
   padding: 1.05rem 1.15rem;
-  border-radius: 1rem;
   color: rgba(255, 255, 255, 0.92);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   text-align: left;
-  transition: color 0.25s ease, transform 0.25s ease, border-color 0.25s ease,
-    background-color 0.25s ease;
+  transition: transform 0.25s ease;
 }
 
 .hero-explore-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(233, 205, 160, 0.5);
-  background: rgba(255, 255, 255, 0.09);
 }
 
 .hero-explore-icon {
@@ -1244,24 +1254,76 @@ html {
   transform: translateX(-50%);
   z-index: 10;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.7rem;
   pointer-events: none;
 }
 
-.scroll-text,
-.section-counter {
+/* Branded chapter markers — replace the generic "SCROLL" control. Numbers in mono for the
+   engineer feel; the active chapter lifts to Ember-gold. Double as a mini-nav (clickable). */
+.hero-chapters {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero-chapter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.hero-chapter:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.hero-chapter-idx {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.hero-chapter-name {
   font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: inherit;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
-.section-counter {
-  font-variant-numeric: tabular-nums;
+.hero-chapter.is-active {
+  color: #f3ead6; /* Ember-gold ivory */
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hero-chapter.is-active .hero-chapter-idx {
+  opacity: 1;
+  color: #e9cda0;
+}
+
+/* On narrow screens keep only the active chapter's name; numbers stay for the rest. */
+@media (max-width: 640px) {
+  .hero-chapter:not(.is-active) .hero-chapter-name {
+    display: none;
+  }
+  .hero-chapters {
+    gap: 0.25rem;
+  }
 }
 
 .progress-track {

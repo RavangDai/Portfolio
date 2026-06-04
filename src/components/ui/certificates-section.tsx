@@ -226,7 +226,7 @@ function FeaturedCertificate({ certificate }: { certificate: Certificate }) {
           </div>
           <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
 
-          <span className="absolute left-7 top-8 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/45 px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-[0.2em] text-white/78 backdrop-blur-sm">
+          <span className="glass-chip absolute left-7 top-8 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-[0.2em] text-white/78">
             <Sparkles className="h-3 w-3" />
             Flagship
           </span>

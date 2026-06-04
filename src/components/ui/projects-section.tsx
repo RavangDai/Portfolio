@@ -145,7 +145,7 @@ function BuildingBadge() {
     return () => clearInterval(id);
   }, []);
   return (
-    <span className="text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/60 border-white/15 bg-black/30 backdrop-blur-sm inline-flex items-center gap-1">
+    <span className="glass-chip text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white/60 inline-flex items-center gap-1">
       <span className="relative flex h-1.5 w-1.5 shrink-0">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/40 opacity-75" />
         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/40" />
@@ -158,7 +158,7 @@ function BuildingBadge() {
 function StatusBadge({ status }: { status: ProjectStatus }) {
   if (status === "In progress") return <BuildingBadge />;
   return (
-    <span className="text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border text-white/75 border-white/20 bg-black/30 backdrop-blur-sm">
+    <span className="glass-chip text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white/75">
       Shipped
     </span>
   );
@@ -204,7 +204,7 @@ function BentoTile({
       <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3.5">
         <StatusBadge status={project.status} />
         {project.video && (
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 border border-white/20 backdrop-blur-sm text-white transition-all duration-300 group-hover:bg-white/20 group-hover:border-white/40 group-hover:scale-110">
+          <span className="glass-chip flex h-8 w-8 items-center justify-center rounded-full text-white transition-transform duration-300 group-hover:scale-110">
             <Play className="h-3 w-3 fill-current ml-0.5" />
           </span>
         )}

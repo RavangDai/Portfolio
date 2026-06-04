@@ -23,7 +23,8 @@ interface ThreeRefs {
   composer: EffectComposer | null;
   stars: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>[];
   nebula: THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial> | null;
-  mountains: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>[];
+  buildings: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>[];
+  buildingWindows: THREE.ShaderMaterial[];
   animationId: number | null;
   targetCameraX?: number;
   targetCameraY?: number;
@@ -70,6 +71,9 @@ const BEATS: Beat[] = [
 
 const TOTAL_BEATS = BEATS.length;
 
+// Authored chapter labels for the branded scroll indicator (aligned 1:1 with BEATS).
+const CHAPTERS = ["IDENTITY", "WORK", "EXPLORE"] as const;
+
 export const Component = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -90,7 +94,8 @@ export const Component = () => {
     composer: null,
     stars: [],
     nebula: null,
-    mountains: [],
+    buildings: [],
+    buildingWindows: [],
     animationId: null,
   });
 
@@ -242,30 +247,51 @@ export const Component = () => {
       refs.nebula = nebula;
     };
 
-    const createMountains = () => {
+    // City skyline (replaces the old mountain ridges — the 21st.dev "horizon" tell).
+    // Each depth layer is a row of boxy towers, fainter with distance for haze; near
+    // layers get sparse warm-gold lit windows, a few of which flicker.
+    const createBuildings = () => {
       const layers = [
-        { distance: -50, height: 60, color: 0x1a1a2e, opacity: 1 },
-        { distance: -100, height: 80, color: 0x16213e, opacity: 0.8 },
-        { distance: -150, height: 100, color: 0x0f3460, opacity: 0.6 },
-        { distance: -200, height: 120, color: 0x0a4668, opacity: 0.4 },
+        { distance: -50, color: 0x0b0b10, opacity: 1.0, maxH: 340, minH: 110, lit: 0.5 },
+        { distance: -100, color: 0x0e0d14, opacity: 0.82, maxH: 280, minH: 90, lit: 0.3 },
+        { distance: -150, color: 0x121019, opacity: 0.55, maxH: 210, minH: 70, lit: 0.14 },
+        { distance: -200, color: 0x16131c, opacity: 0.34, maxH: 160, minH: 55, lit: 0 },
       ];
 
-      layers.forEach((layer, index) => {
-        const points: THREE.Vector2[] = [];
-        const segments = 50;
+      const SPAN = 1500; // total skyline width
+      const BASE_Y = -300; // ground line (bottom of the towers), matches the old ridge base
 
-        for (let i = 0; i <= segments; i++) {
-          const x = (i / segments - 0.5) * 1000;
-          const y =
-            Math.sin(i * 0.1) * layer.height +
-            Math.sin(i * 0.05) * layer.height * 0.5 +
-            Math.random() * layer.height * 0.2 -
-            100;
-          points.push(new THREE.Vector2(x, y));
+      layers.forEach((layer, index) => {
+        // 1) Lay towers across x; remember each rect for window placement.
+        //    Heights ease toward a center-biased target (a "downtown" envelope) with a
+        //    smooth random-walk, so neighbours cluster into a real skyline instead of
+        //    white-noise spikes. Far layers are lower/flatter (read as distance/haze).
+        const rects: { x: number; w: number; h: number }[] = [];
+        let cx = -SPAN / 2;
+        let h = layer.maxH * 0.6; // running height
+        while (cx < SPAN / 2) {
+          const t = Math.abs(cx) / (SPAN / 2); // 0 center → 1 edge
+          const envelope = 0.45 + 0.55 * Math.pow(1 - t, 1.3); // taller downtown, higher floor
+          const target = layer.maxH * envelope * (0.8 + Math.random() * 0.2); // tighter variance
+          h += (target - h) * (0.22 + Math.random() * 0.16); // gentler ease → smoother skyline
+          h = Math.max(layer.minH, h);
+          const w = Math.max(64, h * 0.13) + Math.random() * 46; // wider towers → fewer jaggy steps
+          rects.push({ x: cx, w, h });
+          cx += w + 7 + Math.random() * 9; // gap to next tower
         }
 
-        points.push(new THREE.Vector2(5000, -300));
-        points.push(new THREE.Vector2(-5000, -300));
+        // 2) Silhouette polygon: step up/over/down each tower top, then close the base.
+        const points: THREE.Vector2[] = [];
+        points.push(new THREE.Vector2(-SPAN, BASE_Y));
+        rects.forEach((r) => {
+          points.push(new THREE.Vector2(r.x, BASE_Y));
+          points.push(new THREE.Vector2(r.x, BASE_Y + r.h));
+          points.push(new THREE.Vector2(r.x + r.w, BASE_Y + r.h));
+          points.push(new THREE.Vector2(r.x + r.w, BASE_Y));
+        });
+        points.push(new THREE.Vector2(SPAN, BASE_Y));
+        points.push(new THREE.Vector2(SPAN, BASE_Y - 200));
+        points.push(new THREE.Vector2(-SPAN, BASE_Y - 200));
 
         const shape = new THREE.Shape(points);
         const geometry = new THREE.ShapeGeometry(shape);
@@ -276,12 +302,79 @@ export const Component = () => {
           side: THREE.DoubleSide,
         });
 
-        const mountain = new THREE.Mesh(geometry, material);
-        mountain.position.z = layer.distance;
-        mountain.position.y = layer.distance;
-        mountain.userData = { baseZ: layer.distance, index };
-        refs.scene?.add(mountain);
-        refs.mountains.push(mountain);
+        const building = new THREE.Mesh(geometry, material);
+        building.position.z = layer.distance;
+        building.position.y = 50; // steady resting height (no bob — a city shouldn't wobble)
+        building.userData = { baseZ: layer.distance, index };
+        refs.scene?.add(building);
+        refs.buildings.push(building);
+
+        // 3) Gold lit windows — child Points so they parallax with the tower.
+        if (layer.lit > 0) {
+          const wp: number[] = [];
+          const wr: number[] = [];
+          rects.forEach((r) => {
+            const cols = Math.max(1, Math.floor(r.w / 14));
+            const rows = Math.max(2, Math.floor(r.h / 18));
+            const gx = (r.w - 12) / Math.max(1, cols);
+            const gy = (r.h - 20) / Math.max(1, rows);
+            for (let c = 0; c < cols; c++) {
+              for (let rr = 0; rr < rows; rr++) {
+                if (Math.random() > layer.lit) continue;
+                wp.push(r.x + 8 + c * gx, BASE_Y + 12 + rr * gy, 1);
+                wr.push(Math.random());
+              }
+            }
+          });
+
+          if (wp.length > 0) {
+            const wgeo = new THREE.BufferGeometry();
+            wgeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(wp), 3));
+            wgeo.setAttribute("aRand", new THREE.BufferAttribute(new Float32Array(wr), 1));
+
+            const wmat = new THREE.ShaderMaterial({
+              uniforms: {
+                time: { value: 0 },
+                size: { value: 3.4 - index * 0.7 },
+                color: { value: new THREE.Color(0xffc873) }, // warm gold
+              },
+              vertexShader: `
+                attribute float aRand;
+                uniform float time;
+                uniform float size;
+                varying float vGlow;
+                void main() {
+                  // Most windows hold steady; a subset (aRand > 0.8) flickers.
+                  float flicker = aRand > 0.8
+                    ? 0.4 + 0.6 * (0.5 + 0.5 * sin(time * (2.0 + aRand * 4.0) + aRand * 30.0))
+                    : 0.82 + 0.18 * sin(time * 0.6 + aRand * 6.28);
+                  vGlow = flicker;
+                  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+                  gl_PointSize = size * (300.0 / -mv.z);
+                  gl_Position = projectionMatrix * mv;
+                }
+              `,
+              fragmentShader: `
+                uniform vec3 color;
+                varying float vGlow;
+                void main() {
+                  vec2 q = gl_PointCoord - vec2(0.5);
+                  float d = length(q);
+                  if (d > 0.5) discard;
+                  float a = (1.0 - smoothstep(0.1, 0.5, d)) * vGlow;
+                  gl_FragColor = vec4(color, a);
+                }
+              `,
+              transparent: true,
+              blending: THREE.AdditiveBlending,
+              depthWrite: false,
+            });
+
+            const windows = new THREE.Points(wgeo, wmat);
+            building.add(windows);
+            refs.buildingWindows.push(wmat);
+          }
+        }
       });
     };
 
@@ -327,8 +420,8 @@ export const Component = () => {
 
     const getLocation = () => {
       const locations: number[] = [];
-      refs.mountains.forEach((mountain, i) => {
-        locations[i] = mountain.position.z;
+      refs.buildings.forEach((building, i) => {
+        locations[i] = building.position.z;
       });
       refs.locations = locations;
     };
@@ -368,10 +461,10 @@ export const Component = () => {
         refs.camera.lookAt(0, 10, -600);
       }
 
-      refs.mountains.forEach((mountain, i) => {
-        const parallaxFactor = 1 + i * 0.5;
-        mountain.position.x = Math.sin(time * 0.1) * 2 * parallaxFactor;
-        mountain.position.y = 50 + Math.cos(time * 0.15) * 1 * parallaxFactor;
+      // Buildings stay steady (camera float supplies the parallax); just drive the
+      // window flicker.
+      refs.buildingWindows.forEach((wmat) => {
+        wmat.uniforms.time.value = time;
       });
 
       if (refs.composer) {
@@ -404,7 +497,16 @@ export const Component = () => {
       refs.renderer.toneMapping = THREE.ACESFilmicToneMapping;
       refs.renderer.toneMappingExposure = 0.5;
 
-      refs.composer = new EffectComposer(refs.renderer);
+      // Multisampled render target so the buildings' hard edges don't crawl/jag: the
+      // canvas's own MSAA is lost once we render through the bloom composer, so add it here.
+      // IMPORTANT: keep HalfFloatType (the EffectComposer default) — UnsignedByte clamps at
+      // 1.0 and crushes the bright HDR bloom (the "sun"/atmosphere glow).
+      const dbSize = refs.renderer.getDrawingBufferSize(new THREE.Vector2());
+      const msaaTarget = new THREE.WebGLRenderTarget(dbSize.width, dbSize.height, {
+        type: THREE.HalfFloatType,
+        samples: 4,
+      });
+      refs.composer = new EffectComposer(refs.renderer, msaaTarget);
       const renderPass = new RenderPass(refs.scene, refs.camera);
       refs.composer.addPass(renderPass);
 
@@ -418,7 +520,7 @@ export const Component = () => {
 
       createStarField();
       createNebula();
-      createMountains();
+      createBuildings();
       createAtmosphere();
       getLocation();
 
@@ -453,11 +555,19 @@ export const Component = () => {
       });
       refs.stars = [];
 
-      refs.mountains.forEach((mountain) => {
-        mountain.geometry.dispose();
-        mountain.material.dispose();
+      refs.buildings.forEach((building) => {
+        // Dispose the gold-window child Points too.
+        building.children.forEach((child) => {
+          if (child instanceof THREE.Points) {
+            child.geometry.dispose();
+            (child.material as THREE.Material).dispose();
+          }
+        });
+        building.geometry.dispose();
+        building.material.dispose();
       });
-      refs.mountains = [];
+      refs.buildings = [];
+      refs.buildingWindows = [];
 
       if (refs.nebula) {
         refs.nebula.geometry.dispose();
@@ -564,22 +674,22 @@ export const Component = () => {
       refs.targetCameraY = currentPos.y + (nextPos.y - currentPos.y) * f;
       refs.targetCameraZ = currentPos.z + (nextPos.z - currentPos.z) * f;
 
-      // Smooth parallax for mountains + nebula
-      refs.mountains.forEach((mountain, i) => {
+      // Smooth parallax for the skyline + nebula
+      refs.buildings.forEach((building, i) => {
         const speed = 1 + i * 0.9;
-        const targetZ = mountain.userData.baseZ + scrolled * speed * 0.5;
+        const targetZ = building.userData.baseZ + scrolled * speed * 0.5;
         if (refs.nebula) {
           refs.nebula.position.z = targetZ + progress * speed * 0.01 - 100;
         }
-        mountain.userData.targetZ = targetZ;
+        building.userData.targetZ = targetZ;
         if (progress > 0.7) {
-          mountain.position.z = 600000;
+          building.position.z = 600000;
         } else if (refs.locations) {
-          mountain.position.z = refs.locations[i];
+          building.position.z = refs.locations[i];
         }
       });
-      if (refs.nebula && refs.mountains[3]) {
-        refs.nebula.position.z = refs.mountains[3].position.z;
+      if (refs.nebula && refs.buildings[3]) {
+        refs.nebula.position.z = refs.buildings[3].position.z;
       }
     };
 
@@ -598,6 +708,15 @@ export const Component = () => {
 
   const beat = BEATS[currentSection];
 
+  // Chapter markers double as a mini-nav: smooth-scroll to the middle of a beat's range.
+  const scrollToBeat = (i: number) => {
+    const el = containerRef.current;
+    if (!el) return;
+    const range = el.offsetHeight - window.innerHeight;
+    const top = el.offsetTop + ((i + 0.5) / TOTAL_BEATS) * range;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   return (
     <div ref={containerRef} className="hero-container">
       <div className="hero-sticky">
@@ -605,6 +724,9 @@ export const Component = () => {
 
         {/* Beat content — swaps as the camera flies */}
         <div className="hero-content">
+          {/* The cosmos blooms bright at the end of the scroll; this dark pool keeps the
+              EXPLORE cards/text legible while stars still show at the edges. */}
+          {beat.cta === "explore" && <div className="hero-explore-scrim" aria-hidden />}
           <div key={currentSection} className="hero-beat-inner">
             {currentSection === 0 && (
               <span className="role-badge">
@@ -649,7 +771,7 @@ export const Component = () => {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="GitHub"
-                  className="hero-social"
+                  className="btn-icon h-11 w-11"
                 >
                   <FaGithub className="h-5 w-5" />
                 </a>
@@ -658,7 +780,7 @@ export const Component = () => {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="LinkedIn"
-                  className="hero-social"
+                  className="btn-icon h-11 w-11"
                 >
                   <FaLinkedinIn className="h-5 w-5" />
                 </a>
@@ -668,7 +790,7 @@ export const Component = () => {
             {beat.cta === "explore" && (
               <div className="hero-explore-grid">
                 {EXPLORE_LINKS.map(({ href, label, desc, Icon }) => (
-                  <Link key={href} href={href} className="hero-explore-card group">
+                  <Link key={href} href={href} className="glass-panel hero-explore-card group rounded-2xl">
                     <Icon className="hero-explore-icon" />
                     <span className="hero-explore-label">{label}</span>
                     <span className="hero-explore-desc">{desc}</span>
@@ -680,14 +802,24 @@ export const Component = () => {
           </div>
         </div>
 
-        {/* Scroll progress indicator (scoped to the hero) */}
+        {/* Branded chapter markers + progress (scoped to the hero) */}
         <div ref={scrollProgressRef} className="scroll-progress" style={{ visibility: "hidden" }}>
-          <div className="scroll-text">SCROLL</div>
+          <div className="hero-chapters">
+            {CHAPTERS.map((name, i) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => scrollToBeat(i)}
+                className={`hero-chapter${i === currentSection ? " is-active" : ""}`}
+                aria-label={`Go to ${name}`}
+              >
+                <span className="hero-chapter-idx">{String(i).padStart(2, "0")}</span>
+                <span className="hero-chapter-name">{name}</span>
+              </button>
+            ))}
+          </div>
           <div className="progress-track">
             <div className="progress-fill" style={{ width: `${scrollProgress * 100}%` }} />
-          </div>
-          <div className="section-counter">
-            {String(currentSection + 1).padStart(2, "0")} / {String(TOTAL_BEATS).padStart(2, "0")}
           </div>
         </div>
       </div>

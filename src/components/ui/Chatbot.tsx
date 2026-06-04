@@ -504,9 +504,9 @@ export function Chatbot() {
                         )}
                         style={{
                             maxHeight: "min(82vh, calc(100dvh - 1.5rem))",
-                            background: "rgba(10, 11, 16, 0.70)",
-                            backdropFilter: "blur(48px) saturate(1.8)",
-                            WebkitBackdropFilter: "blur(48px) saturate(1.8)",
+                            background: "rgba(10, 11, 16, 0.74)",
+                            backdropFilter: "url(#liquid-distort) blur(20px) saturate(170%) brightness(104%)",
+                            WebkitBackdropFilter: "url(#liquid-distort) blur(20px) saturate(170%) brightness(104%)",
                             border: "1px solid rgba(255,255,255,0.08)",
                             boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 72px -12px rgba(0,0,0,0.8), 0 0 80px -20px ${accent.glow}`,
                         }}
