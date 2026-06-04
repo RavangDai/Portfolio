@@ -129,10 +129,10 @@ export function MainNavbar() {
   }, [pathname]);
 
   const links = [
-    { name: "Projects",      href: "/#projects",      id: "projects"      },
-    { name: "Certificates",  href: "/#certificates",  id: "certificates"  },
-    { name: "Achievements",  href: "/achievements",   id: "achievements"  },
-    { name: "Contact",       href: "/#contact",       id: "contact"       },
+    { name: "Projects",      href: "/projects",      id: "projects"      },
+    { name: "Certificates",  href: "/certificates",  id: "certificates"  },
+    { name: "Achievements",  href: "/achievements",  id: "achievements"  },
+    { name: "Contact",       href: "/contact",       id: "contact"       },
   ];
 
   const handleBrandClick = () => {
@@ -217,13 +217,7 @@ export function MainNavbar() {
               <LiquidButton
                 size="sm"
                 className="hidden md:inline-flex rounded-full text-[0.72rem] font-bold tracking-wide"
-                onClick={() => {
-                  if (pathname === "/") {
-                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-                  } else {
-                    router.push("/#contact");
-                  }
-                }}
+                onClick={() => router.push("/contact")}
               >
                 Hire Me
               </LiquidButton>
@@ -388,11 +382,7 @@ export function MainNavbar() {
                 className="rounded-full text-[0.72rem] font-bold"
                 onClick={() => {
                   setMobileOpen(false);
-                  if (pathname === "/") {
-                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-                  } else {
-                    router.push("/#contact");
-                  }
+                  router.push("/contact");
                 }}
               >
                 Hire Me

@@ -2,16 +2,17 @@
 
 import type { ComponentProps, ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const NAV_LINKS = [
-  { name: "Home",         href: "/#home"         },
-  { name: "Projects",     href: "/#projects"     },
-  { name: "Certificates", href: "/#certificates" },
-  { name: "Contact",      href: "/#contact"      },
+  { name: "Home",         href: "/"             },
+  { name: "Projects",     href: "/projects"     },
+  { name: "Certificates", href: "/certificates" },
+  { name: "Contact",      href: "/contact"      },
 ];
 
 const SOCIALS = [
@@ -41,7 +42,12 @@ function AnimatedContainer({ className, delay = 0.1, children }: AnimatedContain
 }
 
 export function Footer() {
+  const pathname = usePathname();
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // Home is the cosmos hero only — its scroll ends in the EXPLORE beat. Hiding the footer
+  // there keeps that the true end of the page (no extra scroll past EXPLORE into the footer).
+  if (pathname === "/") return null;
 
   return (
     <footer className="relative w-full overflow-hidden border-t border-white/[0.06]"

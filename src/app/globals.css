@@ -1012,3 +1012,277 @@ html {
     0 0 0 3px rgba(255, 255, 255, 0.04);
 }
 
+/* ===== Horizon cosmos hero =====
+   The Three.js scene needs something to refract/sit on, so the hero owns a solid
+   black backdrop. The canvas is pinned (sticky) through a tall container so the
+   camera fly-through plays as you scroll, then releases into the rest of the page.
+   NOTE: this only works because <HomeHero/> is rendered OUTSIDE <PageTransition>
+   in page.tsx — a transformed ancestor would break position: sticky. */
+.hero-container {
+  position: relative;
+  width: 100%;
+  height: 300vh; /* three scroll beats */
+  background: #000;
+  color: #fff;
+}
+
+/* Boot placeholder shown while the WebGL cosmos chunk loads — a plain black panel that
+   matches the hero backdrop, so no "old hero" ever flashes in before the cosmos. */
+.hero-loading {
+  height: 100svh;
+  width: 100%;
+  background: #000;
+}
+
+.hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 0;
+}
+
+.hero-content {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  pointer-events: none; /* canvas stays interactive-free; buttons re-enable below */
+}
+
+/* Readability scrim — pools darkness behind the centered text so the title/subtitle
+   stay legible over the bright starfield + bloom, while stars still show at the edges. */
+.hero-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 72% 52% at 50% 47%,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.38) 42%,
+    rgba(0, 0, 0, 0) 72%
+  );
+}
+
+.hero-beat-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  max-width: min(92vw, 62rem);
+  animation: hero-beat-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-beat-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-size: clamp(2.6rem, 9vw, 7.5rem);
+  visibility: hidden; /* GSAP reveals it */
+}
+
+.title-char {
+  display: inline-block;
+  white-space: pre; /* preserve spaces in the split title */
+  /* Ember Gold theme — white fading to warm ivory */
+  background: linear-gradient(180deg, #ffffff 0%, #f3ead6 50%, #e8d9b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* dark halo (not a white glow) — separates the letters from bright stars/bloom */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 2px 22px rgba(0, 0, 0, 0.4);
+}
+
+.hero-subtitle {
+  visibility: hidden; /* GSAP reveals it */
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: clamp(0.95rem, 2.2vw, 1.3rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.86);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.72), 0 1px 16px rgba(0, 0, 0, 0.55);
+}
+
+.subtitle-line {
+  margin: 0;
+}
+
+.hero-actions {
+  pointer-events: auto;
+  margin-top: 1.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.hero-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  width: 2.75rem;
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: color 0.25s ease, transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.hero-social:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+/* ── EXPLORE beat — navigation hub that ends the cosmos scroll ── */
+.hero-explore-grid {
+  pointer-events: auto;
+  margin-top: 1.8rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  width: min(92vw, 34rem);
+}
+
+.hero-explore-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 1.05rem 1.15rem;
+  border-radius: 1rem;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-align: left;
+  transition: color 0.25s ease, transform 0.25s ease, border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.hero-explore-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(233, 205, 160, 0.5);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.hero-explore-icon {
+  height: 1.35rem;
+  width: 1.35rem;
+  color: rgba(240, 227, 198, 0.85);
+}
+
+.hero-explore-label {
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.hero-explore-desc {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.hero-explore-arrow {
+  position: absolute;
+  top: 0.95rem;
+  right: 0.95rem;
+  height: 1rem;
+  width: 1rem;
+  color: rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  transform: translate(-2px, 2px);
+  transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+}
+
+.hero-explore-card:hover .hero-explore-arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+  color: rgba(240, 227, 198, 0.9);
+}
+
+.scroll-progress {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  pointer-events: none;
+}
+
+.scroll-text,
+.section-counter {
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.section-counter {
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  position: relative;
+  width: 140px;
+  height: 2px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(233, 205, 160, 0.55), #f0e3c6);
+  transition: width 0.15s linear;
+}
+
+/* The cosmos scroll fly-through runs on every device — the 300vh container drives the
+   three beats (incl. the final EXPLORE hub) on mobile as well as desktop. */
+

@@ -1,22 +1,8 @@
-import { ProjectsSection } from "@/components/ui/projects-section";
-import { CertificatesSection } from "@/components/ui/certificates-section";
-import { ContactSection } from "@/components/ui/contact-section";
-import { NewHero } from "@/components/ui/new-hero";
-import { PageTransition } from "@/components/ui/page-transition";
-import { SectionReveal } from "@/components/ui/section-reveal";
+import { HomeHero } from "@/components/ui/home-hero";
+
+// Home is the cosmos hero only. The scroll ends in the hero's own EXPLORE beat, whose
+// buttons route to /projects, /certificates, /achievements, /contact (their own pages).
+// Hero is rendered without any transform wrapper so its position: sticky keeps working.
 export default function HomePage() {
-  return (
-    <PageTransition>
-      <NewHero />
-      <SectionReveal>
-        <ProjectsSection />
-      </SectionReveal>
-      <SectionReveal delay={0.05}>
-        <CertificatesSection />
-      </SectionReveal>
-      <SectionReveal delay={0.05}>
-        <ContactSection />
-      </SectionReveal>
-    </PageTransition>
-  );
+  return <HomeHero />;
 }
