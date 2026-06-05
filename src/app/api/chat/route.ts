@@ -7,7 +7,7 @@ import { streamText } from "ai";
 
 const PROJECTS: Record<string, {
   tag: string; description: string; stack: string; live?: string;
-  github: string; year: number; status: string;
+  github?: string; year: number; status: string;
 }> = {
   karyaai: {
     tag: "MERN Stack · Productivity",
@@ -39,29 +39,11 @@ const PROJECTS: Record<string, {
     github: "github.com/RavangDai/VectorVance",
     year: 2025, status: "Shipped",
   },
-  gridnavigator: {
-    tag: "Algorithms · Visualization",
-    description: "Interactive visualizer for pathfinding — A*, Dijkstra, BFS, DFS — on live grids.",
-    stack: "TypeScript, React, Vite",
-    live: "grid-navigator-mu.vercel.app",
-    github: "github.com/RavangDai/GridNavigator",
-    year: 2025, status: "Shipped",
-  },
-  ticktickfocus: {
-    tag: "Productivity · PWA",
-    description: "Minimal Pomodoro timer PWA. Fully offline-capable, zero distractions.",
-    stack: "React, Tailwind, PWA",
-    live: "tick-tick-focus.vercel.app",
-    github: "github.com/RavangDai/TickTickFocus",
-    year: 2025, status: "Shipped",
-  },
-  quotex: {
-    tag: "Frontend · API",
-    description: "Quote generator with theme switching and smooth animations.",
-    stack: "JavaScript, React, Tailwind",
-    live: "quotex-five.vercel.app",
-    github: "github.com/RavangDai/Quotex",
-    year: 2024, status: "Shipped",
+  buzzboard: {
+    tag: "Node.js · Express · MongoDB",
+    description: "Message board web app with topic subscriptions, recent-message dashboard, posting, unsubscribe flows, topic access stats, and MVC, Observer, and Singleton pattern implementations.",
+    stack: "Node.js, Express 4, MongoDB, Mongoose, Handlebars, express-session, bcryptjs, connect-mongo",
+    year: 2026, status: "Shipped",
   },
 };
 
@@ -94,9 +76,7 @@ const PROJECT_ALIASES: Record<string, string> = {
   crumb: "crumbcraft", craft: "crumbcraft", crumbcraft: "crumbcraft",
   revveal: "revveal", "car deal": "revveal", "car-deal": "revveal",
   vector: "vectorvance", vectorvance: "vectorvance", "autonomous car": "vectorvance",
-  grid: "gridnavigator", gridnavigator: "gridnavigator", pathfinding: "gridnavigator",
-  "ticktick": "ticktickfocus", pomodoro: "ticktickfocus", ticktickfocus: "ticktickfocus",
-  quotex: "quotex", quote: "quotex",
+  buzz: "buzzboard", buzzboard: "buzzboard", "buzz board": "buzzboard", messageboard: "buzzboard", "message board": "buzzboard", "topic stats": "buzzboard",
 };
 
 // ── Local intent detection ────────────────────────────────────────────────────
@@ -117,7 +97,7 @@ function detectCertQuery(text: string): boolean {
 function detectStackQuery(text: string): boolean {
   const lower = text.toLowerCase();
   return /\bstack\b|tech.*use|what.*build with|language|framework|tool|skill/i.test(lower) &&
-    !/project|built|karya|crumb|revveal|vector|grid|tick|quotex/i.test(lower);
+    !/project|built|karya|crumb|revveal|vector|buzz|message\s*board/i.test(lower);
 }
 
 function detectContactQuery(text: string): boolean {
@@ -137,9 +117,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   crumbcraft: "CrumbCraft",
   revveal: "Revveal",
   vectorvance: "VectorVance",
-  gridnavigator: "GridNavigator",
-  ticktickfocus: "TickTickFocus",
-  quotex: "Quotex",
+  buzzboard: "BuzzBoard",
 };
 
 function displayName(key: string): string {
@@ -153,8 +131,8 @@ function buildProjectCard(key: string): string {
 
   const links = [
     p.live ? `Live: https://${p.live}` : null,
-    `Source: https://${p.github}`,
-  ].filter(Boolean).join("  ·  ");
+    p.github ? `Source: https://${p.github}` : null,
+  ].filter(Boolean).join("  ·  ") || "Ask me about the implementation details.";
   const lines = [
     `Project: ${name}`,
     `Impact: ${p.description}`,
@@ -287,7 +265,9 @@ function normalize(s: string): string {
 // match the app name: car-deal -> Revveal, SmartTodo -> KaryaAI, crumb -> CrumbCraft.
 // Derived from each project's `github` field so it stays in sync automatically.
 const REPO_KEY_BY_NAME: Record<string, string> = Object.fromEntries(
-  Object.entries(PROJECTS).map(([key, p]) => [normalize(p.github.split("/").pop() ?? ""), key])
+  Object.entries(PROJECTS)
+    .filter(([, p]) => Boolean(p.github))
+    .map(([key, p]) => [normalize((p.github ?? "").split("/").pop() ?? ""), key])
 );
 
 function repoKeyFor(repoName: string): string | null {
@@ -391,7 +371,7 @@ Learning: LLM fine-tuning, vector databases, RAG systems
 
 ═══════════════ MY PROJECTS ═══════════════
 ${Object.entries(PROJECTS).map(([key, p]) => {
-  const repo = p.github.split("/").pop() ?? "";
+  const repo = p.github?.split("/").pop() ?? "";
   const repoNote = repo && normalize(repo) !== normalize(key) ? ` [GitHub repo: ${repo}]` : "";
   return `- ${displayName(key)} (${p.tag})${repoNote}: ${p.description} Stack: ${p.stack}. Status: ${p.status}.`;
 }).join("\n")}

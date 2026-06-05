@@ -2,8 +2,14 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, X, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Play, X, ArrowUpRight, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  BentoCell,
+  BentoGrid,
+  ContainerScale,
+  ContainerScroll,
+} from "@/components/ui/hero-gallery-scroll-animation";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -22,7 +28,7 @@ type Project = {
   tag: string;
   description: string;
   tech: string[];
-  github: string;
+  github?: string;
   live?: string;
   year: number;
   status: ProjectStatus;
@@ -80,50 +86,17 @@ const projects: Project[] = [
     image: "/vvdash.png",
   },
   {
-    name: "GridNavigator",
-    tag: "Algorithms · Visualization",
+    name: "BuzzBoard",
+    tag: "Node.js · Express · MongoDB",
     description:
-      "Visualize pathfinding algorithms like A*, Dijkstra, and BFS on interactive grids.",
-    tech: ["TypeScript", "React", "Vite"],
-    github: "https://github.com/RavangDai/GridNavigator",
-    live: "https://grid-navigator-mu.vercel.app/",
-    year: 2025,
+      "Message board app with topic subscriptions, recent-message dashboard, posting, stats, and MVC, Observer, and Singleton pattern implementations over MongoDB.",
+    tech: ["Node.js", "Express", "MongoDB", "Mongoose", "Handlebars", "bcryptjs", "express-session", "MVC", "Observer", "Singleton"],
+    github: "https://github.com/RavangDai/Buzzboard",
+    live: "https://buzzboard-fk7m.onrender.com/auth/login",
+    year: 2026,
     status: "Completed",
-    image: "/gridnav.png",
+    image: "/BuzzBoard.png",
   },
-  {
-    name: "TickTickFocus",
-    tag: "Productivity · PWA",
-    description: "Minimal Pomodoro timer PWA. No distractions, just focus.",
-    tech: ["React", "Tailwind", "PWA"],
-    github: "https://github.com/RavangDai/TickTickFocus",
-    live: "https://tick-tick-focus.vercel.app/",
-    year: 2025,
-    status: "Completed",
-    image: "/Ticktick.png",
-  },
-  {
-    name: "Quotex",
-    tag: "Frontend · API",
-    description: "Random quote generator with theme switching and smooth animations.",
-    tech: ["JavaScript", "React", "Tailwind"],
-    github: "https://github.com/RavangDai/Quotex",
-    live: "https://quotex-five.vercel.app/",
-    year: 2024,
-    status: "Completed",
-    image: "/quotex.png",
-  },
-];
-
-// Bento span per project index — featured (KaryaAI, VectorVance) are 2×2; tiles fit a 4-col mosaic.
-const SPANS = [
-  "col-span-2 row-span-2",                      // 0 KaryaAI    — featured
-  "col-span-2 md:col-span-2",                   // 1 CrumbCraft — wide
-  "col-span-2 md:col-span-2",                   // 2 Revveal    — wide
-  "col-span-2 row-span-2",                      // 3 VectorVance— featured
-  "col-span-2 md:col-span-2",                   // 4 GridNav    — wide
-  "col-span-1 md:col-span-1",                   // 5 TickTick   — small
-  "col-span-1 md:col-span-1",                   // 6 Quotex     — small
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -164,9 +137,11 @@ function StatusBadge({ status }: { status: ProjectStatus }) {
   );
 }
 
-// ─── Bento tile ─────────────────────────────────────────────────────────────────
+// ─── Gallery tile ───────────────────────────────────────────────────────────────
+// A clickable BentoCell: scroll-driven translate/scale come from the cell itself,
+// the screenshot + overlays live as its children, and a click opens the lightbox.
 
-function BentoTile({
+function GalleryTile({
   project, index, featured, onOpen,
 }: {
   project: Project;
@@ -175,18 +150,18 @@ function BentoTile({
   onOpen: (i: number) => void;
 }) {
   return (
-    <motion.button
-      type="button"
-      onClick={() => onOpen(index)}
-      initial={{ opacity: 0, y: 36, filter: "blur(8px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, delay: (index % 4) * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "bento-tile group relative overflow-hidden text-left",
-        SPANS[index]
-      )}
+    <BentoCell
+      role="button"
+      tabIndex={0}
       aria-label={`Open ${project.name}`}
+      onClick={() => onOpen(index)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen(index);
+        }
+      }}
+      className="bento-tile group relative cursor-pointer overflow-hidden text-left"
     >
       {/* Screenshot */}
       <img
@@ -248,7 +223,7 @@ function BentoTile({
       <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-white opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100">
         <ArrowUpRight className="h-4 w-4" />
       </span>
-    </motion.button>
+    </BentoCell>
   );
 }
 
@@ -348,11 +323,13 @@ function GalleryLightbox({
           </div>
 
           <div className="mt-auto flex items-center gap-5 pt-6">
-            <a href={project.github} target="_blank" rel="noreferrer"
-              className="flex items-center gap-1.5 text-[0.75rem] font-medium text-white/45 hover:text-white transition-colors duration-200">
-              <GithubIcon className="h-4 w-4" />
-              Source
-            </a>
+            {project.github && (
+              <a href={project.github} target="_blank" rel="noreferrer"
+                className="flex items-center gap-1.5 text-[0.75rem] font-medium text-white/45 hover:text-white transition-colors duration-200">
+                <GithubIcon className="h-4 w-4" />
+                Source
+              </a>
+            )}
             {project.live && (
               <a href={project.live} target="_blank" rel="noreferrer"
                 className="group/live flex items-center gap-1 text-[0.75rem] font-semibold text-white/60 hover:text-white transition-colors duration-200">
@@ -392,43 +369,52 @@ export function ProjectsSection() {
     return () => window.removeEventListener("keydown", onKey);
   }, [activeIndex, close, navigate]);
 
+  // KaryaAI (index 0) lands in the large hero cell of the default bento variant.
+  const FEATURED_INDEX = 0;
+
+  // NOTE: no overflow-hidden on the <section> — it's an ancestor of the sticky grid,
+  // and an ancestor with overflow:hidden becomes the sticky scroll container, which
+  // stops the grid from pinning. The clip lives on the sticky BentoGrid itself.
   return (
-    <section id="projects" className="relative w-full bg-[#080808]/72 py-20 md:py-28 overflow-hidden">
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
-
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10 md:mb-12"
-        >
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/35 mb-5">
-            Selected Work
-          </p>
-          <h2
-            className="font-black font-display tracking-tighter leading-[0.9]"
-            style={{ fontSize: "clamp(2.8rem,7vw,5rem)" }}
-          >
-            <span className="shimmer-text">Built &amp;</span><br />
-            <span className="text-white/20">Shipped.</span>
-          </h2>
-        </motion.div>
-
-        {/* Bento grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[148px] sm:auto-rows-[168px] gap-3 md:gap-4">
+    <section id="projects" className="relative w-full bg-[#080808]/72">
+      {/* Scroll-converge gallery: screenshots fly in and settle into the bento.
+          Each tile is clickable and opens the lightbox below. */}
+      <ContainerScroll className="h-[320vh]">
+        <BentoGrid className="sticky left-0 top-0 z-0 h-screen w-full overflow-hidden p-4 md:p-8">
           {projects.map((project, index) => (
-            <BentoTile
+            <GalleryTile
               key={project.name}
               project={project}
               index={index}
-              featured={SPANS[index].includes("row-span-2")}
+              featured={index === FEATURED_INDEX}
               onOpen={open}
             />
           ))}
-        </div>
-      </div>
+        </BentoGrid>
+
+        {/* Pinned headline that fades as the grid locks in */}
+        <ContainerScale className="z-10 px-6 text-center">
+          <p className="mb-5 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/40">
+            Selected Work · 2025 — 2026
+          </p>
+          <h1
+            className="font-black font-display leading-[0.9] tracking-tighter"
+            style={{ fontSize: "clamp(2.8rem,8vw,5.5rem)" }}
+          >
+            <span className="shimmer-text">Built &amp;</span>
+            <br />
+            <span className="text-white/20">Shipped.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-md text-sm text-white/50 md:text-base">
+            Five builds across full-stack, applied AI, and robotics — tap any to
+            dive in.
+          </p>
+          <span className="mt-8 inline-flex flex-col items-center gap-1.5 text-[0.6rem] font-medium uppercase tracking-[0.25em] text-white/35">
+            Keep scrolling
+            <ChevronDown className="h-4 w-4 animate-bounce" />
+          </span>
+        </ContainerScale>
+      </ContainerScroll>
 
       {/* Gallery lightbox */}
       <AnimatePresence>
