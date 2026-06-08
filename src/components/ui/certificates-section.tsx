@@ -4,16 +4,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
-  Award,
+  BarChart3,
   CheckCircle2,
   Code2,
   Database,
   ExternalLink,
-  Sparkles,
   Table2,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 type Certificate = {
   title: string;
@@ -53,6 +51,17 @@ const certificates: Certificate[] = [
     Icon: Database,
   },
   {
+    title: "Introduction to Tableau",
+    issuer: "Simplilearn · SkillUp",
+    year: 2025,
+    category: "Data Visualization",
+    summary: "Completion course covering interactive dashboards, charts, and visual analytics workflows in Tableau.",
+    skills: ["Tableau", "Data Visualization", "Dashboards", "Analytics"],
+    image: "/tablue certificate.png",
+    url: "https://www.simplilearn.com/skillup-certificate-landing?token=eyJjb3Vyc2VfaWQiOiI0MDY4IiwiY2VydGlmaWNhdGVfdXJsIjoiaHR0cHM6XC9cL2NlcnRpZmljYXRlcy5zaW1wbGljZG4ubmV0XC9zaGFyZVwvODAyNTU5NV84MzQyNzMxMTc0MTY2MzI1OTE1OC5wbmciLCJ1c2VybmFtZSI6IkJpYmVrIFBhdGhhayJ9&referrer=https%3A%2F%2Flms.simplilearn.com%2Fcourses%2F7062%2FIntroduction-to-Tableau%2Fcertificate%2Fdownload-skillup&%24web_only=true",
+    Icon: BarChart3,
+  },
+  {
     title: "Excel Fundamentals - Finance",
     issuer: "Corporate Finance Institute",
     year: 2024,
@@ -65,289 +74,121 @@ const certificates: Certificate[] = [
   },
 ];
 
+const PASTELS = ["var(--mint)", "var(--lavender)", "var(--butter)"];
 const ease = [0.22, 1, 0.36, 1] as const;
 
-function ProofPill() {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.09] bg-black/35 px-2.5 py-1 text-[0.58rem] font-bold uppercase tracking-[0.18em] text-white/62">
-      <CheckCircle2 className="h-3 w-3" />
-      Verified
-    </span>
-  );
-}
-
-function CertificateTile({
-  certificate,
-  index,
-  className,
-  imagePriority = false,
-  featured: featuredProp,
-}: {
-  certificate: Certificate;
-  index: number;
-  className?: string;
-  imagePriority?: boolean;
-  /** Override the data's `featured` flag (e.g. force uniform tiles in a row). */
-  featured?: boolean;
-}) {
+function CertCard({ certificate, pastel }: { certificate: Certificate; pastel: string }) {
   const Icon = certificate.Icon;
-  const featured = featuredProp ?? certificate.featured;
-
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.22 }}
-      transition={{ duration: 0.55, delay: index * 0.06, ease }}
-      className={cn(
-        "group glass-panel relative overflow-hidden rounded-2xl border border-white/[0.08]",
-        "shadow-[0_22px_70px_rgba(0,0,0,0.42)] transition-[border-color,transform] duration-300",
-        "hover:-translate-y-1 hover:border-white/[0.18]",
-        className
-      )}
-    >
-      <a
-        href={certificate.url}
-        target="_blank"
-        rel="noreferrer"
-        className="block h-full"
-        aria-label={`View ${certificate.title}`}
+    <article className="brut-card-i group flex flex-col overflow-hidden">
+      {/* Thumb */}
+      <div
+        className="relative w-full overflow-hidden border-b-2 border-[var(--ink)]"
+        style={{ background: pastel }}
       >
-        <div
-          className={cn(
-            "relative border-b border-white/[0.06] bg-white/[0.04]",
-            featured ? "p-3 sm:p-4" : "p-3"
-          )}
-        >
-          <div className="overflow-hidden rounded-xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
-            <Image
-              src={certificate.image}
-              alt={`${certificate.title} issued by ${certificate.issuer}`}
-              width={1000}
-              height={740}
-              priority={imagePriority}
-              sizes={featured ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, 100vw"}
-              className={cn(
-                "block w-full object-cover object-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025]",
-                featured ? "aspect-[1.36/1]" : "aspect-[1.35/1]"
-              )}
-            />
-          </div>
-
-          <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+        <div className="relative aspect-[16/10] w-full">
+          <Image
+            src={certificate.image}
+            alt={`${certificate.title} issued by ${certificate.issuer}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover"
+          />
         </div>
+        <span className="brut-chip-accent brut-chip absolute right-3 top-3">
+          <CheckCircle2 className="h-3 w-3" />
+          {certificate.year}
+        </span>
+      </div>
 
-        <div className={cn("relative", featured ? "p-5 sm:p-6" : "p-5")}>
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.04] text-white/72">
-                <Icon className="h-4 w-4" />
-              </span>
-              <div>
-                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.22em] text-white/34">
-                  {certificate.issuer}
-                </p>
-                <p className="mt-1 text-xs font-medium text-white/46">{certificate.category}</p>
-              </div>
-            </div>
-            <ProofPill />
-          </div>
-
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h3
-                className={cn(
-                  "font-black leading-tight tracking-tight text-white",
-                  featured ? "text-2xl sm:text-3xl" : "text-xl"
-                )}
-              >
-                {certificate.title}
-              </h3>
-              <p className={cn("mt-3 leading-relaxed text-white/52", featured ? "text-sm sm:text-base" : "text-sm")}>
-                {certificate.summary}
-              </p>
-            </div>
-            <span className="font-mono text-xs text-white/35">{certificate.year}</span>
-          </div>
-
-          <div className="mt-5 flex flex-wrap gap-1.5">
-            {certificate.skills.map((skill) => (
-              <span
-                key={skill}
-                className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold text-white/54"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-6 flex items-center gap-1.5 text-sm font-semibold text-white/72 transition-colors duration-200 group-hover:text-white">
-            View credential
-            <ExternalLink className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </div>
-        </div>
-      </a>
-    </motion.article>
-  );
-}
-
-// ─── Flagship certificate — wide horizontal hero ──────────────────────────────
-
-function FeaturedCertificate({ certificate }: { certificate: Certificate }) {
-  const Icon = certificate.Icon;
-
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, ease }}
-      className="group glass-panel relative overflow-hidden rounded-3xl border border-white/[0.08] shadow-[0_28px_80px_rgba(0,0,0,0.5)] transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-white/[0.18]"
-    >
-      <a
-        href={certificate.url}
-        target="_blank"
-        rel="noreferrer"
-        className="grid lg:grid-cols-[1.25fr_1fr]"
-        aria-label={`View ${certificate.title}`}
-      >
-        {/* Media */}
-        <div className="relative border-b border-white/[0.06] bg-white/[0.04] p-4 sm:p-5 lg:border-b-0 lg:border-r">
-          <div className="overflow-hidden rounded-xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
-            <Image
-              src={certificate.image}
-              alt={`${certificate.title} issued by ${certificate.issuer}`}
-              width={1000}
-              height={740}
-              priority
-              sizes="(min-width: 1024px) 55vw, 100vw"
-              className="block aspect-[1.5/1] w-full object-cover object-center transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025]"
-            />
-          </div>
-          <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-
-          <span className="glass-chip absolute left-7 top-8 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.55rem] font-bold uppercase tracking-[0.2em] text-white/78">
-            <Sparkles className="h-3 w-3" />
-            Flagship
+      {/* Body */}
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper)]">
+            <Icon className="h-4 w-4 text-[var(--accent)]" />
           </span>
-        </div>
-
-        {/* Details */}
-        <div className="relative flex flex-col p-6 sm:p-8">
-          <div className="mb-5 flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.04] text-white/72">
-                <Icon className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-white/34">
-                  {certificate.issuer}
-                </p>
-                <p className="mt-1 text-xs font-medium text-white/46">{certificate.category}</p>
-              </div>
-            </div>
-            <ProofPill />
-          </div>
-
-          <h3 className="font-black leading-tight tracking-tight text-white text-3xl sm:text-4xl">
-            {certificate.title}
-          </h3>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/52 sm:text-base">
-            {certificate.summary}
-          </p>
-
-          <div className="mt-6 flex flex-wrap gap-1.5">
-            {certificate.skills.map((skill) => (
-              <span
-                key={skill}
-                className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold text-white/54"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-auto flex items-center justify-between gap-4 pt-8">
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-white/72 transition-colors duration-200 group-hover:text-white">
-              View credential
-              <ExternalLink className="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </span>
-            <span className="font-mono text-xs text-white/35">{certificate.year}</span>
+          <div className="min-w-0">
+            <p className="brut-mono text-[0.6rem] uppercase tracking-[0.16em] text-[var(--ink-2)]">
+              {certificate.issuer}
+            </p>
+            <p className="text-[0.66rem] font-medium text-[var(--ink-3)]">{certificate.category}</p>
           </div>
         </div>
-      </a>
-    </motion.article>
+
+        <h3 className="brut-h text-xl leading-tight">{certificate.title}</h3>
+        <p className="text-[0.82rem] leading-relaxed text-[var(--ink-2)]">{certificate.summary}</p>
+
+        <div className="flex flex-wrap gap-1.5">
+          {certificate.skills.map((skill) => (
+            <span key={skill} className="brut-chip">{skill}</span>
+          ))}
+        </div>
+
+        <div className="mt-auto pt-2">
+          <a href={certificate.url} target="_blank" rel="noreferrer" className="brut-btn-ghost w-full">
+            View credential
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
+    </article>
   );
 }
 
 export function CertificatesSection() {
-  const featured = certificates[0];
-
   return (
     <section
       id="certificates"
-      className="relative w-full overflow-hidden bg-[#080808]/72 py-20 md:py-28"
+      className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
-        <div className="mb-12 flex flex-col gap-8 md:mb-14 lg:flex-row lg:items-end lg:justify-between">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.55, ease }}
-          >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5">
-              <Award className="h-3.5 w-3.5 text-white/55" />
-              <span className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-white/40">
-                Certificates
-              </span>
-            </div>
+        {/* ── Header ── */}
+        <motion.header
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease }}
+          className="mb-12 md:mb-16"
+        >
+          <p className="brut-kicker mb-4">Certificates · Verified</p>
+          <h1 className="brut-h text-[clamp(2.6rem,8vw,5.5rem)]">
+            Proof wall. <span className="text-[var(--accent)]">Real receipts.</span>
+          </h1>
+          <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
+            Issuer-backed credentials — each one links to its public verification page.
+          </p>
+        </motion.header>
 
-            <h2 className="font-display text-5xl font-black leading-[0.95] tracking-tighter text-white md:text-7xl">
-              Proof wall.
-              <br />
-              <span className="text-white/22">Real receipts.</span>
-            </h2>
+        {/* ── Grid ── */}
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+          className="grid gap-6 md:grid-cols-3"
+        >
+          {certificates.map((certificate, i) => (
+            <motion.div
+              key={certificate.title}
+              variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease }}
+            >
+              <CertCard certificate={certificate} pastel={PASTELS[i % PASTELS.length]} />
+            </motion.div>
+          ))}
+        </motion.div>
 
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/42">
-              A bento grid of issuer-backed certificates across engineering,
-              backend data, and finance workflows.
-            </p>
-          </motion.div>
-
-          <motion.a
-            href={featured.url}
-            target="_blank"
-            rel="noreferrer"
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.5, delay: 0.08, ease }}
-            className="group inline-flex h-11 w-fit items-center gap-2 rounded-full border border-white/12 bg-white px-4 text-sm font-bold text-black transition-[transform,background-color] duration-200 hover:bg-white/86 active:scale-[0.97]"
-          >
+        {/* ── CTA ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.5, ease }}
+          className="mt-12 flex justify-center"
+        >
+          <a href={certificates[0].url} target="_blank" rel="noreferrer" className="brut-btn">
             Verify latest
-            <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </motion.a>
-        </div>
-
-        {/* Asymmetric bento — flagship hero on top, supporting certs in a 2-up row */}
-        <div className="flex flex-col gap-4">
-          <FeaturedCertificate certificate={certificates[0]} />
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {certificates.slice(1).map((certificate, index) => (
-              <CertificateTile
-                key={certificate.title}
-                certificate={certificate}
-                index={index + 1}
-                featured={false}
-                className="h-full"
-              />
-            ))}
-          </div>
-        </div>
+            <ArrowUpRight className="h-4 w-4" />
+          </a>
+        </motion.div>
       </div>
     </section>
   );

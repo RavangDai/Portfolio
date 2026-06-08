@@ -1,24 +1,34 @@
+"use client";
+
+import { useIsBrut } from "@/lib/theme";
+
 /**
- * Site-wide animated background — pure CSS "living aurora".
+ * Site-wide animated background.
  *
- * Replaces the old Spline 3D-gradient iframe (a full WebGL scene that pegged the
- * GPU and caused scroll lag). This version is just a few large, slow, blurred
- * radial orbs drifting on a near-black base — GPU-composited transforms only, so
- * it costs almost nothing.
+ * - Dark routes (home/hero): a pure-CSS "living aurora" — a few large, slow,
+ *   blurred radial orbs drifting on a near-black base. GPU-composited transforms
+ *   only, so it costs almost nothing, and it gives the (hero) glass surfaces
+ *   bright gradients to refract.
+ * - Brutalist routes (/projects /certificates /achievements /contact): a flat
+ *   paper surface with a faint ink grid + grain, matching the light theme.
  *
- * Why orbs and not flat black: the liquid-glass surfaces across the site refract
- * whatever sits behind them via `backdrop-filter: url(#liquid-distort)`. Flat
- * black gives the glass nothing to bend and it looks dead. The soft orbs give the
- * glass bright gradients to refract while staying moody and monochrome.
- *
- * Notes:
- *  - `pointer-events-none` keeps it from swallowing clicks/scroll.
- *  - Motion uses the `sgb-orb-a/b/c` keyframes (globals.css) which animate only
- *    translate + scale — never `opacity`/`top`/`left` — so brightness stays under
- *    our control and the GPU does the work.
- *  - The base `bg-[#080808]` is the instant fallback paint.
+ * `pointer-events-none` keeps it from swallowing clicks/scroll on either theme.
  */
 export function SiteBackground() {
+  const isBrut = useIsBrut();
+
+  if (isBrut) {
+    return (
+      <div
+        aria-hidden
+        className="brut-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      >
+        {/* faint grain to break the flatness */}
+        <div className="grain-layer opacity-[0.4]" />
+      </div>
+    );
+  }
+
   return (
     <div
       aria-hidden

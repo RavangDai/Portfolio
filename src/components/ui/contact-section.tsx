@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -13,7 +12,6 @@ export function ContactSection() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-
 
   const handleCopy = () => {
     navigator.clipboard.writeText("drbibekg2029@gmail.com");
@@ -60,45 +58,35 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative w-full bg-[#080808]/72 py-20 md:py-28 overflow-hidden"
+      className="theme-brut brut-bg relative w-full overflow-hidden pt-28 pb-24 md:pt-36"
     >
-      {/* ── Content ── */}
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
-        <div className="grid gap-8 md:gap-12 lg:gap-20 xl:gap-28 lg:grid-cols-[1fr_1.3fr]">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.25fr] lg:gap-16">
 
-          {/* Left: info */}
+          {/* ── Left: info ── */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, ease }}
-            className="flex flex-col gap-12"
+            transition={{ duration: 0.7, ease }}
+            className="flex flex-col gap-10"
           >
             <div>
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/35 mb-5">
-                Get In Touch
-              </p>
-              <h2
-                className="font-black font-display tracking-tighter leading-[0.9]"
-                style={{ fontSize: "clamp(2.5rem,6vw,4.5rem)" }}
-              >
-                <span className="shimmer-text">Let&apos;s build</span><br />
-                <span className="text-white/25">something.</span>
+              <p className="brut-kicker mb-4">Get In Touch</p>
+              <h2 className="brut-h text-[clamp(2.6rem,7vw,4.8rem)]">
+                Let&apos;s build <span className="text-[var(--accent)]">something.</span>
               </h2>
-              <p className="mt-6 text-white/35 leading-relaxed max-w-xs text-base">
+              <p className="mt-5 max-w-xs text-sm leading-relaxed text-[var(--ink-2)]">
                 Whether it&apos;s a data project, full-stack app, or something
                 experimental — reach out.
               </p>
             </div>
 
-            <div className="space-y-8">
+            <div className="flex flex-col gap-5">
               {/* Email */}
-              <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
-                  Email
-                </p>
-                <div className="flex items-center gap-3">
-                  {/* Inline text swap on copy */}
+              <div className="brut-card flex items-center justify-between gap-3 p-4">
+                <div className="min-w-0">
+                  <p className="brut-kicker mb-1.5 text-[0.58rem]">Email</p>
                   <div className="relative overflow-hidden">
                     <AnimatePresence mode="popLayout" initial={false}>
                       {copied ? (
@@ -108,7 +96,7 @@ export function ContactSection() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
                           transition={{ duration: 0.22, ease }}
-                          className="text-base font-medium text-white block"
+                          className="block text-sm font-semibold text-[var(--accent)]"
                         >
                           Copied!
                         </motion.span>
@@ -119,239 +107,166 @@ export function ContactSection() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
                           transition={{ duration: 0.22, ease }}
-                          className="text-base font-medium text-white/60 hover:text-white transition-colors select-all block"
+                          className="block select-all truncate text-sm font-medium text-[var(--ink)]"
                         >
                           drbibekg2029@gmail.com
                         </motion.span>
                       )}
                     </AnimatePresence>
                   </div>
-                  <button
-                    onClick={handleCopy}
-                    className={cn(
-                      "btn-icon h-7 w-7 transition-all duration-300 shrink-0",
-                      copied && "!border-white/20 !bg-white/[0.08] !text-white !shadow-[0_0_12px_rgba(255,255,255,0.12)]"
-                    )}
-                    aria-label="Copy email"
-                  >
-                    <AnimatePresence mode="wait" initial={false}>
-                      {copied ? (
-                        <motion.span
-                          key="check"
-                          initial={{ scale: 0.5, opacity: 0 }}
-                          animate={{ scale: 1,   opacity: 1 }}
-                          exit={{   scale: 0.5, opacity: 0 }}
-                          transition={{ duration: 0.18 }}
-                        >
-                          <Check className="h-3 w-3" />
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="copy"
-                          initial={{ scale: 0.5, opacity: 0 }}
-                          animate={{ scale: 1,   opacity: 1 }}
-                          exit={{   scale: 0.5, opacity: 0 }}
-                          transition={{ duration: 0.18 }}
-                        >
-                          <Copy className="h-3 w-3" />
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </button>
                 </div>
+                <button
+                  onClick={handleCopy}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-ink)]"
+                  aria-label="Copy email"
+                >
+                  <AnimatePresence mode="wait" initial={false}>
+                    {copied ? (
+                      <motion.span key="check" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.18 }}>
+                        <Check className="h-3.5 w-3.5" />
+                      </motion.span>
+                    ) : (
+                      <motion.span key="copy" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }} transition={{ duration: 0.18 }}>
+                        <Copy className="h-3.5 w-3.5" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </button>
               </div>
 
               {/* Location */}
-              <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
-                  Based at
-                </p>
-                <p className="text-base text-white/50">Hammond, Louisiana, USA</p>
-                <p className="text-xs text-white/35 mt-1">Open to remote &amp; hybrid</p>
+              <div className="brut-card p-4">
+                <p className="brut-kicker mb-1.5 text-[0.58rem]">Based at</p>
+                <p className="text-sm font-medium text-[var(--ink)]">Hammond, Louisiana, USA</p>
+                <p className="mt-0.5 text-xs text-[var(--ink-3)]">Open to remote &amp; hybrid</p>
               </div>
 
               {/* Focus */}
-              <div>
-                <p className="text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-2">
-                  Focus
-                </p>
-                <p className="text-base text-white/50">Full-stack · Data / AI</p>
+              <div className="brut-card p-4">
+                <p className="brut-kicker mb-1.5 text-[0.58rem]">Focus</p>
+                <p className="text-sm font-medium text-[var(--ink)]">Full-stack · Data / AI</p>
               </div>
 
               {/* Status */}
-              <div className="inline-flex items-center gap-2 text-[0.65rem] font-medium uppercase tracking-widest text-white/50">
+              <div className="inline-flex w-fit items-center gap-2 rounded-[4px] border-2 border-[var(--ink)] bg-[var(--accent)] px-3 py-1.5 brut-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[var(--accent-ink)]">
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/60 opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/70" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-ink)] opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent-ink)]" />
                 </span>
                 Open to Internships
               </div>
             </div>
           </motion.div>
 
-          {/* Right: form / success */}
+          {/* ── Right: form / success ── */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, delay: 0.15, ease }}
-            className="relative"
+            transition={{ duration: 0.7, delay: 0.12, ease }}
+            className="brut-card p-6 sm:p-8"
           >
-            {/* Glass card behind the form */}
-            <div className="glass-panel pointer-events-none absolute -inset-6 -z-10 rounded-3xl" />
-
             <AnimatePresence mode="wait">
               {formSubmitted ? (
                 /* ── Success state ── */
                 <motion.div
                   key="success"
-                  initial={{ opacity: 0, scale: 0.96, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, scale: 1,    filter: "blur(0px)" }}
-                  exit={{   opacity: 0, scale: 0.96, filter: "blur(6px)" }}
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.5, ease }}
-                  className="flex flex-col items-center justify-center gap-8 py-16 text-center"
+                  className="flex flex-col items-center justify-center gap-7 py-14 text-center"
                 >
-                  {/* Animated checkmark */}
-                  <div className="relative flex h-20 w-20 items-center justify-center">
-                    {/* Outer ring pulse */}
-                    <motion.div
-                      initial={{ scale: 0.6, opacity: 0 }}
-                      animate={{ scale: [0.6, 1.3, 1], opacity: [0, 0.2, 0] }}
-                      transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-                      className="absolute inset-0 rounded-full border border-white/30"
-                    />
-                    {/* Circle */}
-                    <svg
-                      width="80" height="80"
-                      viewBox="0 0 80 80"
-                      fill="none"
-                      className="absolute inset-0"
-                    >
-                      <motion.circle
-                        cx="40" cy="40" r="35"
-                        stroke="rgba(255,255,255,0.15)"
-                        strokeWidth="1.5"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 0.7, ease: "easeOut" }}
-                      />
+                  <div className="relative flex h-20 w-20 items-center justify-center rounded-[6px] border-2 border-[var(--ink)] bg-[var(--accent)]">
+                    <svg width="48" height="48" viewBox="0 0 80 80" fill="none">
                       <motion.path
                         d="M24 40 L36 52 L56 30"
                         stroke="white"
-                        strokeWidth="2"
+                        strokeWidth="6"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         fill="none"
                         initial={{ pathLength: 0, opacity: 0 }}
                         animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.5, delay: 0.25, ease }}
                       />
                     </svg>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <motion.h3
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.65, ease }}
-                      className="text-2xl font-bold tracking-tighter text-white"
+                      transition={{ duration: 0.5, delay: 0.4, ease }}
+                      className="brut-h text-2xl"
                     >
                       Message sent.
                     </motion.h3>
                     <motion.p
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.78, ease }}
-                      className="text-sm text-white/35 max-w-[260px] leading-relaxed"
+                      transition={{ duration: 0.5, delay: 0.55, ease }}
+                      className="mx-auto max-w-[260px] text-sm leading-relaxed text-[var(--ink-2)]"
                     >
                       Thanks for reaching out. It landed in my inbox and I&apos;ll get back to you soon.
                     </motion.p>
                   </div>
 
-                  {/* Progress bar draining down */}
-                  <motion.div className="w-32 h-px bg-white/[0.08] rounded-full overflow-hidden">
+                  <div className="h-2 w-40 overflow-hidden rounded-full border-2 border-[var(--ink)]">
                     <motion.div
-                      className="h-full bg-white/40 rounded-full origin-left"
+                      className="h-full origin-left bg-[var(--accent)]"
                       initial={{ scaleX: 1 }}
                       animate={{ scaleX: 0 }}
                       transition={{ duration: 5, ease: "linear", delay: 0.2 }}
                     />
-                  </motion.div>
+                  </div>
                 </motion.div>
               ) : (
                 /* ── Form ── */
                 <motion.form
                   key="form"
-                  initial={{ opacity: 0, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
-                  exit={{   opacity: 0, filter: "blur(6px)" }}
-                  transition={{ duration: 0.45, ease }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease }}
                   onSubmit={handleSubmit}
-                  className="flex flex-col gap-8"
+                  className="flex flex-col gap-6"
                 >
-                  <div className="grid gap-8 sm:grid-cols-2">
-                    <MinimalField label="Name" htmlFor="f-name">
-                      <input
-                        id="f-name"
-                        name="name"
-                        type="text"
-                        placeholder="Your name"
-                        className={minimalInput}
-                        required
-                      />
-                    </MinimalField>
-                    <MinimalField label="Email" htmlFor="f-email">
-                      <input
-                        id="f-email"
-                        name="email"
-                        type="email"
-                        placeholder="you@example.com"
-                        className={minimalInput}
-                        required
-                      />
-                    </MinimalField>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <BrutField label="Name" htmlFor="f-name">
+                      <input id="f-name" name="name" type="text" placeholder="Your name" className="brut-input" required />
+                    </BrutField>
+                    <BrutField label="Email" htmlFor="f-email">
+                      <input id="f-email" name="email" type="email" placeholder="you@example.com" className="brut-input" required />
+                    </BrutField>
                   </div>
 
-                  <MinimalField label="Subject" htmlFor="f-subject">
-                    <input
-                      id="f-subject"
-                      name="subject"
-                      type="text"
-                      placeholder="What are we working on?"
-                      className={minimalInput}
-                      required
-                    />
-                  </MinimalField>
+                  <BrutField label="Subject" htmlFor="f-subject">
+                    <input id="f-subject" name="subject" type="text" placeholder="What are we working on?" className="brut-input" required />
+                  </BrutField>
 
-                  <MinimalField label="Message" htmlFor="f-message">
+                  <BrutField label="Message" htmlFor="f-message">
                     <textarea
                       id="f-message"
                       name="message"
                       rows={5}
                       placeholder="Tell me about your idea, timeline, and how I can help."
-                      className={cn(minimalInput, "resize-none min-h-[120px]")}
+                      className={cn("brut-input resize-none min-h-[130px]")}
                       required
                     />
-                  </MinimalField>
+                  </BrutField>
 
-                  <div className="flex flex-col gap-3 pt-2">
-                    <div className="flex items-center gap-4">
-                      <LiquidButton
-                        type="submit"
-                        size="lg"
-                        disabled={submitting}
-                        className="rounded-full font-semibold disabled:opacity-60 disabled:cursor-wait"
-                      >
-                        {submitting ? (
-                          <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Sending...
-                          </>
-                        ) : (
-                          "Send Message"
-                        )}
-                      </LiquidButton>
-                    </div>
+                  <div className="flex flex-col gap-3 pt-1">
+                    <button type="submit" disabled={submitting} className="brut-btn w-full sm:w-fit">
+                      {submitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Send Message"
+                      )}
+                    </button>
                     <AnimatePresence>
                       {errorMsg && (
                         <motion.p
@@ -359,7 +274,7 @@ export function ContactSection() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.25, ease }}
-                          className="text-xs text-red-300/80 leading-relaxed"
+                          className="brut-mono text-xs leading-relaxed text-[#c81e3a]"
                           role="alert"
                         >
                           {errorMsg}
@@ -380,15 +295,7 @@ export function ContactSection() {
 
 /* ── Subcomponents ── */
 
-const minimalInput = cn(
-  "w-full bg-transparent border-0 border-b border-white/[0.07] py-3 px-0",
-  "text-sm text-white/80 placeholder-white/40",
-  "transition-all duration-300",
-  "focus:border-white/30 focus:outline-none",
-  "hover:border-white/[0.14]"
-);
-
-function MinimalField({
+function BrutField({
   label,
   htmlFor,
   children,
@@ -399,10 +306,7 @@ function MinimalField({
 }) {
   return (
     <div>
-      <label
-        htmlFor={htmlFor}
-        className="block text-[0.58rem] font-bold uppercase tracking-[0.28em] text-white/35 mb-1"
-      >
+      <label htmlFor={htmlFor} className="mb-1.5 block brut-kicker text-[0.58rem]">
         {label}
       </label>
       {children}

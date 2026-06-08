@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Play, X, ArrowUpRight, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  BentoCell,
-  BentoGrid,
-  ContainerScale,
-  ContainerScroll,
-} from "@/components/ui/hero-gallery-scroll-animation";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Play, ArrowUpRight } from "lucide-react";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -99,17 +93,12 @@ const projects: Project[] = [
   },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// rotating flat pastel accents (the thin strip + image backdrop) per card
+const PASTELS = ["var(--butter)", "var(--lavender)", "var(--mint)", "var(--blush)"];
 
-function getYouTubeEmbedUrl(url: string): string | null {
-  try {
-    const shortMatch = url.match(/youtu\.be\/([\w-]+)/);
-    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}?autoplay=1&rel=0`;
-    const longMatch = url.match(/[?&]v=([\w-]+)/);
-    if (longMatch) return `https://www.youtube.com/embed/${longMatch[1]}?autoplay=1&rel=0`;
-  } catch { /* ignore */ }
-  return null;
-}
+const ease = [0.22, 1, 0.36, 1] as const;
+
+// ─── Status badge ───────────────────────────────────────────────────────────
 
 function BuildingBadge() {
   const [dots, setDots] = useState(0);
@@ -118,10 +107,10 @@ function BuildingBadge() {
     return () => clearInterval(id);
   }, []);
   return (
-    <span className="glass-chip text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white/60 inline-flex items-center gap-1">
+    <span className="brut-chip">
       <span className="relative flex h-1.5 w-1.5 shrink-0">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/40 opacity-75" />
-        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white/40" />
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
+        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
       </span>
       Building{".".repeat(dots)}
     </span>
@@ -130,298 +119,180 @@ function BuildingBadge() {
 
 function StatusBadge({ status }: { status: ProjectStatus }) {
   if (status === "In progress") return <BuildingBadge />;
+  return <span className="brut-chip-accent brut-chip">Shipped</span>;
+}
+
+// ─── Links row ──────────────────────────────────────────────────────────────
+
+function ProjectLinks({ project }: { project: Project }) {
   return (
-    <span className="glass-chip text-[0.55rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white/75">
-      Shipped
-    </span>
+    <div className="flex flex-wrap items-center gap-2.5">
+      {project.github && (
+        <a href={project.github} target="_blank" rel="noreferrer" className="brut-btn-ghost">
+          <GithubIcon className="h-3.5 w-3.5" />
+          Source
+        </a>
+      )}
+      {project.live && (
+        <a href={project.live} target="_blank" rel="noreferrer" className="brut-btn">
+          Live
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      )}
+      {project.video && (
+        <a href={project.video} target="_blank" rel="noreferrer" className="brut-btn-ghost">
+          <Play className="h-3 w-3 fill-current" />
+          Demo
+        </a>
+      )}
+    </div>
   );
 }
 
-// ─── Gallery tile ───────────────────────────────────────────────────────────────
-// A clickable BentoCell: scroll-driven translate/scale come from the cell itself,
-// the screenshot + overlays live as its children, and a click opens the lightbox.
-
-function GalleryTile({
-  project, index, featured, onOpen,
-}: {
-  project: Project;
-  index: number;
-  featured: boolean;
-  onOpen: (i: number) => void;
-}) {
+function TechChips({ tech, max = 6 }: { tech: string[]; max?: number }) {
   return (
-    <BentoCell
-      role="button"
-      tabIndex={0}
-      aria-label={`Open ${project.name}`}
-      onClick={() => onOpen(index)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onOpen(index);
-        }
-      }}
-      className="bento-tile group relative cursor-pointer overflow-hidden text-left"
-    >
-      {/* Screenshot */}
-      <img
-        src={project.image}
-        alt={project.name}
-        className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
-      />
-
-      {/* Readability gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/10" />
-      {/* Hover sheen */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/[0.06] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-      {/* Top row: badge + (video marker) */}
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3.5">
-        <StatusBadge status={project.status} />
-        {project.video && (
-          <span className="glass-chip flex h-8 w-8 items-center justify-center rounded-full text-white transition-transform duration-300 group-hover:scale-110">
-            <Play className="h-3 w-3 fill-current ml-0.5" />
-          </span>
-        )}
-      </div>
-
-      {/* Bottom content */}
-      <div className="absolute inset-x-0 bottom-0 p-3.5 md:p-4">
-        <div className="flex items-end justify-between gap-2">
-          <div className="min-w-0">
-            <h3
-              className={cn(
-                "font-bold tracking-tight text-white truncate",
-                featured ? "text-xl md:text-2xl" : "text-sm md:text-base"
-              )}
-            >
-              {project.name}
-            </h3>
-            <p className="mt-0.5 text-[0.6rem] md:text-[0.65rem] font-medium uppercase tracking-[0.16em] text-white/45 truncate">
-              {project.tag}
-            </p>
-          </div>
-          <span className="font-mono text-[0.6rem] text-white/30 shrink-0">{project.year}</span>
-        </div>
-
-        {/* Featured-only: description + tech, revealed on hover */}
-        {featured && (
-          <div className="mt-2 max-h-0 overflow-hidden opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:max-h-28 group-hover:opacity-100">
-            <p className="text-xs text-white/60 leading-relaxed line-clamp-2">{project.description}</p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {project.tech.slice(0, 4).map((t) => (
-                <span key={t} className="text-[0.58rem] font-medium px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.10] text-white/55">
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Click affordance */}
-      <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-white opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100">
-        <ArrowUpRight className="h-4 w-4" />
-      </span>
-    </BentoCell>
+    <div className="flex flex-wrap gap-1.5">
+      {tech.slice(0, max).map((t) => (
+        <span key={t} className="brut-chip">{t}</span>
+      ))}
+      {tech.length > max && (
+        <span className="brut-chip">+{tech.length - max}</span>
+      )}
+    </div>
   );
 }
 
-// ─── Gallery lightbox ────────────────────────────────────────────────────────────
+// ─── Cards ──────────────────────────────────────────────────────────────────
 
-function GalleryLightbox({
-  index, onClose, onNavigate,
-}: {
-  index: number;
-  onClose: () => void;
-  onNavigate: (dir: 1 | -1) => void;
-}) {
-  const project = projects[index];
-
+function ProjectImage({ project, pastel }: { project: Project; pastel: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
-      onClick={onClose}
+    <div
+      className="relative w-full overflow-hidden border-b-2 border-[var(--ink)]"
+      style={{ background: pastel }}
     >
-      <div className="absolute inset-0 bg-black/85 backdrop-blur-xl" />
+      <div className="relative aspect-[16/10] w-full">
+        <Image
+          src={project.image}
+          alt={`${project.name} — ${project.tag}`}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover"
+        />
+      </div>
+    </div>
+  );
+}
 
-      {/* Prev / Next */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onNavigate(-1); }}
-        aria-label="Previous project"
-        className="btn-icon absolute left-3 sm:left-6 top-1/2 z-20 h-11 w-11 -translate-y-1/2 !text-white/60 hover:!text-white"
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </button>
-      <button
-        onClick={(e) => { e.stopPropagation(); onNavigate(1); }}
-        aria-label="Next project"
-        className="btn-icon absolute right-3 sm:right-6 top-1/2 z-20 h-11 w-11 -translate-y-1/2 !text-white/60 hover:!text-white"
-      >
-        <ChevronRight className="h-5 w-5" />
-      </button>
-
-      <motion.div
-        key={project.name}
-        initial={{ scale: 0.94, opacity: 0, y: 18 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.96, opacity: 0, y: 10 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="liquid-glass relative z-10 grid w-full max-w-5xl overflow-hidden rounded-3xl lg:grid-cols-[1.4fr_1fr]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Media */}
-        <div className="relative aspect-video bg-black lg:aspect-auto">
-          {project.video ? (
-            <iframe
-              src={getYouTubeEmbedUrl(project.video) || project.video}
-              title={`${project.name} demo`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full bg-black"
-            />
-          ) : (
-            <img src={project.image} alt={project.name} className="h-full w-full object-cover object-top" />
-          )}
-        </div>
-
-        {/* Details */}
-        <div className="relative z-10 flex flex-col p-6 md:p-7">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h3 className="text-2xl font-bold tracking-tight text-white">{project.name}</h3>
-              <StatusBadge status={project.status} />
-            </div>
-            <button
-              onClick={onClose}
-              className="btn-icon h-9 w-9 shrink-0 !text-white/50 hover:!text-white"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
+function FeaturedCard({ project, index, pastel }: { project: Project; index: number; pastel: string }) {
+  return (
+    <article className="brut-card-i group overflow-hidden md:col-span-2">
+      <div className="grid md:grid-cols-2">
+        <ProjectImage project={project} pastel={pastel} />
+        <div className="flex flex-col gap-4 p-6 md:p-7">
+          <div className="flex items-center justify-between gap-3">
+            <span className="brut-kicker">Featured · {project.year}</span>
+            <StatusBadge status={project.status} />
           </div>
-
-          <p className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.2em] text-white/35">
-            {project.tag} <span className="text-white/20">· {project.year}</span>
+          <h3 className="brut-h text-3xl md:text-4xl">{project.name}</h3>
+          <p className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-2)]">
+            {project.tag}
           </p>
-
-          <p className="mt-4 text-sm text-white/65 leading-relaxed">{project.description}</p>
-
-          <div className="mt-5 flex flex-wrap gap-1.5">
-            {project.tech.map((t) => (
-              <span
-                key={t}
-                className="text-[0.62rem] font-medium px-2.5 py-1 rounded-md bg-white/[0.06] border border-white/[0.12] text-white/60"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-auto flex items-center gap-5 pt-6">
-            {project.github && (
-              <a href={project.github} target="_blank" rel="noreferrer"
-                className="flex items-center gap-1.5 text-[0.75rem] font-medium text-white/45 hover:text-white transition-colors duration-200">
-                <GithubIcon className="h-4 w-4" />
-                Source
-              </a>
-            )}
-            {project.live && (
-              <a href={project.live} target="_blank" rel="noreferrer"
-                className="group/live flex items-center gap-1 text-[0.75rem] font-semibold text-white/60 hover:text-white transition-colors duration-200">
-                Live Demo
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/live:-translate-y-0.5 group-hover/live:translate-x-0.5" />
-              </a>
-            )}
-            <span className="ml-auto font-mono text-[0.6rem] text-white/30">
-              {index + 1} / {projects.length}
-            </span>
+          <p className="text-sm leading-relaxed text-[var(--ink-2)]">{project.description}</p>
+          <div className="mt-auto flex flex-col gap-4 pt-2">
+            <TechChips tech={project.tech} max={6} />
+            <ProjectLinks project={project} />
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+      <span className="sr-only">{index + 1}</span>
+    </article>
   );
 }
 
-// ─── Main Section ─────────────────────────────────────────────────────────────
+function ProjectCard({ project, index, pastel }: { project: Project; index: number; pastel: string }) {
+  return (
+    <article className="brut-card-i group flex flex-col overflow-hidden">
+      <ProjectImage project={project} pastel={pastel} />
+      <div className="flex flex-1 flex-col gap-3.5 p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="brut-h text-2xl">{project.name}</h3>
+          <StatusBadge status={project.status} />
+        </div>
+        <p className="brut-mono text-[0.66rem] uppercase tracking-[0.1em] text-[var(--ink-2)]">
+          {project.tag} · {project.year}
+        </p>
+        <p className="text-[0.84rem] leading-relaxed text-[var(--ink-2)] line-clamp-3">
+          {project.description}
+        </p>
+        <div className="mt-auto flex flex-col gap-3.5 pt-1">
+          <TechChips tech={project.tech} max={5} />
+          <ProjectLinks project={project} />
+        </div>
+      </div>
+      <span className="sr-only">{index + 1}</span>
+    </article>
+  );
+}
+
+// ─── Section ──────────────────────────────────────────────────────────────────
 
 export function ProjectsSection() {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [featured, ...rest] = projects;
 
-  const open = useCallback((i: number) => setActiveIndex(i), []);
-  const close = useCallback(() => setActiveIndex(null), []);
-  const navigate = useCallback((dir: 1 | -1) => {
-    setActiveIndex((cur) => (cur === null ? cur : (cur + dir + projects.length) % projects.length));
-  }, []);
-
-  useEffect(() => {
-    if (activeIndex === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-      else if (e.key === "ArrowRight") navigate(1);
-      else if (e.key === "ArrowLeft") navigate(-1);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [activeIndex, close, navigate]);
-
-  // KaryaAI (index 0) lands in the large hero cell of the default bento variant.
-  const FEATURED_INDEX = 0;
-
-  // NOTE: no overflow-hidden on the <section> — it's an ancestor of the sticky grid,
-  // and an ancestor with overflow:hidden becomes the sticky scroll container, which
-  // stops the grid from pinning. The clip lives on the sticky BentoGrid itself.
   return (
-    <section id="projects" className="relative w-full bg-[#080808]/72">
-      {/* Scroll-converge gallery: screenshots fly in and settle into the bento.
-          Each tile is clickable and opens the lightbox below. */}
-      <ContainerScroll className="h-[320vh]">
-        <BentoGrid className="sticky left-0 top-0 z-0 h-screen w-full overflow-hidden p-4 md:p-8">
-          {projects.map((project, index) => (
-            <GalleryTile
-              key={project.name}
-              project={project}
-              index={index}
-              featured={index === FEATURED_INDEX}
-              onOpen={open}
-            />
-          ))}
-        </BentoGrid>
-
-        {/* Pinned headline that fades as the grid locks in */}
-        <ContainerScale className="z-10 px-6 text-center">
-          <p className="mb-5 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white/40">
-            Selected Work · 2025 — 2026
-          </p>
-          <h1
-            className="font-black font-display leading-[0.9] tracking-tighter"
-            style={{ fontSize: "clamp(2.8rem,8vw,5.5rem)" }}
-          >
-            <span className="shimmer-text">Built &amp;</span>
-            <br />
-            <span className="text-white/20">Shipped.</span>
+    <section
+      id="projects"
+      className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36"
+    >
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
+        {/* ── Header ── */}
+        <motion.header
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease }}
+          className="mb-12 md:mb-16"
+        >
+          <p className="brut-kicker mb-4">Selected Work · 2025 — 2026</p>
+          <h1 className="brut-h text-[clamp(2.8rem,9vw,6rem)]">
+            Built &amp; <span className="text-[var(--accent)]">Shipped.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-md text-sm text-white/50 md:text-base">
-            Five builds across full-stack, applied AI, and robotics — tap any to
-            dive in.
-          </p>
-          <span className="mt-8 inline-flex flex-col items-center gap-1.5 text-[0.6rem] font-medium uppercase tracking-[0.25em] text-white/35">
-            Keep scrolling
-            <ChevronDown className="h-4 w-4 animate-bounce" />
-          </span>
-        </ContainerScale>
-      </ContainerScroll>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <p className="max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
+              Real products taken from zero to deployed — full-stack apps, AI tooling,
+              and computer-vision systems.
+            </p>
+            <span className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-3)]">
+              {projects.length} projects
+            </span>
+          </div>
+        </motion.header>
 
-      {/* Gallery lightbox */}
-      <AnimatePresence>
-        {activeIndex !== null && (
-          <GalleryLightbox index={activeIndex} onClose={close} onNavigate={navigate} />
-        )}
-      </AnimatePresence>
+        {/* ── Bento grid ── */}
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{ show: { transition: { staggerChildren: 0.08 } } }}
+          className="grid gap-6 md:grid-cols-2"
+        >
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
+            transition={{ duration: 0.6, ease }}
+            className="md:col-span-2"
+          >
+            <FeaturedCard project={featured} index={0} pastel={PASTELS[0]} />
+          </motion.div>
+
+          {rest.map((project, i) => (
+            <motion.div
+              key={project.name}
+              variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.6, ease }}
+            >
+              <ProjectCard project={project} index={i + 1} pastel={PASTELS[(i + 1) % PASTELS.length]} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }

@@ -175,6 +175,10 @@ html {
   --bg-0: #080808;
   --bg-1: #0A0A0A;
 
+  /* Brand cobalt — shared with the light brutalist pages' --accent, but available
+     globally so the dark hero (which is outside .theme-brut) can thread it in too. */
+  --cobalt: #2e5bff;
+
   /* monochrome accent system */
   --accent-1: 255 255 255;
   --accent-2: 200 200 200;
@@ -973,6 +977,133 @@ html {
   transform: translateY(-3px);
 }
 
+/* ===== Orbital gallery — cards on an open arc (horseshoe) around a title ===== */
+/* Cards are positioned on a partial circular arc (not a closed ring) and gently
+   bob in place on a staggered loop, so the constellation feels alive without the
+   mechanical look of a spinning carousel. The translate(-50%,-50%) centring is
+   carried inside the keyframe so the card stays anchored to its arc point. */
+@keyframes orbit-float {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, calc(-50% - 10px));
+  }
+}
+.orbit-card {
+  animation: orbit-float var(--orbit-dur, 6s) ease-in-out infinite;
+  animation-delay: var(--orbit-delay, 0s);
+}
+.orbit-card:hover,
+.orbit-card:focus-visible {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit-card {
+    animation: none !important;
+  }
+}
+
+/* Gold shimmer title for the orbital centre — Ember Gold theme */
+.shimmer-gold {
+  background: linear-gradient(
+    105deg,
+    #ffffff 0%,
+    #f3ead6 16%,
+    #ffe1a3 34%,
+    #c9a24b 50%,
+    #ffe6ab 66%,
+    #f3ead6 84%,
+    #ffffff 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer-sweep 6.5s linear infinite;
+  will-change: background-position;
+}
+
+/* Premium gold-edged frame for orbiting screenshot/credential cards */
+.orbit-frame {
+  position: relative;
+  border-radius: 1.15rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(201, 162, 75, 0.18),
+    0 22px 52px rgba(0, 0, 0, 0.55);
+  transition:
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Hairline gold gradient ring drawn on top of the frame */
+.orbit-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 224, 160, 0.55),
+    rgba(201, 162, 75, 0.12) 40%,
+    rgba(255, 255, 255, 0.06) 70%,
+    rgba(255, 200, 115, 0.4)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.orbit-frame--active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(255, 200, 115, 0.5),
+    0 32px 74px rgba(0, 0, 0, 0.62),
+    0 0 40px rgba(201, 162, 75, 0.32);
+}
+.orbit-frame--active::after {
+  opacity: 1;
+}
+
+/* Warm gold readability scrim under an orbiting card's label */
+.orbit-card-scrim {
+  background: linear-gradient(
+    to top,
+    rgba(8, 6, 3, 0.92) 0%,
+    rgba(12, 9, 4, 0.55) 38%,
+    rgba(0, 0, 0, 0) 72%
+  );
+}
+
+/* Gold gradient hairline (e.g. top edge of the centre detail panel) */
+.gold-hairline {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 224, 160, 0.7) 35%,
+    rgba(255, 200, 115, 0.85) 50%,
+    rgba(255, 224, 160, 0.7) 65%,
+    transparent
+  );
+}
+
+/* Soft radial gold bloom behind the ring */
+.orbit-bloom {
+  background: radial-gradient(
+    circle at center,
+    rgba(201, 162, 75, 0.16) 0%,
+    rgba(120, 92, 35, 0.08) 38%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+
 /* ===== Nav liquid lens — bends the content behind hovered/active nav links ===== */
 .nav-lens {
   border-radius: 9999px;
@@ -1000,6 +1131,7 @@ html {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-top-color: rgba(255, 255, 255, 0.30);
   background: rgba(255, 255, 255, 0.06);
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.24em;
@@ -1042,16 +1174,16 @@ html {
   position: relative;
   width: 100%;
   height: 300vh; /* three scroll beats */
-  background: #000;
-  color: #fff;
+  background: #faf8f2; /* paper */
+  color: #0a0a0a;
 }
 
-/* Boot placeholder shown while the WebGL cosmos chunk loads — a plain black panel that
-   matches the hero backdrop, so no "old hero" ever flashes in before the cosmos. */
+/* Boot placeholder shown while the hero chunk loads — paper to match the light scene,
+   so nothing dark flashes in before it appears. */
 .hero-loading {
   height: 100svh;
   width: 100%;
-  background: #000;
+  background: #faf8f2;
 }
 
 .hero-sticky {
@@ -1060,7 +1192,160 @@ html {
   height: 100svh;
   width: 100%;
   overflow: hidden;
+  background: #faf8f2;
 }
+
+/* ── Brutalist blueprint scene — scales/pans with scroll via --p (0→1) ── */
+.hero-blueprint {
+  --p: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bp-grid {
+  position: absolute;
+  inset: -30%;
+  background-image:
+    linear-gradient(to right, rgba(10, 10, 10, 0.08) 1.5px, transparent 1.5px),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.08) 1.5px, transparent 1.5px);
+  background-size: 64px 64px;
+  transform: scale(calc(1 + var(--p) * 0.8)) translateY(calc(var(--p) * -8%));
+  transform-origin: 50% 45%;
+  will-change: transform;
+}
+.bp-grid--fine {
+  background-size: 16px 16px;
+  background-image:
+    linear-gradient(to right, rgba(10, 10, 10, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.05) 1px, transparent 1px);
+  transform: scale(calc(1 + var(--p) * 1.7)) translateY(calc(var(--p) * -16%));
+  opacity: 0.55;
+}
+
+.bp-monument {
+  position: absolute;
+  will-change: transform;
+  transition: opacity 0.5s ease;
+}
+.bp-initials {
+  top: 50%;
+  left: 50%;
+  font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: clamp(14rem, 40vw, 38rem);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(10, 10, 10, 0.08);
+  transform: translate(-50%, -50%) translateY(calc(var(--p) * -130px)) scale(calc(1 + var(--p) * 0.3));
+}
+.bp-bar {
+  top: 22%;
+  left: 12%;
+  width: clamp(60px, 9vw, 130px);
+  height: 14px;
+  background: var(--cobalt);
+  border: 2px solid #0a0a0a;
+  transform: translate3d(calc(var(--p) * -50px), calc(var(--p) * 260px), 0);
+}
+.bp-ring {
+  bottom: 15%;
+  right: 13%;
+  width: clamp(80px, 12vw, 180px);
+  aspect-ratio: 1;
+  border: 2px solid #0a0a0a;
+  border-radius: 50%;
+  transform: translateY(calc(var(--p) * -220px)) scale(calc(1 + var(--p) * 0.4));
+}
+.bp-square {
+  top: 28%;
+  right: 17%;
+  width: clamp(50px, 7vw, 100px);
+  aspect-ratio: 1;
+  background: #fbe7b0;
+  border: 2px solid #0a0a0a;
+  transform: translate3d(calc(var(--p) * 60px), calc(var(--p) * 320px), 0) rotate(calc(var(--p) * 12deg));
+}
+.bp-rule {
+  background: rgba(10, 10, 10, 0.12);
+}
+.bp-rule--a {
+  top: 0;
+  left: 28%;
+  width: 2px;
+  height: 100%;
+  transform: translateY(calc(var(--p) * -30%));
+}
+.bp-rule--b {
+  left: 0;
+  top: 64%;
+  width: 100%;
+  height: 2px;
+  transform: translateX(calc(var(--p) * 12%));
+}
+
+.bp-cross {
+  position: absolute;
+  top: 38%;
+  left: 22%;
+  width: 26px;
+  height: 26px;
+  transform: translateY(calc(var(--p) * 180px));
+}
+.bp-cross-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--cobalt);
+}
+.bp-cross-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: var(--cobalt);
+}
+
+.bp-tele {
+  position: absolute;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #56544e;
+}
+.bp-tele--tl { top: 6.5rem; left: 1.5rem; }
+.bp-tele--tr { top: 6.5rem; right: 1.5rem; }
+.bp-tele--bl { bottom: 6rem; left: 1.5rem; }
+.bp-tele--br { bottom: 6rem; right: 1.5rem; color: var(--cobalt); }
+
+.bp-stats {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 7vw, 6rem);
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(46, 91, 255, 0.22);
+}
+
+/* Per-beat emphasis */
+.hero-blueprint[data-beat="1"] .bp-stats { opacity: 1; }
+.hero-blueprint[data-beat="2"] .bp-monument { opacity: 0.3; }
+.hero-blueprint[data-beat="2"] .bp-tele { opacity: 0.5; }
 
 .hero-canvas {
   position: absolute;
@@ -1090,11 +1375,13 @@ html {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  /* Pools paper behind the centered text so the title/subtitle stay legible over the
+     blueprint grid + monuments, while the scene still shows at the edges. */
   background: radial-gradient(
-    ellipse 72% 52% at 50% 47%,
-    rgba(0, 0, 0, 0.62) 0%,
-    rgba(0, 0, 0, 0.38) 42%,
-    rgba(0, 0, 0, 0) 72%
+    ellipse 68% 50% at 50% 47%,
+    rgba(250, 248, 242, 0.94) 0%,
+    rgba(250, 248, 242, 0.62) 45%,
+    rgba(250, 248, 242, 0) 72%
   );
 }
 
@@ -1135,24 +1422,19 @@ html {
 
 .hero-title {
   margin: 0;
-  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 800;
+  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
   letter-spacing: -0.03em;
-  line-height: 0.95;
+  line-height: 0.92;
   font-size: clamp(2.6rem, 9vw, 7.5rem);
+  color: #0a0a0a;
   visibility: hidden; /* GSAP reveals it */
 }
 
 .title-char {
   display: inline-block;
   white-space: pre; /* preserve spaces in the split title */
-  /* Ember Gold theme — white fading to warm ivory */
-  background: linear-gradient(180deg, #ffffff 0%, #f3ead6 50%, #e8d9b8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  /* dark halo (not a white glow) — separates the letters from bright stars/bloom */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 2px 22px rgba(0, 0, 0, 0.4);
+  color: #0a0a0a;
 }
 
 .hero-subtitle {
@@ -1160,11 +1442,12 @@ html {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  font-size: clamp(0.95rem, 2.2vw, 1.3rem);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.86);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.72), 0 1px 16px rgba(0, 0, 0, 0.55);
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: clamp(0.82rem, 1.8vw, 1.05rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #56544e;
 }
 
 .subtitle-line {
@@ -1181,6 +1464,63 @@ html {
   gap: 0.7rem;
 }
 
+/* Dark-context brutalist buttons used by the hero (outside .theme-brut). Mono labels,
+   hard borders + offset shadow, physical press — same language as the light pages. */
+.brut-btn-cobalt,
+.brut-btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.72rem 1.2rem;
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.16s ease;
+}
+.brut-btn-cobalt {
+  color: #fff;
+  background: var(--cobalt);
+  border: 2px solid var(--cobalt);
+  box-shadow: 4px 4px 0 0 #000;
+}
+.brut-btn-cobalt:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 #000; }
+.brut-btn-dark {
+  color: #fff;
+  background: #0a0a0a;
+  border: 2px solid #0a0a0a;
+  box-shadow: 4px 4px 0 0 var(--cobalt);
+}
+.brut-btn-dark:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 var(--cobalt); }
+
+/* Square brutalist icon button (hero socials) — matches the footer's bordered squares. */
+.brut-icon-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  width: 2.75rem;
+  color: #fff;
+  background: #0a0a0a;
+  border: 2px solid #0a0a0a;
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 0 var(--cobalt);
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.16s ease, color 0.16s ease;
+}
+.brut-icon-dark:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 var(--cobalt);
+  background: var(--cobalt);
+}
+
 /* ── EXPLORE beat — navigation hub that ends the cosmos scroll ── */
 .hero-explore-grid {
   pointer-events: auto;
@@ -1191,42 +1531,51 @@ html {
   width: min(92vw, 34rem);
 }
 
-/* Layout only — the true-liquid-glass look (refraction + dark fill) comes from the
-   .glass-panel class applied alongside this in the JSX. */
+/* Light brutalist doorway cards — match the inner pages so the hero→page handoff is seamless.
+   Paper fill, hard ink border + cobalt offset shadow, mono desc, press on hover. */
 .hero-explore-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
   padding: 1.05rem 1.15rem;
-  color: rgba(255, 255, 255, 0.92);
+  color: #0a0a0a;
   text-align: left;
-  transition: transform 0.25s ease;
+  background: #ffffff;
+  border: 2px solid #0a0a0a;
+  border-radius: 6px;
+  box-shadow: 5px 5px 0 0 var(--cobalt);
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hero-explore-card:hover {
-  transform: translateY(-3px);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 0 var(--cobalt);
 }
 
 .hero-explore-icon {
   height: 1.35rem;
   width: 1.35rem;
-  color: rgba(240, 227, 198, 0.85);
+  color: var(--cobalt);
 }
 
 .hero-explore-label {
+  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   letter-spacing: -0.01em;
   line-height: 1.1;
 }
 
 .hero-explore-desc {
-  font-size: 0.72rem;
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42);
+  color: #56544e;
 }
 
 .hero-explore-arrow {
@@ -1235,7 +1584,7 @@ html {
   right: 0.95rem;
   height: 1rem;
   width: 1rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--cobalt);
   opacity: 0;
   transform: translate(-2px, 2px);
   transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
@@ -1244,7 +1593,7 @@ html {
 .hero-explore-card:hover .hero-explore-arrow {
   opacity: 1;
   transform: translate(0, 0);
-  color: rgba(240, 227, 198, 0.9);
+  color: var(--cobalt);
 }
 
 .scroll-progress {
@@ -1287,7 +1636,7 @@ html {
 }
 
 .hero-chapter-idx {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -1297,7 +1646,7 @@ html {
 }
 
 .hero-chapter-name {
-  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.24em;
@@ -1307,13 +1656,13 @@ html {
 }
 
 .hero-chapter.is-active {
-  color: #f3ead6; /* Ember-gold ivory */
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--cobalt);
+  background: rgba(46, 91, 255, 0.12);
 }
 
 .hero-chapter.is-active .hero-chapter-idx {
   opacity: 1;
-  color: #e9cda0;
+  color: var(--cobalt);
 }
 
 /* On narrow screens keep only the active chapter's name; numbers stay for the rest. */
@@ -1341,10 +1690,217 @@ html {
   top: 0;
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, rgba(233, 205, 160, 0.55), #f0e3c6);
+  background: linear-gradient(90deg, rgba(46, 91, 255, 0.55), var(--cobalt));
   transition: width 0.15s linear;
 }
 
 /* The cosmos scroll fly-through runs on every device — the 300vh container drives the
    three beats (incl. the final EXPLORE hub) on mobile as well as desktop. */
+
+/* ============================================================================
+   NEON BRUTALISM — light theme for /projects /certificates /achievements /contact
+   Everything is scoped under .theme-brut so the dark hero/global tokens are
+   untouched. Hard 2px ink borders, hard OFFSET shadows (no blur), cobalt accent,
+   a small set of flat pastel fills, Space Grotesk display + JetBrains Mono labels.
+   ============================================================================ */
+.theme-brut {
+  /* surfaces */
+  --paper:    #faf8f2;
+  --paper-2:  #f0ede4;
+  --ink:      #0a0a0a;
+  --ink-2:    #56544e;
+  --ink-3:    #8a877e;
+  /* the single dominant accent */
+  --accent:       #2e5bff;
+  --accent-ink:   #ffffff;
+  --accent-soft:  #dfe6ff;
+  /* flat pastel block fills (desaturated, used sparingly for variety) */
+  --butter:   #fbe7b0;
+  --lavender: #e6ddfb;
+  --mint:     #cdebdc;
+  --blush:    #fbd9e5;
+  /* brutalist primitives */
+  --brut-border: 2px solid var(--ink);
+  --brut-shadow:    5px 5px 0 0 var(--ink);
+  --brut-shadow-sm: 3px 3px 0 0 var(--ink);
+  --brut-shadow-accent: 5px 5px 0 0 var(--accent);
+  --brut-radius: 6px;
+
+  color: var(--ink);
+  font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+}
+
+.theme-brut ::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ── Typography ── */
+.brut-h {
+  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  color: var(--ink);
+}
+
+.brut-kicker {
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.brut-mono {
+  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Surfaces / cards ── */
+.brut-card {
+  background: var(--paper);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-shadow);
+}
+
+/* interactive card — physical "press" toward its own shadow */
+.brut-card-i {
+  background: var(--paper);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-shadow);
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.brut-card-i:hover {
+  transform: translate(2px, 2px);
+  box-shadow: var(--brut-shadow-sm);
+}
+.brut-card-i:active {
+  transform: translate(5px, 5px);
+  box-shadow: 0 0 0 0 var(--ink);
+}
+
+/* ── Buttons ── */
+.brut-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.15rem;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-shadow-sm);
+  cursor: pointer;
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.14s ease;
+}
+.brut-btn:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 var(--ink); }
+.brut-btn:active { transform: translate(3px, 3px); }
+.brut-btn:disabled { opacity: 0.55; cursor: wait; transform: none; box-shadow: var(--brut-shadow-sm); }
+
+.brut-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-shadow-sm);
+  cursor: pointer;
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.14s ease, border-color 0.14s ease;
+}
+.brut-btn-ghost:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 var(--ink);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── Chips / badges (square brutalist labels) ── */
+.brut-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+}
+.brut-chip-accent {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--ink);
+}
+
+/* ── Inputs ── */
+.brut-input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  transition: box-shadow 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+}
+.brut-input::placeholder { color: var(--ink-3); }
+.brut-input:hover { border-color: var(--ink); }
+.brut-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--brut-shadow-accent);
+}
+
+/* ── Stat box ── */
+.brut-stat {
+  background: var(--paper);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-shadow-sm);
+  padding: 1.1rem 1.25rem;
+}
+
+/* ── Backgrounds: paper + faint ink grid + grain ── */
+.brut-bg {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(to right, rgba(10, 10, 10, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.045) 1px, transparent 1px);
+  background-size: 46px 46px;
+}
+
+/* visible keyboard focus inside brut pages */
+.theme-brut a:focus-visible,
+.theme-brut button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
 

@@ -33,7 +33,7 @@ export function linkify(text: string): ReactNode[] {
                 href={href}
                 target={isEmail ? undefined : "_blank"}
                 rel="noreferrer"
-                className="text-white underline decoration-white/40 underline-offset-2 hover:decoration-white/90 transition-colors break-words"
+                className="font-medium underline underline-offset-2 break-words text-[var(--chat-link,#ffffff)] hover:opacity-80 transition-opacity"
             >
                 {token}
             </a>
@@ -79,7 +79,15 @@ export interface TextCardData {
 export type CardData = ProjectCardData | SkillCardData | MetricCardData | TextCardData;
 
 // --- Tag Component ---
-function Tag({ label, variant = "default" }: { label: string; variant?: "default" | "ai" | "production" }) {
+function Tag({ label, variant = "default", brut = false }: { label: string; variant?: "default" | "ai" | "production"; brut?: boolean }) {
+    if (brut) {
+        // Light brutalism — square ink-bordered chips regardless of semantic variant.
+        return (
+            <span className="inline-flex items-center rounded-[3px] border-2 border-[#0a0a0a] bg-[#faf8f2] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0a0a0a]">
+                {label}
+            </span>
+        );
+    }
     return (
         <span
             className={cn(
@@ -104,7 +112,7 @@ function CountUpMetric({ value, unit }: { value: number; unit: string }) {
             className="flex items-baseline gap-1"
         >
             <motion.span
-                className="text-2xl font-semibold text-emerald-300"
+                className="text-2xl font-semibold text-[var(--chat-accent,#34d399)]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.4 }}
@@ -116,7 +124,7 @@ function CountUpMetric({ value, unit }: { value: number; unit: string }) {
 }
 
 // --- Project Card Component ---
-function ProjectCard({ data }: { data: ProjectCardData }) {
+function ProjectCard({ data, brut = false }: { data: ProjectCardData; brut?: boolean }) {
     const tagVariants: Record<string, "ai" | "production" | "default"> = {
         ai: "ai",
         ml: "ai",
@@ -132,25 +140,27 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
-                "glass-panel rounded-lg",
-                "p-4 space-y-3"
+                "p-4 space-y-3",
+                brut
+                    ? "rounded-[6px] border-2 border-[#0a0a0a] bg-white shadow-[3px_3px_0_0_#2e5bff]"
+                    : "glass-panel rounded-lg"
             )}
         >
             {/* Project Name */}
             <div className="flex items-start justify-between">
-                <h4 className="text-sm font-medium text-white/90">{data.name}</h4>
+                <h4 className="text-sm font-semibold text-[var(--chat-fg-strong)]">{data.name}</h4>
             </div>
 
             {/* Impact */}
             {data.impact && (
                 <div className="flex items-center gap-2 text-[13px]">
-                    <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-slate-300">{linkify(data.impact)}</span>
+                    <TrendingUp className="h-3.5 w-3.5 text-[var(--chat-accent,#34d399)]" />
+                    <span className="text-[var(--chat-fg)]">{linkify(data.impact)}</span>
                 </div>
             )}
 
             {/* Stack */}
-            <div className="flex items-center gap-1.5 text-[12px] text-slate-400">
+            <div className="flex items-center gap-1.5 text-[12px] text-[var(--chat-fg)]">
                 <Code2 className="h-3 w-3" />
                 <span>{data.stack.join(" • ")}</span>
             </div>
@@ -163,6 +173,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
                             key={tag}
                             label={tag}
                             variant={tagVariants[tag.toLowerCase()] || "default"}
+                            brut={brut}
                         />
                     ))}
                 </div>
@@ -170,12 +181,12 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 
             {/* Status */}
             {data.status && (
-                <p className="text-[11px] text-white/40 italic">{linkify(data.status)}</p>
+                <p className="text-[11px] text-[var(--chat-fg-dim)] italic">{linkify(data.status)}</p>
             )}
 
             {/* Prompt for more info */}
             {data.prompt && (
-                <div className="flex items-start gap-1.5 text-[12px] text-emerald-400 pt-1">
+                <div className="flex items-start gap-1.5 text-[12px] text-[var(--chat-accent,#34d399)] pt-1">
                     <ArrowRight className="h-3 w-3 mt-0.5 shrink-0" />
                     <span>{linkify(data.prompt)}</span>
                 </div>
@@ -185,20 +196,22 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 }
 
 // --- Metric Card Component ---
-function MetricCard({ data }: { data: MetricCardData }) {
+function MetricCard({ data, brut = false }: { data: MetricCardData; brut?: boolean }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
             className={cn(
-                "rounded-lg border border-emerald-500/[0.15] bg-gradient-to-br from-emerald-500/10 to-cyan-500/5",
-                "p-4 space-y-2"
+                "p-4 space-y-2",
+                brut
+                    ? "rounded-[6px] border-2 border-[#0a0a0a] bg-white shadow-[3px_3px_0_0_#2e5bff]"
+                    : "rounded-lg border border-emerald-500/[0.15] bg-gradient-to-br from-emerald-500/10 to-cyan-500/5"
             )}
         >
-            <p className="text-[11px] uppercase tracking-wide text-white/50">{data.label}</p>
+            <p className="text-[11px] uppercase tracking-wide text-[var(--chat-fg-dim)]">{data.label}</p>
             <CountUpMetric value={data.value} unit={data.unit} />
-            {data.context && <p className="text-[12px] text-slate-400">{data.context}</p>}
+            {data.context && <p className="text-[12px] text-[var(--chat-fg)]">{data.context}</p>}
         </motion.div>
     );
 }
@@ -210,7 +223,7 @@ function TextCard({ content }: { content: string }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[13px] leading-relaxed text-slate-300"
+            className="text-[13px] leading-relaxed text-[var(--chat-fg)]"
         >
             {linkify(content)}
         </motion.div>
@@ -218,12 +231,12 @@ function TextCard({ content }: { content: string }) {
 }
 
 // --- Main MessageCard Component ---
-export function MessageCard({ data }: { data: CardData }) {
+export function MessageCard({ data, brut = false }: { data: CardData; brut?: boolean }) {
     switch (data.type) {
         case "project":
-            return <ProjectCard data={data} />;
+            return <ProjectCard data={data} brut={brut} />;
         case "metric":
-            return <MetricCard data={data} />;
+            return <MetricCard data={data} brut={brut} />;
         case "text":
         default:
             return <TextCard content={(data as TextCardData).content} />;

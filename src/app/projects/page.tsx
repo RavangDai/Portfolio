@@ -1,4 +1,5 @@
 import { ProjectsSection } from "@/components/ui/projects-section";
+import { PageTransition } from "@/components/ui/page-transition";
 
 export const metadata = {
   title: "Projects · Bibek Pathak",
@@ -6,7 +7,9 @@ export const metadata = {
 };
 
 export default function ProjectsPage() {
-  // No PageTransition wrapper: the gallery relies on sticky/fixed pinning, which
-  // a transform ancestor (PageTransition) would break.
-  return <ProjectsSection />;
+  return (
+    <PageTransition>
+      <ProjectsSection />
+    </PageTransition>
+  );
 }
