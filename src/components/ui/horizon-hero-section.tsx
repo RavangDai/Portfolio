@@ -175,12 +175,40 @@ export const Component = () => {
         <div ref={sceneRef} className="hero-blueprint" data-beat={currentSection} aria-hidden>
           <div className="bp-grid" />
           <div className="bp-grid bp-grid--fine" />
+
+          {/* Ghost monogram — the subject on the drafting table; scales up as you scroll in. */}
+          <span className="bp-initials bp-monument">BP</span>
+
+          {/* Set-square triangles — the tools that draw the blueprint; rotate + drift with scroll. */}
+          <svg className="bp-tri bp-tri--lg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="50,4 96,96 4,96" />
+          </svg>
+          <svg className="bp-tri bp-tri--sm" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon points="50,4 96,96 4,96" />
+          </svg>
+
+          {/* Geometric monuments — cobalt bar + ochre square slide down the sheet on scroll. */}
+          <span className="bp-bar bp-monument" />
+          <span className="bp-square bp-monument" />
+
+          {/* Survey node — a plotted "you are here" point that tracks across the sheet. */}
+          <span className="bp-node bp-monument">
+            <span className="bp-node-ring" />
+            <span className="bp-node-ring bp-node-ring--2" />
+            <span className="bp-node-dot" />
+          </span>
+
+          {/* Dimension line — measurement / precision, echoing the tagline. */}
+          <span className="bp-dim bp-monument">
+            <span className="bp-dim-tick bp-dim-tick--a" />
+            <span className="bp-dim-tick bp-dim-tick--b" />
+          </span>
+
           <div className="bp-cross">
             <span className="bp-cross-h" />
             <span className="bp-cross-v" />
           </div>
           <span className="bp-scan" />
-          <span className="bp-tele bp-tele--bl">BUILD · IMPACT-DRIVEN</span>
         </div>
 
         {/* Top bar — monogram + readout */}

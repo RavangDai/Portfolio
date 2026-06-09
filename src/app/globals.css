@@ -1366,6 +1366,99 @@ html {
 .hero-blueprint[data-beat="0"] .bp-square { opacity: 0.45; }
 .hero-blueprint[data-beat="0"] .bp-initials { opacity: 0.5; }
 
+/* ── Set-square triangles — drafting tools; rotate + drift as the sheet scrolls ── */
+.bp-tri {
+  position: absolute;
+  overflow: visible;
+  will-change: transform;
+  transition: opacity 0.5s ease;
+}
+.bp-tri polygon {
+  fill: none;
+  stroke: rgba(10, 10, 10, 0.16);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.bp-tri--lg {
+  top: 15%;
+  right: 13%;
+  width: clamp(96px, 13vw, 210px);
+  height: clamp(96px, 13vw, 210px);
+  transform: translate3d(calc(var(--p) * 36px), calc(var(--p) * 210px), 0) rotate(calc(var(--p) * -26deg));
+}
+.bp-tri--sm {
+  bottom: 19%;
+  left: 14%;
+  width: clamp(48px, 6vw, 100px);
+  height: clamp(48px, 6vw, 100px);
+  transform: translate3d(calc(var(--p) * 28px), calc(var(--p) * -190px), 0) rotate(calc(var(--p) * 42deg));
+}
+.bp-tri--sm polygon { stroke: rgba(46, 91, 255, 0.5); }
+
+/* ── Survey node — a plotted "you are here" point that pans across the sheet ── */
+.bp-node {
+  top: 58%;
+  left: 70%;
+  width: 0;
+  height: 0;
+  transform: translate3d(calc(var(--p) * -64px), calc(var(--p) * -130px), 0);
+}
+.bp-node-dot {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cobalt);
+}
+.bp-node-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 1.5px solid rgba(46, 91, 255, 0.4);
+  border-radius: 50%;
+}
+.bp-node-ring--2 {
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  opacity: 0.45;
+}
+
+/* ── Dimension line — measurement / precision; echoes the "precision" tagline ── */
+.bp-dim {
+  top: 23%;
+  left: 6%;
+  width: 1px;
+  height: clamp(120px, 22vh, 260px);
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 0.32) 0 5px,
+    transparent 5px 10px
+  );
+  transform: translateY(calc(var(--p) * 130px));
+}
+.bp-dim-tick {
+  position: absolute;
+  left: -4px;
+  width: 9px;
+  height: 2px;
+  background: rgba(10, 10, 10, 0.42);
+}
+.bp-dim-tick--a { top: 0; }
+.bp-dim-tick--b { bottom: 0; }
+
+/* Keep the new pieces quiet on beat 0 (identity) and the EXPLORE finale so the
+   name, photo, and nav cards stay the clear focus. */
+.hero-blueprint[data-beat="0"] .bp-tri,
+.hero-blueprint[data-beat="0"] .bp-node,
+.hero-blueprint[data-beat="0"] .bp-dim { opacity: 0.4; }
+.hero-blueprint[data-beat="2"] .bp-tri { opacity: 0.5; }
+
 /* ── Top bar — blueprint framing (monogram + coordinate readout) ── */
 .hero-topbar {
   position: absolute;
@@ -1440,11 +1533,21 @@ html {
    by the sticky wrapper's overflow:hidden (the trailing letter was being cut off). The
    stacked "BIBEK / PATHAK" beat 0 keeps the full clamp above. */
 @media (min-width: 861px) {
-  .hero-stage-left[data-beat="1"] .hero-id-name,
-  .hero-stage-left[data-beat="2"] .hero-id-name {
+  .hero-stage-left[data-beat="1"] .hero-id-name {
     font-size: clamp(2.6rem, 7vw, 5.5rem);
   }
+  /* Beat 02 (EXPLORE) also carries the 2×2 nav grid, so it's the tallest beat.
+     Cap the title + tighten the column so the whole thing fits the sticky 100svh
+     instead of flowing past the bottom edge (overflow:hidden was clipping the
+     lower cards / letters). */
+  .hero-stage-left[data-beat="2"] .hero-id-name {
+    font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+  }
 }
+
+/* Compact the EXPLORE beat across all sizes so it never overflows downward. */
+.hero-stage-left[data-beat="2"] { gap: 0.7rem; min-height: 0; }
+.hero-stage-left[data-beat="2"] .hero-id-sub { gap: 0.05rem; }
 .hero-id-rule { width: 100%; max-width: 26rem; height: 2px; background: #0a0a0a; }
 .hero-id-sub { align-items: flex-start; text-align: left; }
 
@@ -1763,10 +1866,10 @@ html {
 /* ── EXPLORE beat — navigation hub that ends the cosmos scroll ── */
 .hero-explore-grid {
   pointer-events: auto;
-  margin-top: 0.6rem;
+  margin-top: 0.4rem;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
+  gap: 0.6rem;
   width: 100%;
   max-width: 32rem;
 }
@@ -1795,8 +1898,8 @@ html {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
-  padding: 0.95rem 1.05rem;
+  gap: 0.2rem;
+  padding: 0.72rem 0.9rem;
   color: #0a0a0a;
   text-align: left;
   background: #ffffff;
