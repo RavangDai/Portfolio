@@ -253,7 +253,7 @@ export function ProjectsSection() {
           className="mb-12 md:mb-16"
         >
           <p className="brut-kicker mb-4">Selected Work · 2025 — 2026</p>
-          <h1 className="brut-h text-[clamp(2.8rem,9vw,6rem)]">
+          <h1 className="brut-title text-[clamp(2.8rem,9vw,6rem)]">
             Built &amp; <span className="text-[var(--accent)]">Shipped.</span>
           </h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">

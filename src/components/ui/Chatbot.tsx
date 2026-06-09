@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { X, Volume2, VolumeX } from "lucide-react";
 import GlowingChatInput from "./animated-glowing-search-bar";
 import { cn } from "@/lib/utils";
@@ -298,6 +298,9 @@ export function Chatbot() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef       = useRef<HTMLInputElement>(null);
     const containerRef   = useRef<HTMLDivElement>(null);
+    const dragControls   = useDragControls();
+    const dragBoundsRef  = useRef<HTMLDivElement>(null);
+    const [isDesktop, setIsDesktop] = useState(false);
 
     const isBrut = useIsBrut();
     const accent = ACCENT_COLORS[intent];
@@ -331,6 +334,15 @@ export function Chatbot() {
         }
         return null;
     }, [messages]);
+
+    // Drag is desktop-only — the mobile panel is a full-width docked sheet.
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 640px)");
+        const update = () => setIsDesktop(mq.matches);
+        update();
+        mq.addEventListener("change", update);
+        return () => mq.removeEventListener("change", update);
+    }, []);
 
     useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
     useEffect(() => { if (isOpen) setTimeout(() => inputRef.current?.focus(), 200); }, [isOpen]);
@@ -527,15 +539,25 @@ export function Chatbot() {
                 </motion.button>
             )}
 
+            {/* Drag boundary — keeps the panel inside the viewport while dragging */}
+            {isOpen && <div ref={dragBoundsRef} className="fixed inset-0 z-40 pointer-events-none" aria-hidden />}
+
             {/* ─── CHAT PANEL ─── */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         ref={containerRef}
-                        initial={{ opacity: 0, y: 20, scale: 0.96 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 14, scale: 0.97, transition: { duration: 0.15 } }}
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
                         transition={{ type: "spring", stiffness: 340, damping: 28 }}
+                        drag={isDesktop}
+                        dragControls={dragControls}
+                        dragListener={false}
+                        dragConstraints={dragBoundsRef}
+                        dragElastic={0.03}
+                        dragMomentum={false}
+                        whileDrag={{ scale: 1.01 }}
                         className={cn(
                             "fixed z-50 flex flex-col",
                             "bottom-0 left-0 right-0",
@@ -560,9 +582,15 @@ export function Chatbot() {
                             boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 72px -12px rgba(0,0,0,0.8), 0 0 80px -20px ${accent.glow}`,
                         }}
                     >
-                        {/* ─── Header ─── */}
-                        <div className="relative shrink-0 px-5 pt-5 pb-4"
-                            style={{ background: "rgba(255,255,255,0.02)" }}>
+                        {/* ─── Header (doubles as the drag handle on desktop) ─── */}
+                        <div className="relative shrink-0 px-5 pt-5 pb-4 select-none sm:cursor-grab sm:active:cursor-grabbing"
+                            onPointerDown={(e) => {
+                                if (!isDesktop) return;
+                                // Don't start a drag when pressing the voice/close buttons
+                                if ((e.target as HTMLElement).closest("button")) return;
+                                dragControls.start(e);
+                            }}
+                            style={{ background: "rgba(255,255,255,0.02)", touchAction: isDesktop ? "none" : undefined }}>
 
                             {/* Thin top line */}
                             <motion.div className="absolute top-0 left-0 right-0 h-[1.5px]"

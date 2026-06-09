@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useSpring, useVelocity, useTransform } from "framer-motion";
 import { X, ArrowUpRight } from "lucide-react";
@@ -170,11 +171,15 @@ export function MainNavbar() {
           <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-8">
             <nav className="flex items-center justify-between gap-4 rounded-[6px] border-2 border-[var(--ink)] bg-[var(--paper)] px-5 py-3 shadow-[4px_4px_0_0_var(--ink)]">
               {/* Brand */}
-              <button onClick={handleBrandClick} className="group flex shrink-0 items-center gap-2.5">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-50" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
-                </span>
+              <button onClick={handleBrandClick} className="group flex shrink-0 items-center gap-2">
+                <Image
+                  src="/brand/mark.png"
+                  alt="Bibek Pathak"
+                  width={219}
+                  height={326}
+                  priority
+                  className="h-[1.35rem] w-auto"
+                />
                 <span className="brut-h text-[0.95rem] tracking-tight text-[var(--ink)] transition-colors group-hover:text-[var(--accent)]">
                   BIBEK.TECH
                 </span>
@@ -234,7 +239,10 @@ export function MainNavbar() {
               className="theme-brut fixed inset-0 z-40 flex flex-col bg-[var(--paper)] md:hidden"
             >
               <div className="flex items-center justify-between border-b-2 border-[var(--ink)] px-7 pt-6 pb-4">
-                <button onClick={handleBrandClick} className="brut-h text-base text-[var(--ink)]">BIBEK.TECH</button>
+                <button onClick={handleBrandClick} className="flex items-center gap-2">
+                  <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="h-[1.4rem] w-auto" />
+                  <span className="brut-h text-base text-[var(--ink)]">BIBEK.TECH</span>
+                </button>
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] text-[var(--ink)]"

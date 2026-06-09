@@ -73,7 +73,7 @@ export function ContactSection() {
           >
             <div>
               <p className="brut-kicker mb-4">Get In Touch</p>
-              <h2 className="brut-h text-[clamp(2.6rem,7vw,4.8rem)]">
+              <h2 className="brut-title text-[clamp(2.6rem,7vw,4.8rem)]">
                 Let&apos;s build <span className="text-[var(--accent)]">something.</span>
               </h2>
               <p className="mt-5 max-w-xs text-sm leading-relaxed text-[var(--ink-2)]">

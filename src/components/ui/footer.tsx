@@ -2,6 +2,7 @@
 
 import type { ComponentProps, ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
@@ -58,7 +59,8 @@ export function Footer() {
           <div className="grid gap-10 border-b-2 border-[var(--ink)] pb-10 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_auto] lg:gap-12">
             {/* Brand */}
             <AnimatedContainer delay={0.05} className="space-y-4">
-              <button onClick={scrollToTop} className="group text-left">
+              <button onClick={scrollToTop} className="group flex items-center gap-2.5 text-left">
+                <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="h-7 w-auto" />
                 <span className="brut-h text-base tracking-tight text-[var(--ink)]">BIBEK.TECH</span>
               </button>
               <p className="max-w-[220px] text-[0.82rem] leading-relaxed text-[var(--ink-2)]">

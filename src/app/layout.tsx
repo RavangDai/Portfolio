@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Raleway, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Sora } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { MainNavbar } from "@/components/ui/main-navbar";
@@ -8,27 +8,22 @@ import { Chatbot } from "@/components/ui/Chatbot";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteBackground } from "@/components/ui/site-background";
 
-const raleway = Raleway({
+// Body + ALL UI text/labels use Inter (label classes add uppercase + letter-spacing in CSS).
+// Exposed as --font-inter; --font-raleway and --font-brut-mono are aliased to it in globals.css
+// so every existing reference resolves to Inter with no per-call edits.
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-raleway",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
   display: "swap",
 });
 
-// Brutalist pages (projects / certificates / achievements / contact) use these.
-// Space Grotesk for heavy display headings, JetBrains Mono for kicker labels,
-// data tags and tabular figures. The hero/home keeps Raleway untouched.
-const spaceGrotesk = Space_Grotesk({
+// Big identity titles ONLY (hero BIBEK PATHAK / BUILDER / EXPLORE + major page titles like
+// "Built & Shipped") use Sora — a clean, geometric, highly readable display sans — via --font-brut-display.
+const displayFont = Sora({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
   variable: "--font-brut-display",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-brut-mono",
   display: "swap",
 });
 
@@ -78,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${raleway.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`dark scroll-smooth ${inter.variable} ${displayFont.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-[#080808] text-white antialiased min-h-screen" suppressHydrationWarning>
         {/* Site-wide animated Spline gradient — fixed behind all content (z −10) */}
         <SiteBackground />

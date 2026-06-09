@@ -92,7 +92,7 @@ export function AchievementsSection() {
           className="mb-14 md:mb-16"
         >
           <p className="brut-kicker mb-4">Track Record</p>
-          <h1 className="brut-h text-[clamp(3rem,9vw,6.5rem)]">
+          <h1 className="brut-title text-[clamp(3rem,9vw,6.5rem)]">
             Achieve<span className="text-[var(--accent)]">-</span>ments.
           </h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--ink-2)]">

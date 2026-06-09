@@ -13,9 +13,9 @@ html {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-raleway), "Raleway", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-raleway), "Raleway", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-inter), ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -178,6 +178,13 @@ html {
   /* Brand cobalt — shared with the light brutalist pages' --accent, but available
      globally so the dark hero (which is outside .theme-brut) can thread it in too. */
   --cobalt: #2e5bff;
+
+  /* Typography: Inter is the single text/label font. These legacy var names are kept as
+     aliases → Inter so every existing reference (body, kickers, chips, buttons, telemetry,
+     nav, chatbot) resolves to Inter without per-call edits. Big identity titles use the
+     separate --font-brut-display (Sora — clean geometric display sans). */
+  --font-raleway: var(--font-inter);
+  --font-brut-mono: var(--font-inter);
 
   /* monochrome accent system */
   --accent-1: 255 255 255;
@@ -1126,20 +1133,17 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 16px;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-top-color: rgba(255, 255, 255, 0.30);
-  background: rgba(255, 255, 255, 0.06);
-  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.62rem;
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 2px solid #0a0a0a;
+  background: #faf8f2;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6rem;
   font-weight: 600;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.80);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 16px rgba(0,0,0,0.3);
+  color: #0a0a0a;
+  box-shadow: 3px 3px 0 0 var(--cobalt);
 }
 
 /* ===== Section gradient separator ===== */
@@ -1237,7 +1241,7 @@ html {
   font-weight: 700;
   font-size: clamp(14rem, 40vw, 38rem);
   line-height: 0.8;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   color: transparent;
   -webkit-text-stroke: 2px rgba(10, 10, 10, 0.08);
   transform: translate(-50%, -50%) translateY(calc(var(--p) * -130px)) scale(calc(1 + var(--p) * 0.3));
@@ -1326,6 +1330,15 @@ html {
 .bp-tele--bl { bottom: 6rem; left: 1.5rem; }
 .bp-tele--br { bottom: 6rem; right: 1.5rem; color: var(--cobalt); }
 
+/* Scan line — a single thin cobalt sweep that tracks scroll progress (intentional, calm) */
+.bp-scan {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(8% + var(--p, 0) * 84%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(46, 91, 255, 0.45), transparent);
+}
+
 .bp-stats {
   position: absolute;
   inset: 0;
@@ -1338,6 +1351,7 @@ html {
   font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: clamp(2rem, 7vw, 6rem);
+  letter-spacing: -0.01em;
   color: transparent;
   -webkit-text-stroke: 2px rgba(46, 91, 255, 0.22);
 }
@@ -1346,6 +1360,247 @@ html {
 .hero-blueprint[data-beat="1"] .bp-stats { opacity: 1; }
 .hero-blueprint[data-beat="2"] .bp-monument { opacity: 0.3; }
 .hero-blueprint[data-beat="2"] .bp-tele { opacity: 0.5; }
+/* Beat 0 (identity comp) — calm the loud monuments so the name + photo read clean */
+.hero-blueprint[data-beat="0"] .bp-bar,
+.hero-blueprint[data-beat="0"] .bp-ring,
+.hero-blueprint[data-beat="0"] .bp-square { opacity: 0.45; }
+.hero-blueprint[data-beat="0"] .bp-initials { opacity: 0.5; }
+
+/* ── Top bar — blueprint framing (monogram + coordinate readout) ── */
+.hero-topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.3rem clamp(1rem, 4vw, 3rem);
+  pointer-events: none;
+}
+.hero-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0a0a0a;
+  border-radius: 5px;
+  padding: 0.34rem 0.5rem;
+  background: var(--paper, #faf8f2);
+}
+.hero-monogram-img {
+  display: block;
+  height: 1.2rem;
+  width: auto;
+}
+.hero-coords {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #56544e;
+}
+
+/* ── Pinned stage — left column swaps per beat, right (portrait) persists ── */
+.hero-stage {
+  pointer-events: auto;
+  width: min(1180px, 94vw);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+  text-align: left;
+}
+.hero-stage-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 62vh; /* stable column height so the persistent photo doesn't jump between beats */
+  animation: hero-beat-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-sector {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+}
+.hero-title.hero-id-name {
+  margin: 0;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+}
+.hero-id-name .title-line { display: block; }
+
+/* Single-word title beats (BUILDER / EXPLORE) render on ONE line inside the narrower
+   left column on desktop — cap their size so the wide word can't overflow and get clipped
+   by the sticky wrapper's overflow:hidden (the trailing letter was being cut off). The
+   stacked "BIBEK / PATHAK" beat 0 keeps the full clamp above. */
+@media (min-width: 861px) {
+  .hero-stage-left[data-beat="1"] .hero-id-name,
+  .hero-stage-left[data-beat="2"] .hero-id-name {
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+  }
+}
+.hero-id-rule { width: 100%; max-width: 26rem; height: 2px; background: #0a0a0a; }
+.hero-id-sub { align-items: flex-start; text-align: left; }
+
+/* Beat 01 — proof cards (engineered mini panels) */
+.hero-proof {
+  pointer-events: auto;
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 32rem;
+}
+.hero-proof-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 0.9rem;
+  background: #fff;
+  border: 2px solid #0a0a0a;
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 0 var(--cobalt);
+}
+.hero-proof-idx {
+  font-family: var(--font-inter), ui-monospace, monospace;
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.14em; color: #8a877e;
+}
+.hero-proof-name {
+  font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
+  font-size: 1.05rem; letter-spacing: 0; line-height: 1; color: #0a0a0a;
+}
+.hero-proof-tag {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.58rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #56544e;
+}
+
+/* right column — PERSISTENT portrait over a hard cobalt block (shifts subtly per beat) */
+.hero-stage-right {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: bottom center;
+}
+.hero-stage-right[data-beat="1"] { transform: translateX(3%) scale(0.95); }
+.hero-stage-right[data-beat="2"] { transform: translateX(5%) scale(0.9); }
+
+.hero-photo {
+  position: relative;
+  width: min(100%, 27rem);
+  aspect-ratio: 5 / 6;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible; /* never clip the portrait */
+}
+.hero-photo-block {
+  position: absolute;
+  left: 9%; right: 9%; top: 18%; bottom: 2%;
+  background: var(--cobalt);
+  border: 2px solid #0a0a0a;
+}
+.hero-photo-chip {
+  position: absolute;
+  left: -2%; bottom: 10%;
+  width: 2.4rem; height: 2.4rem;
+  background: #fbe7b0;
+  border: 2px solid #0a0a0a;
+  z-index: 2;
+}
+.hero-photo-img {
+  position: relative;
+  z-index: 3;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;       /* show the whole cutout — no mid crop */
+  object-position: bottom center;
+}
+.hero-bracket {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  z-index: 4;
+}
+.hero-bracket--tl { top: 9%; left: 3%; border-top: 2px solid #0a0a0a; border-left: 2px solid #0a0a0a; }
+.hero-bracket--br { bottom: 2%; right: 3%; border-bottom: 2px solid #0a0a0a; border-right: 2px solid #0a0a0a; }
+.hero-tagline {
+  align-self: flex-end;
+  max-width: 24rem;
+  margin-top: 0.25rem;
+  text-align: left;
+  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.45;
+  color: #0a0a0a;
+  background: var(--paper, #faf8f2);
+  border: 2px solid #0a0a0a;
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  box-shadow: 6px 6px 0 0 var(--cobalt, #2e5bff);
+}
+.hero-tagline-key {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+}
+.hero-tagline-underline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: var(--cobalt, #2e5bff);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.hero-scroll-tag {
+  align-self: flex-end;
+  font-family: var(--font-inter), ui-monospace, monospace;
+  font-size: 0.56rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #56544e;
+  background: #fff;
+  border: 2px solid #0a0a0a;
+  border-radius: 4px;
+  padding: 0.18rem 0.5rem;
+}
+
+/* Display tracking for Sora (the --font-brut-display face). Sora is a normal-metrics sans,
+   so big titles read best with slightly tight tracking. Centralized here — do NOT re-set
+   letter-spacing on the base .hero-title / .brut-title rules below or it overrides this. */
+.hero-title { letter-spacing: -0.01em; }
+.brut-title { letter-spacing: -0.01em; }
+
+/* Stage stacks on small screens — photo below the left column, lighter composition */
+@media (max-width: 860px) {
+  .hero-stage { grid-template-columns: 1fr; gap: 1.5rem; }
+  .hero-stage-left { min-height: 0; gap: 0.85rem; }
+  .hero-id-name { font-size: clamp(2.8rem, 15vw, 5rem); }
+  .hero-stage-right { transform: none !important; }
+  .hero-photo { width: min(78%, 18rem); }
+  .hero-scroll-tag { display: none; }
+  .hero-tagline {
+    align-self: stretch;
+    max-width: 100%;
+    font-size: 0.82rem;
+    padding: 0.7rem 0.85rem;
+    box-shadow: 4px 4px 0 0 var(--cobalt, #2e5bff);
+  }
+  .hero-proof { grid-template-columns: 1fr; max-width: 100%; }
+  .hero-explore-grid { max-width: 100%; }
+}
 
 .hero-canvas {
   position: absolute;
@@ -1367,23 +1622,8 @@ html {
   pointer-events: none; /* canvas stays interactive-free; buttons re-enable below */
 }
 
-/* Readability scrim — pools darkness behind the centered text so the title/subtitle
-   stay legible over the bright starfield + bloom, while stars still show at the edges. */
-.hero-content::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  /* Pools paper behind the centered text so the title/subtitle stay legible over the
-     blueprint grid + monuments, while the scene still shows at the edges. */
-  background: radial-gradient(
-    ellipse 68% 50% at 50% 47%,
-    rgba(250, 248, 242, 0.94) 0%,
-    rgba(250, 248, 242, 0.62) 45%,
-    rgba(250, 248, 242, 0) 72%
-  );
-}
+/* No glow / radial behind the text — the blueprint grid is faint enough that ink text on
+   paper stays perfectly legible. (Removed the paper halo per design direction.) */
 
 .hero-beat-inner {
   position: relative;
@@ -1424,7 +1664,6 @@ html {
   margin: 0;
   font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
-  letter-spacing: -0.03em;
   line-height: 0.92;
   font-size: clamp(2.6rem, 9vw, 7.5rem);
   color: #0a0a0a;
@@ -1456,11 +1695,11 @@ html {
 
 .hero-actions {
   pointer-events: auto;
-  margin-top: 1.4rem;
+  margin-top: 0.8rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.7rem;
 }
 
@@ -1524,28 +1763,46 @@ html {
 /* ── EXPLORE beat — navigation hub that ends the cosmos scroll ── */
 .hero-explore-grid {
   pointer-events: auto;
-  margin-top: 1.8rem;
+  margin-top: 0.6rem;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.8rem;
-  width: min(92vw, 34rem);
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 32rem;
 }
 
-/* Light brutalist doorway cards — match the inner pages so the hero→page handoff is seamless.
-   Paper fill, hard ink border + cobalt offset shadow, mono desc, press on hover. */
+/* Engineered navigation panels — numbered, ink-bordered, cobalt offset, press on hover. */
+.hero-explore-idx {
+  font-family: var(--font-inter), ui-monospace, monospace;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #8a877e;
+}
+.hero-explore-plus {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.9rem;
+  height: 1rem;
+  width: 1rem;
+  color: var(--cobalt);
+  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-explore-card:hover .hero-explore-plus { transform: rotate(90deg); }
+.hero-explore-icon { display: none; }
 .hero-explore-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.3rem;
-  padding: 1.05rem 1.15rem;
+  gap: 0.25rem;
+  padding: 0.95rem 1.05rem;
   color: #0a0a0a;
   text-align: left;
   background: #ffffff;
   border: 2px solid #0a0a0a;
   border-radius: 6px;
-  box-shadow: 5px 5px 0 0 var(--cobalt);
+  box-shadow: 4px 4px 0 0 var(--cobalt);
   transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -1562,8 +1819,8 @@ html {
 }
 
 .hero-explore-label {
-  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  font-weight: 700;
+  font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -1736,10 +1993,20 @@ html {
 }
 
 /* ── Typography ── */
+/* General headings (card titles, sub-heads, stat numbers) — Inter, heavy + tight. */
 .brut-h {
+  font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  color: var(--ink);
+}
+
+/* Big identity titles ONLY (hero BIBEK PATHAK / BUILDER / EXPLORE + major page titles like
+   "Built & Shipped") — the display font (Sora). */
+.brut-title {
   font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
-  letter-spacing: -0.02em;
   line-height: 0.95;
   color: var(--ink);
 }

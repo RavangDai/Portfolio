@@ -150,7 +150,7 @@ export function CertificatesSection() {
           className="mb-12 md:mb-16"
         >
           <p className="brut-kicker mb-4">Certificates · Verified</p>
-          <h1 className="brut-h text-[clamp(2.6rem,8vw,5.5rem)]">
+          <h1 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
             Proof wall. <span className="text-[var(--accent)]">Real receipts.</span>
           </h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
