@@ -1,75 +1,57 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
+import { getContent } from "@/lib/storage";
+import type { Project, Certificate } from "@/lib/content/types";
 
 // ══════════════════════════════════════════════════════════════════════════════
-// KNOWLEDGE BASE — answers common questions locally, no Gemini call needed
+// KNOWLEDGE BASE — built from Vercel Blob storage, falls back to defaults
 // ══════════════════════════════════════════════════════════════════════════════
 
-const PROJECTS: Record<string, {
-  tag: string; description: string; stack: string; live?: string;
-  github?: string; year: number; status: string;
-}> = {
-  karyaai: {
-    tag: "MERN Stack · Productivity",
-    description: "Task manager with JWT auth, MongoDB syncing, and AI-powered task sorting.",
-    stack: "React, Node.js, MongoDB, Express, Tailwind",
-    live: "karyaai.vercel.app",
-    github: "github.com/RavangDai/SmartTodo",
-    year: 2026, status: "Shipped",
-  },
-  crumbcraft: {
-    tag: "Full-stack · AI · Productivity",
-    description: "Two AI dev tools in one. Crumb compresses messy conversations into structured docs; Craft engineers precise prompts.",
-    stack: "Next.js, React, Tailwind, Gemini 2.5, Framer Motion",
-    live: "crumbcrraft.vercel.app",
-    github: "github.com/RavangDai/crumb",
-    year: 2026, status: "Shipped",
-  },
-  revveal: {
-    tag: "Full-stack · AI · Data",
-    description: "Finds underpriced used cars before everyone else. Async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, ranks by discount. JWT auth, rate-limited APIs.",
-    stack: "FastAPI, React, PostgreSQL, Celery, Redis, Docker",
-    github: "github.com/RavangDai/car-deal",
-    year: 2026, status: "In progress — core works, real scraper and ML pricing still building",
-  },
-  vectorvance: {
-    tag: "Raspberry Pi · Computer Vision · Robotics",
-    description: "Autonomous car on Raspberry Pi. Follows lanes, detects obstacles and traffic signs with SSD MobileNet, navigates colour-coded forks, streams live telemetry to a web dashboard.",
-    stack: "Python, OpenCV, Flask, Raspberry Pi, SSD MobileNet, PID control, NumPy, lgpio",
-    github: "github.com/RavangDai/VectorVance",
-    year: 2025, status: "Shipped",
-  },
-  buzzboard: {
-    tag: "Node.js · Express · MongoDB",
-    description: "Message board web app with topic subscriptions, recent-message dashboard, posting, unsubscribe flows, topic access stats, and MVC, Observer, and Singleton pattern implementations.",
-    stack: "Node.js, Express 4, MongoDB, Mongoose, Handlebars, express-session, bcryptjs, connect-mongo",
-    year: 2026, status: "Shipped",
-  },
-};
+type KBProject = { tag: string; description: string; stack: string; live?: string; github?: string; year: number; status: string };
+type KBCert = { title: string; issuer: string; year: number; skills: string[]; url: string };
 
-const CERTIFICATES = [
-  {
-    title: "Software Engineer Certificate",
-    issuer: "HackerRank",
-    year: 2025,
-    skills: ["Problem Solving", "REST API Design", "Full-stack Architecture", "Data Structures"],
-    url: "hackerrank.com/certificates/iframe/1ec7df9efdd8",
-  },
-  {
-    title: "SQL (Advanced) Certificate",
-    issuer: "HackerRank",
-    year: 2025,
-    skills: ["Complex Queries", "Joins & Subqueries", "Indexing", "Performance Tuning"],
-    url: "hackerrank.com/certificates/a0f6fb1fb4af",
-  },
-  {
-    title: "Excel Fundamentals - Finance",
-    issuer: "Corporate Finance Institute",
-    year: 2024,
-    skills: ["Financial Modeling", "Pivot Tables", "Data Analysis", "Excel Formulas"],
-    url: "credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
-  },
-];
+function buildProjectsKB(projects: Project[]): Record<string, KBProject> {
+  return Object.fromEntries(
+    projects.map((p) => [
+      p.id,
+      {
+        tag: p.tag,
+        description: p.description,
+        stack: p.tech.join(", "),
+        ...(p.live ? { live: p.live.replace(/^https?:\/\//, "") } : {}),
+        ...(p.github ? { github: p.github.replace(/^https?:\/\//, "") } : {}),
+        year: p.year,
+        status: p.status === "In progress" ? "In progress" : "Shipped",
+      },
+    ])
+  );
+}
+
+function buildCertsKB(certificates: Certificate[]): KBCert[] {
+  return certificates.map((c) => ({
+    title: c.title,
+    issuer: c.issuer,
+    year: c.year,
+    skills: c.skills,
+    url: c.url.replace(/^https?:\/\//, ""),
+  }));
+}
+
+// Mutable KB — refreshed from storage on every POST request
+let PROJECTS: Record<string, KBProject> = {};
+let CERTIFICATES: KBCert[] = [];
+
+async function refreshKB() {
+  const content = await getContent();
+  PROJECTS = buildProjectsKB(content.projects);
+  CERTIFICATES = buildCertsKB(content.certificates);
+  DISPLAY_NAMES = Object.fromEntries(content.projects.map((p) => [p.id, p.name]));
+  REPO_KEY_BY_NAME = Object.fromEntries(
+    content.projects
+      .filter((p) => Boolean(p.github))
+      .map((p) => [normalize((p.github ?? "").split("/").pop() ?? ""), p.id])
+  );
+}
 
 const PROJECT_ALIASES: Record<string, string> = {
   karya: "karyaai", "karya ai": "karyaai", karyaai: "karyaai",
@@ -112,13 +94,8 @@ function detectAllProjectsQuery(text: string): boolean {
 
 // Canonical display names (the app name, which can differ from the GitHub repo name —
 // e.g. the "car-deal" repo is the Revveal app).
-const DISPLAY_NAMES: Record<string, string> = {
-  karyaai: "KaryaAI",
-  crumbcraft: "CrumbCraft",
-  revveal: "Revveal",
-  vectorvance: "VectorVance",
-  buzzboard: "BuzzBoard",
-};
+// DISPLAY_NAMES is rebuilt from storage in refreshKB(); fall back to title-casing the id.
+let DISPLAY_NAMES: Record<string, string> = {};
 
 function displayName(key: string): string {
   return DISPLAY_NAMES[key] ?? key.charAt(0).toUpperCase() + key.slice(1);
@@ -261,14 +238,8 @@ function normalize(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-// Map a GitHub repo name back to its curated project key. Repo names don't always
-// match the app name: car-deal -> Revveal, SmartTodo -> KaryaAI, crumb -> CrumbCraft.
-// Derived from each project's `github` field so it stays in sync automatically.
-const REPO_KEY_BY_NAME: Record<string, string> = Object.fromEntries(
-  Object.entries(PROJECTS)
-    .filter(([, p]) => Boolean(p.github))
-    .map(([key, p]) => [normalize((p.github ?? "").split("/").pop() ?? ""), key])
-);
+// Rebuilt from PROJECTS after each refreshKB() call.
+let REPO_KEY_BY_NAME: Record<string, string> = {};
 
 function repoKeyFor(repoName: string): string | null {
   return REPO_KEY_BY_NAME[normalize(repoName)] ?? null;
@@ -423,6 +394,9 @@ Under 120 words unless explicitly asked for more.
 
 export async function POST(req: Request) {
   try {
+    // Refresh KB from Vercel Blob (60 s cache — effectively free)
+    await refreshKB();
+
     const { messages } = await req.json();
     const lastUserMsg: string = messages.findLast((m: { role: string; content: string }) => m.role === "user")?.content ?? "";
 

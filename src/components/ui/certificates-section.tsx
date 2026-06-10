@@ -2,83 +2,15 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  BarChart3,
-  CheckCircle2,
-  Code2,
-  Database,
-  ExternalLink,
-  Table2,
-  type LucideIcon,
-} from "lucide-react";
-
-type Certificate = {
-  title: string;
-  issuer: string;
-  year: number;
-  category: string;
-  summary: string;
-  skills: string[];
-  image: string;
-  url: string;
-  Icon: LucideIcon;
-  featured?: boolean;
-};
-
-const certificates: Certificate[] = [
-  {
-    title: "Software Engineer Certificate",
-    issuer: "HackerRank",
-    year: 2025,
-    category: "Full-stack Engineering",
-    summary: "Role certification covering problem solving, REST APIs, full-stack structure, and data structures.",
-    skills: ["Problem Solving", "REST APIs", "Full-stack", "Data Structures"],
-    image: "/certificates/software-engineer-crop.png",
-    url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
-    Icon: Code2,
-    featured: true,
-  },
-  {
-    title: "SQL (Advanced) Certificate",
-    issuer: "HackerRank",
-    year: 2025,
-    category: "Data / Backend",
-    summary: "Advanced SQL certification covering query optimization, indexing, joins, subqueries, and pivots.",
-    skills: ["Complex Queries", "Indexing", "Joins", "Performance"],
-    image: "/certificates/sql-advanced-crop.png",
-    url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
-    Icon: Database,
-  },
-  {
-    title: "Introduction to Tableau",
-    issuer: "Simplilearn · SkillUp",
-    year: 2025,
-    category: "Data Visualization",
-    summary: "Completion course covering interactive dashboards, charts, and visual analytics workflows in Tableau.",
-    skills: ["Tableau", "Data Visualization", "Dashboards", "Analytics"],
-    image: "/tablue certificate.png",
-    url: "https://www.simplilearn.com/skillup-certificate-landing?token=eyJjb3Vyc2VfaWQiOiI0MDY4IiwiY2VydGlmaWNhdGVfdXJsIjoiaHR0cHM6XC9cL2NlcnRpZmljYXRlcy5zaW1wbGljZG4ubmV0XC9zaGFyZVwvODAyNTU5NV84MzQyNzMxMTc0MTY2MzI1OTE1OC5wbmciLCJ1c2VybmFtZSI6IkJpYmVrIFBhdGhhayJ9&referrer=https%3A%2F%2Flms.simplilearn.com%2Fcourses%2F7062%2FIntroduction-to-Tableau%2Fcertificate%2Fdownload-skillup&%24web_only=true",
-    Icon: BarChart3,
-  },
-  {
-    title: "Excel Fundamentals - Finance",
-    issuer: "Corporate Finance Institute",
-    year: 2024,
-    category: "Finance & Analysis",
-    summary: "Finance-focused Excel credential covering formulas, analysis workflows, and structured spreadsheet modeling.",
-    skills: ["Excel Formulas", "Financial Modeling", "Data Analysis", "Pivot Tables"],
-    image: "/certificates/excel-finance-crop.png",
-    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
-    Icon: Table2,
-  },
-];
+import { ArrowUpRight, CheckCircle2, ExternalLink } from "lucide-react";
+import type { Certificate } from "@/lib/content/types";
+import { getIcon } from "@/lib/content/icons";
 
 const PASTELS = ["var(--mint)", "var(--lavender)", "var(--butter)"];
 const ease = [0.22, 1, 0.36, 1] as const;
 
 function CertCard({ certificate, pastel }: { certificate: Certificate; pastel: string }) {
-  const Icon = certificate.Icon;
+  const Icon = getIcon(certificate.icon);
   return (
     <article className="brut-card-i group flex flex-col overflow-hidden">
       {/* Thumb */}
@@ -135,7 +67,26 @@ function CertCard({ certificate, pastel }: { certificate: Certificate; pastel: s
   );
 }
 
-export function CertificatesSection() {
+interface CertificatesSectionProps {
+  certificates: Certificate[];
+}
+
+export function CertificatesSection({ certificates }: CertificatesSectionProps) {
+  if (!certificates.length) {
+    return (
+      <section
+        id="certificates"
+        className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36"
+      >
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
+          <p className="text-[var(--ink-2)]">No certificates yet.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const verifyUrl = certificates[0]?.url;
+
   return (
     <section
       id="certificates"
@@ -163,11 +114,11 @@ export function CertificatesSection() {
           initial="hidden"
           animate="show"
           variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-          className="grid gap-6 md:grid-cols-3"
+          className="grid gap-6 sm:grid-cols-2 md:grid-cols-3"
         >
           {certificates.map((certificate, i) => (
             <motion.div
-              key={certificate.title}
+              key={certificate.id}
               variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6, ease }}
             >
@@ -177,18 +128,20 @@ export function CertificatesSection() {
         </motion.div>
 
         {/* ── CTA ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.5, ease }}
-          className="mt-12 flex justify-center"
-        >
-          <a href={certificates[0].url} target="_blank" rel="noreferrer" className="brut-btn">
-            Verify latest
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
-        </motion.div>
+        {verifyUrl && (
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.5, ease }}
+            className="mt-12 flex justify-center"
+          >
+            <a href={verifyUrl} target="_blank" rel="noreferrer" className="brut-btn">
+              Verify latest
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </motion.div>
+        )}
       </div>
     </section>
   );

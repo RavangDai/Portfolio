@@ -1,15 +1,17 @@
 import { CertificatesSection } from "@/components/ui/certificates-section";
 import { PageTransition } from "@/components/ui/page-transition";
+import { getContent } from "@/lib/storage";
 
 export const metadata = {
   title: "Certificates · Bibek Pathak",
   description: "Professional certifications and completed credentials.",
 };
 
-export default function CertificatesPage() {
+export default async function CertificatesPage() {
+  const { certificates } = await getContent();
   return (
     <PageTransition>
-      <CertificatesSection />
+      <CertificatesSection certificates={certificates} />
     </PageTransition>
   );
 }

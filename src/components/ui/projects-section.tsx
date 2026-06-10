@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, ArrowUpRight } from "lucide-react";
+import type { Project } from "@/lib/content/types";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -13,92 +14,9 @@ function GithubIcon({ className }: { className?: string }) {
   );
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type ProjectStatus = "Completed" | "In progress";
-
-type Project = {
-  name: string;
-  tag: string;
-  description: string;
-  tech: string[];
-  github?: string;
-  live?: string;
-  year: number;
-  status: ProjectStatus;
-  image: string;
-  video?: string;
-};
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const projects: Project[] = [
-  {
-    name: "KaryaAI",
-    tag: "MERN Stack · Productivity",
-    description: "Task manager with JWT auth, MongoDB syncing, and AI-powered task sorting.",
-    tech: ["React", "Node.js", "MongoDB", "Express", "Tailwind"],
-    github: "https://github.com/RavangDai/SmartTodo",
-    live: "https://karyaai.vercel.app/",
-    year: 2026,
-    status: "Completed",
-    image: "/KaryaAI.png",
-    video: "https://youtu.be/sQ7IdpM0jQg",
-  },
-  {
-    name: "CrumbCraft",
-    tag: "Full-stack · AI · Productivity",
-    description:
-      "Two AI-powered dev tools in one: Crumb compresses messy conversations into structured docs, Craft helps engineer precise AI prompts with guided templates.",
-    tech: ["Next.js", "React", "Tailwind CSS", "Gemini 2.5", "Framer Motion"],
-    github: "https://github.com/RavangDai/crumb",
-    live: "https://crumbcrraft.vercel.app/",
-    year: 2026,
-    status: "Completed",
-    image: "/CrumbCraft.png",
-  },
-  {
-    name: "Revveal",
-    tag: "Full-stack · AI · Data",
-    description:
-      "Finds underpriced used cars before everyone else. An async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, and ranks listings by discount, behind JWT auth and rate-limited APIs.",
-    tech: ["FastAPI", "React", "PostgreSQL", "Celery", "Redis", "Docker"],
-    github: "https://github.com/RavangDai/car-deal",
-    year: 2026,
-    status: "In progress",
-    image: "/revveal.png",
-  },
-  {
-    name: "VectorVance",
-    tag: "Raspberry Pi · Computer Vision · Robotics",
-    description:
-      "Autonomous car on Raspberry Pi that follows lanes, detects obstacles and traffic signs via SSD MobileNet, navigates colour-coded forks, and streams live telemetry to a web dashboard.",
-    tech: ["Python", "OpenCV", "Flask", "Raspberry Pi", "SSD MobileNet", "PID Control", "NumPy", "lgpio"],
-    github: "https://github.com/RavangDai/VectorVance",
-    year: 2025,
-    status: "Completed",
-    image: "/vvdash.png",
-  },
-  {
-    name: "BuzzBoard",
-    tag: "Node.js · Express · MongoDB",
-    description:
-      "Message board app with topic subscriptions, recent-message dashboard, posting, stats, and MVC, Observer, and Singleton pattern implementations over MongoDB.",
-    tech: ["Node.js", "Express", "MongoDB", "Mongoose", "Handlebars", "bcryptjs", "express-session", "MVC", "Observer", "Singleton"],
-    github: "https://github.com/RavangDai/Buzzboard",
-    live: "https://buzzboard-fk7m.onrender.com/auth/login",
-    year: 2026,
-    status: "Completed",
-    image: "/BuzzBoard.png",
-  },
-];
-
-// rotating flat pastel accents (the thin strip + image backdrop) per card
+// rotating flat pastel accents per card
 const PASTELS = ["var(--butter)", "var(--lavender)", "var(--mint)", "var(--blush)"];
-
 const ease = [0.22, 1, 0.36, 1] as const;
-
-// ─── Status badge ───────────────────────────────────────────────────────────
 
 function BuildingBadge() {
   const [dots, setDots] = useState(0);
@@ -117,12 +35,10 @@ function BuildingBadge() {
   );
 }
 
-function StatusBadge({ status }: { status: ProjectStatus }) {
+function StatusBadge({ status }: { status: Project["status"] }) {
   if (status === "In progress") return <BuildingBadge />;
   return <span className="brut-chip-accent brut-chip">Shipped</span>;
 }
-
-// ─── Links row ──────────────────────────────────────────────────────────────
 
 function ProjectLinks({ project }: { project: Project }) {
   return (
@@ -161,8 +77,6 @@ function TechChips({ tech, max = 6 }: { tech: string[]; max?: number }) {
     </div>
   );
 }
-
-// ─── Cards ──────────────────────────────────────────────────────────────────
 
 function ProjectImage({ project, pastel }: { project: Project; pastel: string }) {
   return (
@@ -234,10 +148,25 @@ function ProjectCard({ project, index, pastel }: { project: Project; index: numb
   );
 }
 
-// ─── Section ──────────────────────────────────────────────────────────────────
+interface ProjectsSectionProps {
+  projects: Project[];
+}
 
-export function ProjectsSection() {
+export function ProjectsSection({ projects }: ProjectsSectionProps) {
   const [featured, ...rest] = projects;
+
+  if (!featured) {
+    return (
+      <section
+        id="projects"
+        className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36"
+      >
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
+          <p className="text-[var(--ink-2)]">No projects yet.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -262,7 +191,7 @@ export function ProjectsSection() {
               and computer-vision systems.
             </p>
             <span className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-3)]">
-              {projects.length} projects
+              {projects.length} project{projects.length !== 1 ? "s" : ""}
             </span>
           </div>
         </motion.header>
@@ -284,7 +213,7 @@ export function ProjectsSection() {
 
           {rest.map((project, i) => (
             <motion.div
-              key={project.name}
+              key={project.id}
               variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6, ease }}
             >

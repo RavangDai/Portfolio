@@ -1,86 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Trophy, Star, Code2, Zap, BookOpen, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Achievement, Stat } from "@/lib/content/types";
+import { getIcon } from "@/lib/content/icons";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const STATS = [
-  { value: "10+", label: "Projects Shipped" },
-  { value: "3.5+", label: "GPA" },
-  { value: "1/1", label: "Hackathon Win Rate" },
-  { value: "3", label: "Certifications" },
-];
-
-type Category = "Academic" | "Certification" | "Competition" | "Project";
-
-interface Achievement {
-  id: number;
-  date: string;
-  title: string;
-  org: string;
-  category: Category;
-  desc: string;
-  Icon: React.ElementType;
-  highlight?: boolean;
-  url?: string;
+interface AchievementsSectionProps {
+  achievements: Achievement[];
+  stats: Stat[];
 }
 
-const ACHIEVEMENTS: Achievement[] = [
-  {
-    id: 1,
-    date: "Apr 2026",
-    title: "1st Place — HackLions 2026",
-    org: "SELU 1st Hackathon",
-    category: "Competition",
-    desc: "Won SELU's hackathon by building DollarPilot — a finance app that makes money management fun and brutal — from zero to shipped in 6 hours.",
-    Icon: Trophy,
-    highlight: true,
-    url: "https://devpost.com/software/dollarpilot",
-  },
-  {
-    id: 3,
-    date: "Fall 2024",
-    title: "Honors Scholarship",
-    org: "Southeastern Louisiana University",
-    category: "Academic",
-    desc: "Awarded the Honors Scholarship at Southeastern Louisiana University in recognition of outstanding academic achievement and potential.",
-    Icon: Star,
-  },
-  {
-    id: 4,
-    date: "2025",
-    title: "Software Engineer Certificate",
-    org: "HackerRank",
-    category: "Certification",
-    desc: "Demonstrated expertise in problem-solving, REST API design, full-stack architecture, and data structures.",
-    Icon: Code2,
-    url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
-  },
-  {
-    id: 5,
-    date: "2025",
-    title: "SQL (Advanced) Certificate",
-    org: "HackerRank",
-    category: "Certification",
-    desc: "Validated advanced SQL skills including complex queries, joins, subqueries, indexing, and performance tuning.",
-    Icon: Zap,
-    url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
-  },
-  {
-    id: 6,
-    date: "2024",
-    title: "Excel Fundamentals – Finance",
-    org: "Corporate Finance Institute®",
-    category: "Certification",
-    desc: "Completed CFI's program covering financial modeling, pivot tables, Excel formulas, and data analysis for finance.",
-    Icon: BookOpen,
-    url: "https://credentials.corporatefinanceinstitute.com/88b6efc3-2491-4e1d-9e12-433819361baa",
-  },
-];
-
-export function AchievementsSection() {
+export function AchievementsSection({ achievements, stats }: AchievementsSectionProps) {
   return (
     <div className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36">
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 md:px-8">
@@ -102,26 +35,28 @@ export function AchievementsSection() {
         </motion.div>
 
         {/* ── Stats ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.12, ease }}
-          className="mb-16 grid grid-cols-2 gap-4 md:mb-20 md:grid-cols-4"
-        >
-          {STATS.map((stat) => (
-            <div key={stat.label} className="brut-stat flex flex-col gap-1.5">
-              <span className="brut-h brut-mono text-[clamp(2rem,5vw,3rem)] text-[var(--ink)]">
-                {stat.value}
-              </span>
-              <span className="brut-kicker text-[0.58rem] tracking-[0.18em]">{stat.label}</span>
-            </div>
-          ))}
-        </motion.div>
+        {stats.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.12, ease }}
+            className="mb-16 grid grid-cols-2 gap-4 md:mb-20 md:grid-cols-4"
+          >
+            {stats.map((stat) => (
+              <div key={stat.label} className="brut-stat flex flex-col gap-1.5">
+                <span className="brut-h brut-mono text-[clamp(2rem,5vw,3rem)] text-[var(--ink)]">
+                  {stat.value}
+                </span>
+                <span className="brut-kicker text-[0.58rem] tracking-[0.18em]">{stat.label}</span>
+              </div>
+            ))}
+          </motion.div>
+        )}
 
         {/* ── Timeline list ── */}
         <div className="space-y-5">
-          {ACHIEVEMENTS.map((item, i) => {
-            const Icon = item.Icon;
+          {achievements.map((item, i) => {
+            const Icon = getIcon(item.icon);
             const hi = item.highlight;
             return (
               <motion.div

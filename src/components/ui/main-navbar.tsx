@@ -4,58 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence, useScroll, useSpring, useVelocity, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { X, ArrowUpRight } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { cn } from "@/lib/utils";
-import { isBrutPath } from "@/lib/theme";
-import { LiquidButton } from "@/components/ui/liquid-glass-button";
-
-function NavLink({
-  text,
-  href,
-  isActive,
-  onClick,
-}: {
-  text: string;
-  href: string;
-  isActive: boolean;
-  onClick?: () => void;
-}) {
-  const label = text.toUpperCase();
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={cn(
-        "group relative flex items-center px-4 py-2 text-[0.72rem] font-semibold tracking-[0.1em] uppercase transition-colors duration-300 select-none",
-        isActive ? "text-white" : "text-white/55 hover:text-white"
-      )}
-    >
-      {isActive && (
-        <motion.span
-          layoutId="nav-pill"
-          aria-hidden
-          className="nav-lens absolute inset-0"
-          transition={{ type: "spring", stiffness: 400, damping: 35 }}
-        />
-      )}
-      {!isActive && (
-        <span
-          aria-hidden
-          className="nav-lens absolute inset-0 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-        />
-      )}
-      <span className="relative z-10 flex flex-col items-center gap-0.5">
-        {label}
-        <span
-          className="h-px w-0 rounded-full bg-white/50 transition-[width] duration-[250ms] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-full"
-          aria-hidden
-        />
-      </span>
-    </Link>
-  );
-}
 
 const SOCIALS = [
   { name: "GitHub",   href: "https://github.com/RavangDai",                        Icon: FaGithub     },
@@ -63,23 +15,13 @@ const SOCIALS = [
 ];
 
 export function MainNavbar() {
-  const [activeSection, setActiveSection] = useState("home");
-  const [scrolled, setScrolled]           = useState(false);
-  const [mobileOpen, setMobileOpen]       = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const pathname = usePathname();
   const router   = useRouter();
 
-  const { scrollYProgress, scrollY } = useScroll();
+  const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
-
-  // Subtle "liquid spell": scroll velocity drives a faint light-sheen that sweeps across the
-  // glass and a micro vertical jelly-squish — the bar stays put, just reacts while scrolling.
-  const scrollVelocity = useVelocity(scrollY);
-  const smoothVel = useSpring(scrollVelocity, { stiffness: 160, damping: 28, restDelta: 1 });
-  const sheenX = useTransform(smoothVel, [-2400, 0, 2400], ["115%", "45%", "-25%"]);
-  const sheenOpacity = useTransform(smoothVel, [-2400, -120, 0, 120, 2400], [0.7, 0, 0, 0, 0.7]);
-  const navScaleY = useTransform(smoothVel, [-3000, 0, 3000], [1.035, 1, 0.975]);
 
   // Lock body scroll when overlay is open
   useEffect(() => {
@@ -87,48 +29,8 @@ export function MainNavbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
-  // Active section: pathname-based for non-home pages; observer-based on home
-  useEffect(() => {
-    if (pathname !== "/") {
-      setActiveSection(pathname.replace("/", ""));
-      return;
-    }
-
-    const sections = ["home", "projects", "certificates", "contact"];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveSection(entry.target.id || "home");
-        });
-      },
-      { threshold: 0, rootMargin: "-45% 0px -45% 0px" }
-    );
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    const handleScroll = () => {
-      if (window.scrollY < 80) setActiveSection("home");
-      setScrolled(window.scrollY > 30);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [pathname]);
-
-  // Keep scrolled state up to date on non-home pages
-  useEffect(() => {
-    if (pathname === "/") return;
-    const handleScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [pathname]);
+  // Active link tracks the current path (every chrome route is a standalone page).
+  const activeSection = pathname === "/" ? "home" : pathname.replace("/", "");
 
   const links = [
     { name: "Projects",      href: "/projects",      id: "projects"      },
@@ -151,371 +53,131 @@ export function MainNavbar() {
   const isActive = (link: { id: string }) => activeSection === link.id;
 
   // Homepage is the full-screen hero; its EXPLORE beat handles navigation, so no global nav there.
-  if (pathname === "/") return null;
+  // The admin panel ships its own chrome (see app/admin/layout.tsx), so suppress the public nav too.
+  if (pathname === "/" || pathname.startsWith("/admin")) return null;
 
   // ── Light "neon brutalism" navbar (projects / certificates / achievements / contact) ──
-  if (isBrutPath(pathname)) {
-    return (
-      <>
-        <motion.header
-          className="theme-brut fixed top-0 z-50 w-full"
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
-        >
-          {/* Scroll progress bar */}
-          <motion.div
-            className="absolute top-0 left-0 right-0 z-10 h-[2px] origin-left bg-[var(--accent)]"
-            style={{ scaleX }}
-          />
-          <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-8">
-            <nav className="flex items-center justify-between gap-4 rounded-[6px] border-2 border-[var(--ink)] bg-[var(--paper)] px-5 py-3 shadow-[4px_4px_0_0_var(--ink)]">
-              {/* Brand */}
-              <button onClick={handleBrandClick} className="group flex shrink-0 items-center gap-2">
-                <Image
-                  src="/brand/mark.png"
-                  alt="Bibek Pathak"
-                  width={219}
-                  height={326}
-                  priority
-                  className="h-[1.35rem] w-auto"
-                />
-                <span className="brut-h text-[0.95rem] tracking-tight text-[var(--ink)] transition-colors group-hover:text-[var(--accent)]">
-                  BIBEK.TECH
-                </span>
-              </button>
-
-              {/* Desktop links */}
-              <div className="hidden items-center gap-1 md:flex">
-                {links.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={handleLinkClick}
-                    className={cn(
-                      "rounded-[4px] px-3 py-1.5 brut-mono text-[0.7rem] font-bold uppercase tracking-[0.1em] transition-colors",
-                      isActive(link)
-                        ? "bg-[var(--accent)] text-[var(--accent-ink)]"
-                        : "text-[var(--ink-2)] hover:text-[var(--accent)]"
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Right: CTA + hamburger */}
-              <div className="flex items-center gap-2">
-                <button onClick={() => router.push("/contact")} className="hidden brut-btn md:inline-flex">
-                  Hire Me
-                </button>
-                <button
-                  onClick={() => setMobileOpen(!mobileOpen)}
-                  className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-ink)] md:hidden"
-                  aria-label="Toggle menu"
-                >
-                  {mobileOpen ? <X className="h-4 w-4" /> : (
-                    <span className="flex flex-col items-end gap-[3px]">
-                      <span className="block h-[2px] w-4 bg-current" />
-                      <span className="block h-[2px] w-2.5 bg-current" />
-                      <span className="block h-[2px] w-4 bg-current" />
-                    </span>
-                  )}
-                </button>
-              </div>
-            </nav>
-          </div>
-        </motion.header>
-
-        {/* Mobile overlay */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              key="brut-mobile"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="theme-brut fixed inset-0 z-40 flex flex-col bg-[var(--paper)] md:hidden"
-            >
-              <div className="flex items-center justify-between border-b-2 border-[var(--ink)] px-7 pt-6 pb-4">
-                <button onClick={handleBrandClick} className="flex items-center gap-2">
-                  <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="h-[1.4rem] w-auto" />
-                  <span className="brut-h text-base text-[var(--ink)]">BIBEK.TECH</span>
-                </button>
-                <button
-                  onClick={() => setMobileOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] text-[var(--ink)]"
-                  aria-label="Close menu"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="flex flex-1 flex-col justify-center gap-3 px-7">
-                {links.map((link, i) => (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.45, delay: 0.06 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={handleLinkClick}
-                      className={cn(
-                        "flex items-center gap-4 border-b-2 border-[var(--ink)]/15 py-4",
-                        isActive(link) ? "text-[var(--accent)]" : "text-[var(--ink)]"
-                      )}
-                    >
-                      <span className="brut-mono text-[0.6rem] text-[var(--ink-3)]">{String(i + 1).padStart(2, "0")}</span>
-                      <span className="brut-h text-3xl uppercase">{link.name}</span>
-                      <ArrowUpRight className="ml-auto h-5 w-5 text-[var(--ink-3)]" />
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-              <div className="flex items-center justify-between border-t-2 border-[var(--ink)] px-7 pt-5 pb-8">
-                <div className="flex items-center gap-2.5">
-                  {SOCIALS.map(({ name, href, Icon }) => (
-                    <a
-                      key={name}
-                      href={href}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={name}
-                      className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] text-[var(--ink)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-ink)]"
-                    >
-                      <Icon className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
-                <button onClick={() => { setMobileOpen(false); router.push("/contact"); }} className="brut-btn">
-                  Hire Me
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </>
-    );
-  }
-
   return (
     <>
       <motion.header
-        className="fixed top-0 z-50 w-full"
+        className="theme-brut fixed top-0 z-50 w-full"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
       >
         {/* Scroll progress bar */}
         <motion.div
-          className="absolute top-0 left-0 right-0 h-[1.5px] origin-left z-10"
-          style={{ scaleX, background: "linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.9), rgba(255,255,255,0.5), rgba(255,255,255,0.9), rgba(255,255,255,0.2))" }}
+          className="absolute top-0 left-0 right-0 z-10 h-[2px] origin-left bg-[var(--accent)]"
+          style={{ scaleX }}
         />
-
-        <div className={cn("mx-auto max-w-7xl px-4 sm:px-8 transition-all duration-500", scrolled ? "pt-2" : "pt-4")}>
-          <motion.nav
-            className={cn(
-              "liquid-glass relative flex items-center justify-between overflow-hidden rounded-2xl px-6 py-3 transition-[background,backdrop-filter] duration-500",
-              scrolled && "nav-scrolled"
-            )}
-            style={{
-              background: scrolled ? "rgba(8,8,8,0.46)" : "transparent",
-              scaleY: navScaleY,
-              transformOrigin: "top",
-            }}
-          >
-            {/* Liquid sheen — a faint light streak that sweeps across as you scroll */}
-            <motion.span
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 z-[2] w-1/2 -skew-x-[18deg]"
-              style={{
-                x: sheenX,
-                opacity: sheenOpacity,
-                background:
-                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent)",
-              }}
-            />
-            {/* ── Brand ── */}
-            <button
-              onClick={handleBrandClick}
-              className="group relative z-10 flex items-center gap-2.5 shrink-0"
-            >
-              <span className="relative flex h-2 w-2 shrink-0">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-40" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
-              </span>
-              <span className="text-[0.82rem] font-black tracking-tight text-white group-hover:text-white/70 transition-colors duration-200 font-display">
+        <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-8">
+          <nav className="flex items-center justify-between gap-4 rounded-[6px] border-2 border-[var(--ink)] bg-[var(--paper)] px-5 py-3 shadow-[4px_4px_0_0_var(--ink)]">
+            {/* Brand */}
+            <button onClick={handleBrandClick} className="group flex shrink-0 items-center gap-2">
+              <Image
+                src="/brand/mark.png"
+                alt="Bibek Pathak"
+                width={219}
+                height={326}
+                priority
+                className="h-[1.35rem] w-auto"
+              />
+              <span className="brut-h text-[0.95rem] tracking-tight text-[var(--ink)] transition-colors group-hover:text-[var(--accent)]">
                 BIBEK.TECH
               </span>
             </button>
 
-            {/* ── Desktop nav links ── */}
-            <div className="relative z-10 hidden md:flex items-center gap-1">
+            {/* Desktop links */}
+            <div className="hidden items-center gap-1 md:flex">
               {links.map((link) => (
-                <NavLink
+                <Link
                   key={link.href}
-                  text={link.name}
                   href={link.href}
-                  isActive={isActive(link)}
                   onClick={handleLinkClick}
-                />
+                  className={cn(
+                    "rounded-[4px] px-3 py-1.5 brut-mono text-[0.7rem] font-bold uppercase tracking-[0.1em] transition-colors",
+                    isActive(link)
+                      ? "bg-[var(--accent)] text-[var(--accent-ink)]"
+                      : "text-[var(--ink-2)] hover:text-[var(--accent)]"
+                  )}
+                >
+                  {link.name}
+                </Link>
               ))}
             </div>
 
-            {/* ── Right: CTA + hamburger ── */}
-            <div className="relative z-10 flex items-center gap-2">
-              <LiquidButton
-                size="sm"
-                className="hidden md:inline-flex rounded-full text-[0.72rem] font-bold tracking-wide"
-                onClick={() => router.push("/contact")}
-              >
+            {/* Right: CTA + hamburger */}
+            <div className="flex items-center gap-2">
+              <button onClick={() => router.push("/contact")} className="hidden brut-btn md:inline-flex">
                 Hire Me
-              </LiquidButton>
-
-              {/* Mobile hamburger */}
+              </button>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden relative flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.12] text-white/50 hover:text-white hover:border-white/25 transition-all duration-200"
+                className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-ink)] md:hidden"
                 aria-label="Toggle menu"
               >
-                <AnimatePresence mode="wait" initial={false}>
-                  {mobileOpen ? (
-                    <motion.div
-                      key="x"
-                      initial={{ rotate: -45, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 45, opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="bars"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="flex flex-col gap-[4px] items-end"
-                    >
-                      <span className="h-px w-4 bg-current block" />
-                      <span className="h-px w-2.5 bg-current block" />
-                      <span className="h-px w-4 bg-current block" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {mobileOpen ? <X className="h-4 w-4" /> : (
+                  <span className="flex flex-col items-end gap-[3px]">
+                    <span className="block h-[2px] w-4 bg-current" />
+                    <span className="block h-[2px] w-2.5 bg-current" />
+                    <span className="block h-[2px] w-4 bg-current" />
+                  </span>
+                )}
               </button>
             </div>
-          </motion.nav>
+          </nav>
         </div>
       </motion.header>
 
-      {/* ── Full-screen mobile overlay ── */}
+      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            key="mobile-overlay"
+            key="brut-mobile"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 z-40 md:hidden flex flex-col"
-            style={{
-              background: "rgba(5,5,5,0.97)",
-              backdropFilter: "blur(48px) saturate(180%)",
-              WebkitBackdropFilter: "blur(48px) saturate(180%)",
-            }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="theme-brut fixed inset-0 z-40 flex flex-col bg-[var(--paper)] md:hidden"
           >
-            {/* Grain texture */}
-            <div
-              className="pointer-events-none absolute inset-0 opacity-[0.025]"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-                backgroundRepeat: "repeat",
-                backgroundSize: "128px",
-              }}
-            />
-            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-
-            {/* Header row */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center justify-between px-7 pt-6 pb-4"
-            >
-              <button
-                onClick={handleBrandClick}
-                className="text-[0.82rem] font-black tracking-tight text-white/80"
-              >
-                BIBEK.TECH
+            <div className="flex items-center justify-between border-b-2 border-[var(--ink)] px-7 pt-6 pb-4">
+              <button onClick={handleBrandClick} className="flex items-center gap-2">
+                <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="h-[1.4rem] w-auto" />
+                <span className="brut-h text-base text-[var(--ink)]">BIBEK.TECH</span>
               </button>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/40 hover:text-white hover:border-white/25 transition-all duration-200"
+                className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] text-[var(--ink)]"
                 aria-label="Close menu"
               >
                 <X className="h-4 w-4" />
               </button>
-            </motion.div>
-
-            {/* Nav links */}
-            <div className="flex-1 flex flex-col justify-center px-7 overflow-hidden">
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-3 px-7">
               {links.map((link, i) => (
                 <motion.div
                   key={link.href}
-                  initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, x: -24, filter: "blur(4px)" }}
-                  transition={{
-                    duration: 0.55,
-                    delay: 0.08 + i * 0.07,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="border-b border-white/[0.06] last:border-b-0"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.45, delay: 0.06 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <Link
                     href={link.href}
                     onClick={handleLinkClick}
-                    className="group flex items-center gap-5 py-5"
-                  >
-                    <span className="font-mono text-[0.58rem] font-medium tracking-[0.25em] text-white/20 w-6 shrink-0">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span
-                      className={cn(
-                        "font-black tracking-tighter leading-none uppercase transition-colors duration-300",
-                        isActive(link) ? "shimmer-text" : "text-white/35 group-hover:text-white/75"
-                      )}
-                      style={{ fontSize: "clamp(2rem, 10vw, 3.5rem)" }}
-                    >
-                      {link.name}
-                    </span>
-                    <motion.div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <ArrowUpRight className="h-6 w-6 text-white/40" />
-                    </motion.div>
-                    {isActive(link) && (
-                      <span className="relative flex h-1.5 w-1.5 shrink-0 ml-auto">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-50" />
-                        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
-                      </span>
+                    className={cn(
+                      "flex items-center gap-4 border-b-2 border-[var(--ink)]/15 py-4",
+                      isActive(link) ? "text-[var(--accent)]" : "text-[var(--ink)]"
                     )}
+                  >
+                    <span className="brut-mono text-[0.6rem] text-[var(--ink-3)]">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="brut-h text-3xl uppercase">{link.name}</span>
+                    <ArrowUpRight className="ml-auto h-5 w-5 text-[var(--ink-3)]" />
                   </Link>
                 </motion.div>
               ))}
             </div>
-
-            {/* Bottom bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.45, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="px-7 pt-5 pb-8 flex items-center justify-between border-t border-white/[0.06]"
-            >
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between border-t-2 border-[var(--ink)] px-7 pt-5 pb-8">
+              <div className="flex items-center gap-2.5">
                 {SOCIALS.map(({ name, href, Icon }) => (
                   <a
                     key={name}
@@ -523,23 +185,16 @@ export function MainNavbar() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={name}
-                    className="btn-icon h-9 w-9"
+                    className="flex h-9 w-9 items-center justify-center rounded-[4px] border-2 border-[var(--ink)] text-[var(--ink)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--accent-ink)]"
                   >
                     <Icon className="h-4 w-4" />
                   </a>
                 ))}
               </div>
-              <LiquidButton
-                size="sm"
-                className="rounded-full text-[0.72rem] font-bold"
-                onClick={() => {
-                  setMobileOpen(false);
-                  router.push("/contact");
-                }}
-              >
+              <button onClick={() => { setMobileOpen(false); router.push("/contact"); }} className="brut-btn">
                 Hire Me
-              </LiquidButton>
-            </motion.div>
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

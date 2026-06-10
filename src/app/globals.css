@@ -3,6 +3,11 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+}
+
+body {
+  overflow-x: clip;
 }
 
 /* Animations always play, regardless of the OS "reduce motion" setting.
@@ -205,12 +210,6 @@ html {
   --blue-500: #3b82f6;
   --indigo-300: #a5b4fc;
   --violet-200: #ddd6fe;
-}
-
-/* Optional: smoother blur on some browsers */
-.glass {
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
 }
 
 /* Reusable hero/project text gradient */
@@ -807,141 +806,6 @@ html {
   mix-blend-mode: screen;
 }
 
-/* ===== Glass Card — true refractive liquid glass =====
-   Refraction comes from the shared #liquid-distort SVG filter (mounted once in layout).
-   The first backdrop-filter line is a blur-only fallback for browsers without SVG
-   backdrop support (e.g. Firefox); the second upgrades it where supported. */
-.glass-card {
-  position: relative;
-  isolation: isolate;
-  background: transparent;
-  border: none;
-  border-radius: 1.5rem;
-  box-shadow:
-    0 0 6px rgba(0, 0, 0, 0.03),
-    0 4px 14px rgba(0, 0, 0, 0.18),
-    inset 3px 3px 0.5px -3px rgba(255, 255, 255, 0.12),
-    inset -3px -3px 0.5px -3px rgba(255, 255, 255, 0.06),
-    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.16),
-    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.09),
-    inset 0 0 6px 6px rgba(255, 255, 255, 0.03),
-    inset 0 0 2px 2px rgba(255, 255, 255, 0.05),
-    0 0 16px rgba(255, 255, 255, 0.06);
-  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
-  backdrop-filter: blur(6px) saturate(150%);
-  -webkit-backdrop-filter: blur(6px) saturate(150%);
-  backdrop-filter: url(#liquid-distort) blur(3px) saturate(160%) brightness(104%);
-  -webkit-backdrop-filter: url(#liquid-distort) blur(3px) saturate(160%) brightness(104%);
-}
-/* Thin top-edge light catch */
-.glass-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 12%);
-  z-index: 1;
-}
-
-/* ===== Liquid Glass — true clear glass, modeled on LiquidButton =====
-   No milky fill, no heavy frost: the look comes from layered inset highlight shadows
-   that catch light on the edges + the shared #liquid-distort refraction filter. */
-.liquid-glass {
-  position: relative;
-  isolation: isolate;
-  background: transparent;
-  border: none;
-  box-shadow:
-    0 0 6px rgba(0, 0, 0, 0.03),
-    0 2px 6px rgba(0, 0, 0, 0.08),
-    inset 3px 3px 0.5px -3px rgba(255, 255, 255, 0.12),
-    inset -3px -3px 0.5px -3px rgba(255, 255, 255, 0.06),
-    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.18),
-    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.10),
-    inset 0 0 6px 6px rgba(255, 255, 255, 0.04),
-    inset 0 0 2px 2px rgba(255, 255, 255, 0.06),
-    0 0 16px rgba(255, 255, 255, 0.08);
-  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
-  backdrop-filter: blur(6px) saturate(160%);
-  -webkit-backdrop-filter: blur(6px) saturate(160%);
-  backdrop-filter: url(#liquid-distort) blur(3px) saturate(170%) brightness(105%);
-  -webkit-backdrop-filter: url(#liquid-distort) blur(3px) saturate(170%) brightness(105%);
-}
-/* Navbar only: subtle, clean extra frosting once content scrolls behind the bar.
-   Kept light on saturation/brightness so it reads as clear glass over the live
-   gradient rather than a milky panel. */
-.liquid-glass.nav-scrolled {
-  backdrop-filter: blur(7px) saturate(135%);
-  -webkit-backdrop-filter: blur(7px) saturate(135%);
-  backdrop-filter: url(#liquid-distort) blur(6px) saturate(140%) brightness(102%);
-  -webkit-backdrop-filter: url(#liquid-distort) blur(6px) saturate(140%) brightness(102%);
-}
-/* Thin top-edge light catch — no milky sheen */
-.liquid-glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 12%);
-  z-index: 1;
-}
-
-/* ===== Glass Panel — tinted refractive liquid glass for content surfaces =====
-   Same look/refraction as .liquid-glass, plus a faint dark fill so text stays
-   legible over the live gradient background. Apply to cards/panels across the site.
-   Border-radius comes from each element's own rounded-* class. */
-.glass-panel {
-  position: relative;
-  isolation: isolate;
-  background: rgba(10, 10, 12, 0.40);
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.20),
-    inset 3px 3px 0.5px -3px rgba(255, 255, 255, 0.12),
-    inset -3px -3px 0.5px -3px rgba(255, 255, 255, 0.06),
-    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.16),
-    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.09),
-    inset 0 0 6px 6px rgba(255, 255, 255, 0.03),
-    inset 0 0 2px 2px rgba(255, 255, 255, 0.05),
-    0 0 16px rgba(255, 255, 255, 0.05);
-  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
-  backdrop-filter: blur(7px) saturate(150%);
-  -webkit-backdrop-filter: blur(7px) saturate(150%);
-  backdrop-filter: url(#liquid-distort) blur(5px) saturate(160%) brightness(103%);
-  -webkit-backdrop-filter: url(#liquid-distort) blur(5px) saturate(160%) brightness(103%);
-}
-/* Thin top-edge light catch, matches .liquid-glass */
-.glass-panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 12%);
-}
-
-/* ===== Glass Chip — small refractive liquid-glass pill for status labels / badges =====
-   Compact sibling of .glass-panel: same #liquid-distort refraction + dark tint for legibility,
-   lighter shadow, no real border (the inset highlights read as the glass edge). Pair with a
-   rounded-full / rounded-md utility + padding + text classes in the JSX. */
-.glass-chip {
-  position: relative;
-  isolation: isolate;
-  background: rgba(10, 10, 12, 0.45);
-  box-shadow:
-    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.16),
-    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.08),
-    inset 0 0 2px 1px rgba(255, 255, 255, 0.04),
-    0 1px 4px rgba(0, 0, 0, 0.25);
-  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
-  backdrop-filter: blur(6px) saturate(150%);
-  -webkit-backdrop-filter: blur(6px) saturate(150%);
-  backdrop-filter: url(#liquid-distort) blur(4px) saturate(160%) brightness(103%);
-  -webkit-backdrop-filter: url(#liquid-distort) blur(4px) saturate(160%) brightness(103%);
-}
-
 /* ===== PATHAK moving white/black gradient ===== */
 .pathak-gradient {
   background: linear-gradient(
@@ -1109,23 +973,6 @@ html {
     rgba(120, 92, 35, 0.08) 38%,
     rgba(0, 0, 0, 0) 70%
   );
-}
-
-/* ===== Nav liquid lens — bends the content behind hovered/active nav links ===== */
-.nav-lens {
-  border-radius: 9999px;
-  /* Fallback for browsers without SVG backdrop-filter (e.g. Firefox) */
-  backdrop-filter: blur(5px) saturate(150%);
-  -webkit-backdrop-filter: blur(5px) saturate(150%);
-  /* Refractive liquid bend */
-  backdrop-filter: url(#liquid-lens) brightness(108%);
-  -webkit-backdrop-filter: url(#liquid-lens) brightness(108%);
-  box-shadow:
-    inset 2px 2px 0.5px -2px rgba(255, 255, 255, 0.40),
-    inset -2px -2px 0.5px -2px rgba(255, 255, 255, 0.20),
-    inset 1px 1px 1px -0.5px rgba(255, 255, 255, 0.30),
-    inset -1px -1px 1px -0.5px rgba(255, 255, 255, 0.18),
-    0 0 12px rgba(255, 255, 255, 0.10);
 }
 
 /* ===== Role Badge ===== */

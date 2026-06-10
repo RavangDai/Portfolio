@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence, useDragControls } from "framer-motion";
 import { X, Volume2, VolumeX } from "lucide-react";
 import GlowingChatInput from "./animated-glowing-search-bar";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useIsBrut } from "@/lib/theme";
 import { parseMessageToCards, MessageCard, linkify } from "./MessageCard";
@@ -303,6 +304,7 @@ export function Chatbot() {
     const [isDesktop, setIsDesktop] = useState(false);
 
     const isBrut = useIsBrut();
+    const pathname = usePathname();
     const accent = ACCENT_COLORS[intent];
     // On the light brutalist routes the widget becomes a proper light paper block: hard 2px
     // ink border, hard cobalt offset shadow, ink text, cobalt accents. The palette below is
@@ -462,6 +464,9 @@ export function Chatbot() {
         });
     }, [messages]);
 
+    // The admin panel ships its own chrome and content tools — no public assistant there.
+    if (pathname.startsWith("/admin")) return null;
+
     return (
         <>
             {/* ─── COLLAPSED pill ─── */}
@@ -479,7 +484,7 @@ export function Chatbot() {
                             background: "#faf8f2",
                             border: "2px solid #0a0a0a",
                             boxShadow: "4px 4px 0 0 #2e5bff",
-                        } : { background: "rgba(10,12,20,0.45)", backdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)", WebkitBackdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)", border: `1px solid ${accent.primary}40`, boxShadow: `0 0 20px ${accent.glow}` }}
+                        } : { background: "rgba(10,12,20,0.92)", backdropFilter: "blur(6px) saturate(160%)", WebkitBackdropFilter: "blur(6px) saturate(160%)", border: `1px solid ${accent.primary}40`, boxShadow: `0 0 20px ${accent.glow}` }}
                         aria-label="Reopen chat"
                     >
                         <motion.div className="h-1.5 w-1.5 rounded-full" style={{ background: accentPrimary }}
@@ -506,11 +511,11 @@ export function Chatbot() {
                         boxShadow: "4px 4px 0 0 #2e5bff",
                     } : {
                         borderRadius: "999px",
-                        background: "rgba(10,10,12,0.42)",
+                        background: "rgba(10,10,12,0.92)",
                         border: "1px solid rgba(255,255,255,0.14)",
                         borderTopColor: "rgba(255,255,255,0.24)",
-                        backdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)",
-                        WebkitBackdropFilter: "url(#liquid-distort) blur(6px) saturate(160%) brightness(103%)",
+                        backdropFilter: "blur(6px) saturate(160%)",
+                        WebkitBackdropFilter: "blur(6px) saturate(160%)",
                         boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 0 0 1px rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.7)",
                     }}
                     aria-label="Open AI chat"
@@ -575,9 +580,9 @@ export function Chatbot() {
                         } : {
                             ...chatVars,
                             maxHeight: "min(82vh, calc(100dvh - 1.5rem))",
-                            background: "rgba(10, 11, 16, 0.74)",
-                            backdropFilter: "url(#liquid-distort) blur(20px) saturate(170%) brightness(104%)",
-                            WebkitBackdropFilter: "url(#liquid-distort) blur(20px) saturate(170%) brightness(104%)",
+                            background: "rgba(10, 11, 16, 0.94)",
+                            backdropFilter: "blur(20px) saturate(170%)",
+                            WebkitBackdropFilter: "blur(20px) saturate(170%)",
                             border: "1px solid rgba(255,255,255,0.08)",
                             boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 72px -12px rgba(0,0,0,0.8), 0 0 80px -20px ${accent.glow}`,
                         }}

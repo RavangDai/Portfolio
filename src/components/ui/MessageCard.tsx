@@ -143,7 +143,7 @@ function ProjectCard({ data, brut = false }: { data: ProjectCardData; brut?: boo
                 "p-4 space-y-3",
                 brut
                     ? "rounded-[6px] border-2 border-[#0a0a0a] bg-white shadow-[3px_3px_0_0_#2e5bff]"
-                    : "glass-panel rounded-lg"
+                    : "rounded-lg border border-white/10 bg-[rgba(18,20,26,0.9)]"
             )}
         >
             {/* Project Name */}
