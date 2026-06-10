@@ -1533,23 +1533,32 @@ body {
 .hero-title { letter-spacing: -0.01em; }
 .brut-title { letter-spacing: -0.01em; }
 
-/* Stage stacks on small screens — photo below the left column, lighter composition */
+/* Stage stacks on small screens — photo below the left column, lighter composition.
+   The hero is a pinned 100svh frame with overflow:hidden, so on phones everything
+   (text column + portrait) MUST fit one viewport or the bottom gets clipped. These
+   rules shrink type, photo, and gaps so each beat fits without cutoff. */
 @media (max-width: 860px) {
-  .hero-stage { grid-template-columns: 1fr; gap: 1.5rem; }
-  .hero-stage-left { min-height: 0; gap: 0.85rem; }
-  .hero-id-name { font-size: clamp(2.8rem, 15vw, 5rem); }
-  .hero-stage-right { transform: none !important; }
-  .hero-photo { width: min(78%, 18rem); }
+  .hero-content { padding: 0 1.25rem; }
+  .hero-stage { grid-template-columns: 1fr; gap: 1rem; width: 100%; }
+  .hero-stage-left { min-height: 0; gap: 0.6rem; }
+  .hero-id-name { font-size: clamp(2.2rem, 11vw, 3.6rem); }
+  .hero-subtitle { font-size: clamp(0.74rem, 3vw, 0.92rem); }
+  /* Hide the portrait (and its tagline card) on mobile — the name + CTAs carry the
+     identity beat, and dropping the photo keeps every beat well inside the pinned frame. */
+  .hero-stage-right { display: none; }
   .hero-scroll-tag { display: none; }
-  .hero-tagline {
-    align-self: stretch;
-    max-width: 100%;
-    font-size: 0.82rem;
-    padding: 0.7rem 0.85rem;
-    box-shadow: 4px 4px 0 0 var(--cobalt, #2e5bff);
-  }
-  .hero-proof { grid-template-columns: 1fr; max-width: 100%; }
+  .hero-proof { grid-template-columns: 1fr; max-width: 100%; gap: 0.5rem; }
   .hero-explore-grid { max-width: 100%; }
+  .hero-actions { gap: 0.5rem; margin-top: 0.4rem; }
+}
+
+/* Very small phones — tighten further and let the portrait shrink so the
+   identity beat (name + photo + CTAs) never overflows a short viewport. */
+@media (max-width: 420px) {
+  .hero-id-name { font-size: clamp(2rem, 10vw, 2.8rem); }
+  .hero-stage { gap: 0.75rem; }
+  .brut-btn-cobalt,
+  .brut-btn-dark { padding: 0.62rem 0.95rem; font-size: 0.66rem; }
 }
 
 .hero-canvas {

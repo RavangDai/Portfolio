@@ -51,10 +51,10 @@ export function Footer() {
 
   return (
       <footer className="theme-brut relative w-full border-t-2 border-[var(--ink)] bg-[var(--paper)]">
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 pt-14 pb-8">
-          <div className="grid gap-10 border-b-2 border-[var(--ink)] pb-10 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr_auto] lg:gap-12">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 pt-10 pb-7 sm:pt-14 sm:pb-8">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-8 border-b-2 border-[var(--ink)] pb-8 sm:gap-10 lg:grid-cols-[1.8fr_1fr_1fr_auto] lg:gap-12 lg:pb-10">
             {/* Brand */}
-            <AnimatedContainer delay={0.05} className="space-y-4">
+            <AnimatedContainer delay={0.05} className="col-span-2 space-y-4 lg:col-span-1">
               <button onClick={scrollToTop} className="group flex items-center gap-2.5 text-left">
                 <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="h-7 w-auto" />
                 <span className="brut-h text-base tracking-tight text-[var(--ink)]">BIBEK.TECH</span>
@@ -108,7 +108,7 @@ export function Footer() {
             </AnimatedContainer>
 
             {/* Back to top */}
-            <AnimatedContainer delay={0.28} className="flex flex-col items-start justify-between gap-6 lg:items-end">
+            <AnimatedContainer delay={0.28} className="col-span-2 flex flex-col items-start justify-between gap-6 lg:col-span-1 lg:items-end">
               <button onClick={scrollToTop} className="brut-btn-ghost">
                 Back to top
                 <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}>
