@@ -3,8 +3,10 @@ import { PageTransition } from "@/components/ui/page-transition";
 import { getContent } from "@/lib/storage";
 
 export const metadata = {
-  title: "Projects · Bibek Pathak",
-  description: "10+ builds across React, Next.js, Python, and applied AI.",
+  title: "Projects",
+  description:
+    "Projects by Bibek Pathak (BibekTech) — 10+ builds across React, Next.js, Python, and applied AI.",
+  alternates: { canonical: "/projects" },
 };
 
 export default async function ProjectsPage() {

@@ -3,8 +3,10 @@ import { PageTransition } from "@/components/ui/page-transition";
 import { getContent } from "@/lib/storage";
 
 export const metadata = {
-  title: "Certificates · Bibek Pathak",
-  description: "Professional certifications and completed credentials.",
+  title: "Certificates",
+  description:
+    "Bibek Pathak's professional certifications and verified credentials in software, SQL, and data.",
+  alternates: { canonical: "/certificates" },
 };
 
 export default async function CertificatesPage() {

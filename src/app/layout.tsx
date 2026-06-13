@@ -7,6 +7,15 @@ import { Footer } from "@/components/ui/footer";
 import { Chatbot } from "@/components/ui/Chatbot";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { SiteBackground } from "@/components/ui/site-background";
+import {
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_TITLE,
+  DEFAULT_DESCRIPTION,
+  KEYWORDS,
+  GOOGLE_SITE_VERIFICATION,
+  buildJsonLd,
+} from "@/lib/seo";
 
 // Body + ALL UI text/labels use Inter (label classes add uppercase + letter-spacing in CSS).
 // Exposed as --font-inter; --font-raleway and --font-brut-mono are aliased to it in globals.css
@@ -27,44 +36,55 @@ const displayFont = Sora({
   display: "swap",
 });
 
-// Canonical site URL: set NEXT_PUBLIC_SITE_URL to your real domain in production.
-// Falls back to the Vercel deployment URL, then localhost for dev.
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
-const title = "Bibek Pathak · Full-Stack Engineer & AI/ML Developer";
-const description =
-  "Full-Stack Engineer and AI/ML developer. 10+ projects across React, Next.js, Python, and AI. Available for internships and engineering roles.";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title,
-  description,
-  keywords: [
-    "Bibek Pathak",
-    "Full-Stack Engineer",
-    "AI Developer",
-    "Machine Learning",
-    "React",
-    "Next.js",
-    "Python",
-    "Portfolio",
-  ],
-  authors: [{ name: "Bibek Pathak" }],
+  metadataBase: new URL(SITE_URL),
+  // Home uses the full default; every other page becomes "<Page> · Bibek Pathak".
+  title: {
+    default: DEFAULT_TITLE,
+    template: "%s · Bibek Pathak",
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: "BibekTech",
+  keywords: KEYWORDS,
+  authors: [{ name: "Bibek Pathak", url: SITE_URL }],
+  creator: "Bibek Pathak",
+  publisher: "Bibek Pathak",
+  category: "technology",
+  // Home canonical; section pages override with their own path.
   alternates: { canonical: "/" },
+  icons: {
+    icon: [{ url: "/brand/badge.png", type: "image/png" }],
+    shortcut: "/brand/badge.png",
+    apple: "/brand/badge.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
-    url: siteUrl,
-    siteName: "Bibek Pathak",
-    title,
-    description,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title,
-    description,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
   },
+  // Populated once you paste the Google Search Console token into env.
+  ...(GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export default function RootLayout({
@@ -75,7 +95,18 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark scroll-smooth ${inter.variable} ${displayFont.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-[#080808] text-white antialiased min-h-screen" suppressHydrationWarning>
-        {/* Site-wide animated Spline gradient — fixed behind all content (z −10) */}
+        {/* Person + WebSite structured data — helps Google build a name/brand
+            knowledge result for "Bibek Pathak / BibekTech / RavangDai". */}
+        <script
+          type="application/ld+json"
+          // Static, code-defined data (no user input). `<` is escaped so a future
+          // string edit can never break out of the <script> tag.
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildJsonLd()).replace(/</g, "\\u003c"),
+          }}
+        />
+
+        {/* Site-wide route-aware background — fixed behind all content (z −10) */}
         <SiteBackground />
 
         <MotionConfig reducedMotion="never">

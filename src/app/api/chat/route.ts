@@ -61,6 +61,17 @@ const PROJECT_ALIASES: Record<string, string> = {
   buzz: "buzzboard", buzzboard: "buzzboard", "buzz board": "buzzboard", messageboard: "buzzboard", "message board": "buzzboard", "topic stats": "buzzboard",
 };
 
+// Repos whose GitHub name differs from the public app name but that are NOT separate
+// curated projects. The "PaisaPilot" repo IS DollarPilot — my HackLions 2026 winner —
+// so the bot must never present the repo and the app as two different projects.
+const REPO_APP_NAME: Record<string, string> = {
+  paisapilot: "DollarPilot",
+};
+
+function appNameForRepo(repoName: string): string | null {
+  return REPO_APP_NAME[normalize(repoName)] ?? null;
+}
+
 // ── Local intent detection ────────────────────────────────────────────────────
 
 function detectProjectQuery(text: string): string | null {

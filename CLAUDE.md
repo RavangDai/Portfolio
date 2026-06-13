@@ -100,9 +100,21 @@ Local secrets live in `.env.local` (gitignored). Used across the app:
 - `GEMINI_API_KEY` — chatbot LLM tier (absent → chatbot returns a "not configured" message).
 - `GITHUB_TOKEN` — optional; lifts GitHub API rate limit from 60 to 5000/hr.
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `CONTACT_TO`, `CONTACT_FROM` — contact form.
-- `NEXT_PUBLIC_SITE_URL` — canonical URL for metadata (falls back to `VERCEL_URL`, then localhost).
+- `NEXT_PUBLIC_SITE_URL` — canonical origin for metadata/sitemap/JSON-LD. Optional: `seo.ts` defaults to `https://bibek.tech`; set this only if the domain changes.
+- `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` — optional Google Search Console token; when set, `layout.tsx` auto-injects the verification meta tag.
 
 `next.config.ts` allows remote images from Vercel Blob, Unsplash, aceternity, and `xubohuah.github.io`.
+
+## SEO
+
+The goal is ranking #1 for branded/name queries (`bibek pathak`, `bibektech`, `ravangdai`). All identity/SEO signals are centralized in **`src/lib/seo.ts`** — `SITE_URL` (defaults to `https://bibek.tech`), the `PROFILE` constants, and `buildJsonLd()` (a linked `Person` + `WebSite` schema graph). Edit names, social links, titles, and keywords there, not in individual files.
+
+- **Structured data**: `buildJsonLd()` is server-rendered as a `<script type="application/ld+json">` in `layout.tsx` (on every page). `<` is escaped to prevent any `</script>` breakout. `alternateName` includes every search variant (Bibek, BibekTech, RavangDai).
+- **Titles**: `layout.tsx` sets a template `"%s · Bibek Pathak"`; section pages must use a **bare** title (`"Projects"`, not `"Projects · Bibek Pathak"`) or the brand doubles up.
+- **Canonicals**: every page sets its own `alternates.canonical` (layout = `/`, sections = `/projects` etc.). Don't leave a section page without one — they'd inherit `/` and look like duplicates of home.
+- **Homepage crawlable content**: the hero is `ssr:false`, so `app/page.tsx` renders a server-side `sr-only` `<h1>` + bio. That block is the homepage's primary indexable text — keep it truthful and name-rich; don't delete it.
+- **Generated routes**: `app/sitemap.ts` (`/sitemap.xml`), `app/robots.ts` (`/robots.txt`, blocks `/admin` + `/api`), `app/manifest.ts` — all read `SITE_URL` from `seo.ts`.
+- **Off-page (manual, not in code)**: verify the site in Google Search Console + submit the sitemap, and link `bibek.tech` from GitHub/LinkedIn/Devpost so `sameAs` resolves both ways. Code can't substitute for these.
 
 ## Conventions
 
