@@ -78,7 +78,7 @@ export function ContactSection() {
               </h2>
               <p className="mt-5 max-w-xs text-sm leading-relaxed text-[var(--ink-2)]">
                 Whether it&apos;s a data project, full-stack app, or something
-                experimental — reach out.
+                experimental. Reach out.
               </p>
             </div>
 

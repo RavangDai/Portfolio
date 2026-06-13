@@ -5,7 +5,7 @@ import { getContent } from "@/lib/storage";
 export const metadata = {
   title: "Achievements",
   description:
-    "Bibek Pathak's achievements — competition wins (HackLions 2026), academic honors, and certifications.",
+    "Bibek Pathak's achievements: competition wins (HackLions 2026), academic honors, and certifications.",
   alternates: { canonical: "/achievements" },
 };
 

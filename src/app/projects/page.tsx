@@ -5,7 +5,7 @@ import { getContent } from "@/lib/storage";
 export const metadata = {
   title: "Projects",
   description:
-    "Projects by Bibek Pathak (BibekTech) — 10+ builds across React, Next.js, Python, and applied AI.",
+    "Projects by Bibek Pathak (BibekTech): 10+ builds across React, Next.js, Python, and applied AI.",
   alternates: { canonical: "/projects" },
 };
 

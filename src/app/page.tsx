@@ -11,13 +11,13 @@ export default function HomePage() {
   return (
     <>
       <section className="sr-only">
-        <h1>Bibek Pathak — Full-Stack Engineer &amp; AI/ML Developer</h1>
+        <h1>Bibek Pathak · Full-Stack Engineer &amp; AI/ML Developer</h1>
         <p>
           Bibek Pathak, also known as BibekTech and online as RavangDai, is a
           full-stack engineer and AI/ML developer and a Computer Science student at
           Southeastern Louisiana University. He builds with React, Next.js, TypeScript,
           and Python, has shipped 10+ projects, and won 1st place at HackLions 2026.
-          This is his portfolio — explore his projects, certificates, achievements, and
+          This is his portfolio. Explore his projects, certificates, achievements, and
           ways to get in touch.
         </p>
       </section>

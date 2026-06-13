@@ -105,7 +105,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
             Proof wall. <span className="text-[var(--accent)]">Real receipts.</span>
           </h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
-            Issuer-backed credentials — each one links to its public verification page.
+            Issuer-backed credentials, each linking to its public verification page.
           </p>
         </motion.header>
 

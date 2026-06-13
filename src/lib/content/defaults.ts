@@ -127,10 +127,10 @@ export const DEFAULT_CONTENT: SiteContent = {
     {
       id: "hacklions-2026",
       date: "Apr 2026",
-      title: "1st Place — HackLions 2026",
+      title: "1st Place · HackLions 2026",
       org: "SELU 1st Hackathon",
       category: "Competition",
-      desc: "Won SELU's hackathon by building DollarPilot — a finance app that makes money management fun and brutal — from zero to shipped in 6 hours.",
+      desc: "Won SELU's hackathon by building DollarPilot, a finance app that makes money management fun and brutal, shipped from zero in 6 hours.",
       icon: "Trophy",
       highlight: true,
       url: "https://devpost.com/software/dollarpilot",

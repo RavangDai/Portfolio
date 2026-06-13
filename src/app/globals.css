@@ -184,6 +184,11 @@ body {
      globally so the dark hero (which is outside .theme-brut) can thread it in too. */
   --cobalt: #2e5bff;
 
+  /* Scroll-driven "sun" position (0..1) for the paper light field in .brut-bg.
+     Stays 0 unless site-background.tsx nudges it on desktop scroll; mobile and
+     reduced-motion never touch it, so the refracted light is static there. */
+  --brut-sun: 0;
+
   /* Typography: Inter is the single text/label font. These legacy var names are kept as
      aliases → Inter so every existing reference (body, kickers, chips, buttons, telemetry,
      nav, chatbot) resolves to Inter without per-call edits. Big identity titles use the
@@ -1043,7 +1048,13 @@ body {
   height: 100svh;
   width: 100%;
   overflow: hidden;
-  background: #faf8f2;
+  /* Same refracted-daylight casts as .brut-bg so the home scene matches the rest of
+     the site. Static here (no --brut-sun) — the hero runs its own scroll system. */
+  background:
+    radial-gradient(135% 110% at 15% -12%, rgba(255, 206, 156, 0.20) 0%, rgba(255, 206, 156, 0) 55%),
+    radial-gradient(120% 95% at 92% 4%, rgba(196, 184, 255, 0.16) 0%, rgba(196, 184, 255, 0) 52%),
+    radial-gradient(150% 120% at 35% 118%, rgba(158, 232, 198, 0.15) 0%, rgba(158, 232, 198, 0) 55%),
+    #faf8f2;
 }
 
 /* ── Brutalist blueprint scene — scales/pans with scroll via --p (0→1) ── */
@@ -1942,6 +1953,14 @@ body {
   --brut-shadow-accent: 5px 5px 0 0 var(--accent);
   --brut-radius: 6px;
 
+  /* Skeuomorphic accents — kept deliberately faint so the hard 2px border + offset
+     shadow stay the lead voice (neobrutalism). Just enough real-light cueing to feel
+     tactile: a top-edge highlight, a soft contact shadow under the hard one, and a
+     barely-lit surface gradient (top a hair brighter, as if lit from above). */
+  --brut-lit:     inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --brut-ambient: 0 14px 22px -16px rgba(12, 14, 26, 0.34);
+  --paper-lit:    linear-gradient(177deg, #fffefa 0%, var(--paper) 44%);
+
   color: var(--ink);
   font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
 }
@@ -1986,28 +2005,28 @@ body {
 
 /* ── Surfaces / cards ── */
 .brut-card {
-  background: var(--paper);
+  background: var(--paper-lit);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
-  box-shadow: var(--brut-shadow);
+  box-shadow: var(--brut-lit), var(--brut-shadow), var(--brut-ambient);
 }
 
 /* interactive card — physical "press" toward its own shadow */
 .brut-card-i {
-  background: var(--paper);
+  background: var(--paper-lit);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
-  box-shadow: var(--brut-shadow);
+  box-shadow: var(--brut-lit), var(--brut-shadow), var(--brut-ambient);
   transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .brut-card-i:hover {
   transform: translate(2px, 2px);
-  box-shadow: var(--brut-shadow-sm);
+  box-shadow: var(--brut-lit), var(--brut-shadow-sm), 0 8px 14px -12px rgba(12, 14, 26, 0.3);
 }
 .brut-card-i:active {
   transform: translate(5px, 5px);
-  box-shadow: 0 0 0 0 var(--ink);
+  box-shadow: var(--brut-lit), 0 0 0 0 var(--ink);
 }
 
 /* ── Buttons ── */
@@ -2023,16 +2042,16 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent-ink);
-  background: var(--accent);
+  background: linear-gradient(180deg, #5478ff 0%, var(--accent) 72%);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
-  box-shadow: var(--brut-shadow-sm);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), var(--brut-shadow-sm), var(--brut-ambient);
   cursor: pointer;
   transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
               background-color 0.14s ease;
 }
-.brut-btn:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 var(--ink); }
+.brut-btn:hover { transform: translate(2px, 2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), 0 0 0 0 var(--ink); }
 .brut-btn:active { transform: translate(3px, 3px); }
 .brut-btn:disabled { opacity: 0.55; cursor: wait; transform: none; box-shadow: var(--brut-shadow-sm); }
 
@@ -2048,10 +2067,10 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink);
-  background: var(--paper);
+  background: var(--paper-lit);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
-  box-shadow: var(--brut-shadow-sm);
+  box-shadow: var(--brut-lit), var(--brut-shadow-sm), var(--brut-ambient);
   cursor: pointer;
   transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
@@ -2059,7 +2078,7 @@ body {
 }
 .brut-btn-ghost:hover {
   transform: translate(2px, 2px);
-  box-shadow: 0 0 0 0 var(--ink);
+  box-shadow: var(--brut-lit), 0 0 0 0 var(--ink);
   color: var(--accent);
   border-color: var(--accent);
 }
@@ -2095,6 +2114,9 @@ body {
   background: var(--paper);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
+  /* recessed/debossed — inputs read as carved into the paper, the opposite of the
+     raised buttons, so the tactile language stays coherent. */
+  box-shadow: inset 0 2px 3px rgba(13, 16, 28, 0.07);
   transition: box-shadow 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
 }
 .brut-input::placeholder { color: var(--ink-3); }
@@ -2102,29 +2124,39 @@ body {
 .brut-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: var(--brut-shadow-accent);
+  box-shadow: inset 0 2px 3px rgba(13, 16, 28, 0.05), var(--brut-shadow-accent);
 }
 
 /* ── Stat box ── */
 .brut-stat {
-  background: var(--paper);
+  background: var(--paper-lit);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
-  box-shadow: var(--brut-shadow-sm);
+  box-shadow: var(--brut-lit), var(--brut-shadow-sm), var(--brut-ambient);
   padding: 1.1rem 1.25rem;
 }
 
-/* ── Backgrounds: paper + faint ink grid + grain ── */
+/* ── Backgrounds: real paper under soft refracted daylight ──
+   Three broad colour casts bleed in from off-canvas corners (warm top-left, lavender
+   top-right, mint bottom) so there is never a visible orb edge — it reads as light
+   landing on the sheet, not a glow. A near-white fractal-noise tile under `multiply`
+   gives the paper its tooth (this replaces the old 1.4 MB hexagon PNG, a mobile win).
+   --brut-sun (0..1, inherited from :root) drifts the casts a few percent on desktop
+   scroll; it stays 0 on mobile / reduced-motion, so the field is perfectly static. */
 .brut-bg {
   background-color: var(--paper);
-  /* Hexagon honeycomb texture (public/image.png). A light paper veil sits on
-     top so the busy corner hexagons never fight the foreground content. */
   background-image:
-    linear-gradient(rgba(250, 248, 242, 0.55), rgba(250, 248, 242, 0.55)),
-    url("/image.png");
-  background-repeat: no-repeat, no-repeat;
-  background-position: center, center;
-  background-size: cover, cover;
+    radial-gradient(135% 110% at calc(15% + var(--brut-sun) * 7%) -12%,
+      rgba(255, 206, 156, 0.20) 0%, rgba(255, 206, 156, 0) 55%),
+    radial-gradient(120% 95% at calc(92% - var(--brut-sun) * 6%) 4%,
+      rgba(196, 184, 255, 0.16) 0%, rgba(196, 184, 255, 0) 52%),
+    radial-gradient(150% 120% at calc(35% + var(--brut-sun) * 5%) 118%,
+      rgba(158, 232, 198, 0.15) 0%, rgba(158, 232, 198, 0) 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='paperfiber'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncG type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncB type='linear' slope='0.06' intercept='0.94'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperfiber)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  background-position: center, center, center, top left;
+  background-size: cover, cover, cover, 200px 200px;
+  background-blend-mode: normal, normal, normal, multiply;
 }
 
 /* visible keyboard focus inside brut pages */

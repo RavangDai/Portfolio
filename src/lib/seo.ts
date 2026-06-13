@@ -41,13 +41,13 @@ export const PROFILE = {
   ],
 } as const;
 
-export const SITE_NAME = "Bibek Pathak — BibekTech";
+export const SITE_NAME = "Bibek Pathak · BibekTech";
 
 export const DEFAULT_TITLE =
-  "Bibek Pathak — Full-Stack & AI/ML Developer | BibekTech";
+  "Bibek Pathak · Full-Stack & AI/ML Developer | BibekTech";
 
 export const DEFAULT_DESCRIPTION =
-  "Bibek Pathak (BibekTech) — full-stack engineer & AI/ML developer. 10+ projects in React, Next.js & Python, HackLions 2026 winner. Open to internships & engineering roles.";
+  "Bibek Pathak (BibekTech), full-stack engineer & AI/ML developer. 10+ projects in React, Next.js & Python, HackLions 2026 winner. Open to internships & engineering roles.";
 
 // Keyword-rich but truthful list (still emitted; harmless if ignored by engines).
 export const KEYWORDS = [

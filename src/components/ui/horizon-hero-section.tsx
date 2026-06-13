@@ -40,7 +40,7 @@ const BEATS: Beat[] = [
   },
   {
     title: "EXPLORE",
-    line1: "Dive into the work —",
+    line1: "Dive into the work,",
     line2: "pick where to go next.",
     cta: "explore",
   },
@@ -225,7 +225,7 @@ export const Component = () => {
             {/* LEFT — keyed so it re-mounts + animates each beat */}
             <div key={currentSection} className="hero-stage-left" data-beat={currentSection}>
               <span className="hero-sector">
-                SECTOR {String(currentSection).padStart(2, "0")} — {CHAPTERS[currentSection]}
+                SECTOR {String(currentSection).padStart(2, "0")} · {CHAPTERS[currentSection]}
               </span>
 
               {currentSection === 0 && (

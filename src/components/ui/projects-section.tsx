@@ -87,7 +87,7 @@ function ProjectImage({ project, pastel }: { project: Project; pastel: string })
       <div className="relative aspect-[16/10] w-full">
         <Image
           src={project.image}
-          alt={`${project.name} — ${project.tag}`}
+          alt={`${project.name} · ${project.tag}`}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover"
@@ -181,13 +181,13 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           transition={{ duration: 0.7, ease }}
           className="mb-12 md:mb-16"
         >
-          <p className="brut-kicker mb-4">Selected Work · 2025 — 2026</p>
+          <p className="brut-kicker mb-4">Selected Work · 2025-2026</p>
           <h1 className="brut-title text-[clamp(2.8rem,9vw,6rem)]">
             Built &amp; <span className="text-[var(--accent)]">Shipped.</span>
           </h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <p className="max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
-              Real products taken from zero to deployed — full-stack apps, AI tooling,
+              Real products taken from zero to deployed: full-stack apps, AI tooling,
               and computer-vision systems.
             </p>
             <span className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-3)]">

@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { gsap } from "gsap";
+
 import { useIsBrut } from "@/lib/theme";
 
 /**
@@ -16,6 +19,35 @@ import { useIsBrut } from "@/lib/theme";
  */
 export function SiteBackground() {
   const isBrut = useIsBrut();
+
+  // Desktop-only: drift the paper's refracted light a few percent as you scroll, so the
+  // "sun" feels alive without ever animating on mobile (perf/battery) or for reduced-motion
+  // users. We only nudge an inherited CSS var (--brut-sun) that every .brut-bg surface reads.
+  useEffect(() => {
+    if (!isBrut || typeof window === "undefined") return;
+    const wide = window.matchMedia("(min-width: 768px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!wide.matches || reduced.matches) return;
+
+    const root = document.documentElement;
+    const setSun = gsap.quickTo(root, "--brut-sun", { duration: 0.6, ease: "power2.out" });
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = root.scrollHeight - window.innerHeight;
+      setSun(max > 0 ? window.scrollY / max : 0);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      gsap.set(root, { "--brut-sun": 0 });
+    };
+  }, [isBrut]);
 
   if (isBrut) {
     return (
