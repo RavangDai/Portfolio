@@ -69,8 +69,12 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                 <article
                   className={cn(
                     "brut-card-i relative flex flex-col gap-4 p-5 sm:flex-row sm:gap-5 sm:p-6",
-                    hi && "!bg-[var(--accent-deep)] text-[var(--accent-ink)]"
+                    hi && "text-[var(--accent-ink)]"
                   )}
+                  // Inline fill so it reliably overrides .brut-card-i's --paper-lit background
+                  // (Tailwind v4 dropped the leading-"!" important syntax, which left the card
+                  // on light paper with white text — unreadable).
+                  style={hi ? { background: "var(--accent-deep)" } : undefined}
                 >
                   {/* Icon box */}
                   <div
@@ -107,7 +111,12 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                       </span>
                     </div>
 
-                    <h3 className={cn("brut-h text-xl sm:text-2xl", hi && "text-[var(--accent-ink)]")}>
+                    <h3
+                      className={cn("brut-h text-xl sm:text-2xl", hi && "text-[var(--accent-ink)]")}
+                      // .brut-h sets color:var(--ink) as unlayered CSS, which beats Tailwind's
+                      // layered text-* utility — so force white inline on the highlight card.
+                      style={hi ? { color: "var(--accent-ink)" } : undefined}
+                    >
                       {item.title}
                     </h3>
                     <p

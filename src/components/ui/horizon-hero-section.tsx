@@ -134,60 +134,37 @@ export const Component = () => {
     return () => ctx.revert();
   }, [isReady]);
 
-  // ── Scroll handling — drives the beat (immediate) and a lerp-smoothed --p for the
-  // blueprint depth fly-through. Easing --p toward the scroll target gives the camera dolly
-  // an inertial, floaty feel; the beat text still switches on the raw progress so copy never
-  // lags. Honors reduced-motion (no smoothing) and never re-renders React per scroll tick. ──
+  // ── Scroll handling — GSAP ScrollTrigger scrubs --p across the 300vh container, which drives
+  // the blueprint depth fly-through (camera dolly + fly-past) and the beat index. `scrub` eases
+  // the catch-up to the scroll position for a smooth, inertial feel; the sticky CSS frame still
+  // does the pinning. Reduced-motion drops the smoothing (direct 1:1 link). ──
   useEffect(() => {
+    if (!containerRef.current) return;
+    gsap.registerPlugin(ScrollTrigger);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let targetP = 0;
-    let currentP = 0;
-    let raf = 0;
 
-    const computeProgress = () => {
-      const el = containerRef.current;
-      if (!el) return 0;
-      const rect = el.getBoundingClientRect();
-      const total = el.offsetHeight - window.innerHeight;
-      const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
-      return total > 0 ? scrolled / total : 0;
-    };
-
+    const proxy = { p: 0 };
     const setVar = (p: number) => sceneRef.current?.style.setProperty("--p", p.toFixed(4));
 
-    const tick = () => {
-      currentP += (targetP - currentP) * 0.12;
-      if (Math.abs(targetP - currentP) < 0.0005) {
-        currentP = targetP;
-        setVar(currentP);
-        raf = 0;
-        return;
-      }
-      setVar(currentP);
-      raf = requestAnimationFrame(tick);
-    };
-
-    const onScroll = () => {
-      const progress = computeProgress();
-      targetP = progress;
-
-      const newSection = Math.min(Math.floor(progress * TOTAL_BEATS), TOTAL_BEATS - 1);
-      setCurrentSection((s) => (s === newSection ? s : newSection));
-
-      if (reduce) {
-        currentP = targetP;
-        setVar(currentP);
-        return;
-      }
-      if (!raf) raf = requestAnimationFrame(tick);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
+    const tween = gsap.to(proxy, {
+      p: 1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: reduce ? true : 0.8,
+      },
+      onUpdate: () => {
+        setVar(proxy.p);
+        const newSection = Math.min(Math.floor(proxy.p * TOTAL_BEATS), TOTAL_BEATS - 1);
+        setCurrentSection((s) => (s === newSection ? s : newSection));
+      },
+    });
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
+      tween.scrollTrigger?.kill();
+      tween.kill();
     };
   }, []);
 
