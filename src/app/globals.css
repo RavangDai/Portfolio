@@ -180,9 +180,10 @@ body {
   --bg-0: #080808;
   --bg-1: #0A0A0A;
 
-  /* Brand cobalt — shared with the light brutalist pages' --accent, but available
-     globally so the dark hero (which is outside .theme-brut) can thread it in too. */
-  --cobalt: #2e5bff;
+  /* Brand accent — terracotta. Named --cobalt only for legacy continuity (many hero /
+     blueprint rules reference var(--cobalt)); it now carries the warm terracotta brand
+     colour, shared with the light pages' --accent and threaded into the hero too. */
+  --cobalt: #bd5232;
 
   /* Scroll-driven "sun" position (0..1) for the paper light field in .brut-bg.
      Stays 0 unless site-background.tsx nudges it on desktop scroll; mobile and
@@ -192,7 +193,7 @@ body {
   /* Typography: Inter is the single text/label font. These legacy var names are kept as
      aliases → Inter so every existing reference (body, kickers, chips, buttons, telemetry,
      nav, chatbot) resolves to Inter without per-call edits. Big identity titles use the
-     separate --font-brut-display (Sora — clean geometric display sans). */
+     separate --font-brut-display (Fraunces, a warm high-contrast display serif). */
   --font-raleway: var(--font-inter);
   --font-brut-mono: var(--font-inter);
 
@@ -987,14 +988,14 @@ body {
   gap: 7px;
   padding: 5px 12px;
   border-radius: 5px;
-  border: 2px solid #0a0a0a;
-  background: #faf8f2;
+  border: 2px solid #1a1714;
+  background: #f7f1e8;
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #0a0a0a;
+  color: #1a1714;
   box-shadow: 3px 3px 0 0 var(--cobalt);
 }
 
@@ -1030,8 +1031,8 @@ body {
   position: relative;
   width: 100%;
   height: 300vh; /* three scroll beats */
-  background: #faf8f2; /* paper */
-  color: #0a0a0a;
+  background: #f7f1e8; /* paper */
+  color: #1a1714;
 }
 
 /* Boot placeholder shown while the hero chunk loads — paper to match the light scene,
@@ -1039,7 +1040,7 @@ body {
 .hero-loading {
   height: 100svh;
   width: 100%;
-  background: #faf8f2;
+  background: #f7f1e8;
 }
 
 .hero-sticky {
@@ -1048,13 +1049,19 @@ body {
   height: 100svh;
   width: 100%;
   overflow: hidden;
-  /* Same refracted-daylight casts as .brut-bg so the home scene matches the rest of
-     the site. Static here (no --brut-sun) — the hero runs its own scroll system. */
-  background:
-    radial-gradient(135% 110% at 15% -12%, rgba(255, 206, 156, 0.20) 0%, rgba(255, 206, 156, 0) 55%),
-    radial-gradient(120% 95% at 92% 4%, rgba(196, 184, 255, 0.16) 0%, rgba(196, 184, 255, 0) 52%),
-    radial-gradient(150% 120% at 35% 118%, rgba(158, 232, 198, 0.15) 0%, rgba(158, 232, 198, 0) 55%),
-    #faf8f2;
+  /* Warm paper + a single soft warm light wash + fibre tooth, matching .brut-bg. The
+     wash runs a touch stronger than the inner pages so it reads against the busy
+     blueprint. Static here (no --brut-sun): the hero runs its own scroll system.
+     Literal hex because the hero sits outside .theme-brut, where --paper isn't defined. */
+  background-color: #f7f1e8;
+  background-image:
+    radial-gradient(150% 125% at 50% -18%,
+      rgba(214, 156, 99, 0.22) 0%, rgba(214, 156, 99, 0.08) 34%, rgba(214, 156, 99, 0) 64%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='paperfiber'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncG type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncB type='linear' slope='0.06' intercept='0.94'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperfiber)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, repeat;
+  background-position: center, top left;
+  background-size: cover, 200px 200px;
+  background-blend-mode: normal, multiply;
 }
 
 /* ── Brutalist blueprint scene — scales/pans with scroll via --p (0→1) ── */
@@ -1065,6 +1072,12 @@ body {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  /* Camera push-in: the whole blueprint dollies toward the viewer as you scroll, so the
+     layered parallax below reads as flying through 3D space. The text/portrait stage is a
+     separate sibling, so it stays crisp and stable as the nearest plane. */
+  transform: scale(calc(1 + var(--p) * 0.16));
+  transform-origin: 50% 42%;
+  will-change: transform;
 }
 
 .bp-grid {
@@ -1102,7 +1115,7 @@ body {
   letter-spacing: -0.02em;
   color: transparent;
   -webkit-text-stroke: 2px rgba(10, 10, 10, 0.08);
-  transform: translate(-50%, -50%) translateY(calc(var(--p) * -130px)) scale(calc(1 + var(--p) * 0.3));
+  transform: translate(-50%, -50%) translateY(calc(var(--p) * -160px)) scale(calc(1 + var(--p) * 0.55));
 }
 .bp-bar {
   top: 22%;
@@ -1110,7 +1123,7 @@ body {
   width: clamp(60px, 9vw, 130px);
   height: 14px;
   background: var(--cobalt);
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   transform: translate3d(calc(var(--p) * -50px), calc(var(--p) * 260px), 0);
 }
 .bp-ring {
@@ -1118,7 +1131,7 @@ body {
   right: 13%;
   width: clamp(80px, 12vw, 180px);
   aspect-ratio: 1;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   border-radius: 50%;
   transform: translateY(calc(var(--p) * -220px)) scale(calc(1 + var(--p) * 0.4));
 }
@@ -1128,7 +1141,7 @@ body {
   width: clamp(50px, 7vw, 100px);
   aspect-ratio: 1;
   background: #fbe7b0;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   transform: translate3d(calc(var(--p) * 60px), calc(var(--p) * 320px), 0) rotate(calc(var(--p) * 12deg));
 }
 .bp-rule {
@@ -1181,7 +1194,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #56544e;
+  color: #5c5349;
 }
 .bp-tele--tl { top: 6.5rem; left: 1.5rem; }
 .bp-tele--tr { top: 6.5rem; right: 1.5rem; }
@@ -1194,7 +1207,7 @@ body {
   left: 0; right: 0;
   top: calc(8% + var(--p, 0) * 84%);
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(46, 91, 255, 0.45), transparent);
+  background: linear-gradient(90deg, transparent, rgba(189, 82, 50, 0.45), transparent);
 }
 
 .bp-stats {
@@ -1211,7 +1224,7 @@ body {
   font-size: clamp(2rem, 7vw, 6rem);
   letter-spacing: -0.01em;
   color: transparent;
-  -webkit-text-stroke: 2px rgba(46, 91, 255, 0.22);
+  -webkit-text-stroke: 2px rgba(189, 82, 50, 0.22);
 }
 
 /* Per-beat emphasis */
@@ -1251,7 +1264,7 @@ body {
   height: clamp(48px, 6vw, 100px);
   transform: translate3d(calc(var(--p) * 28px), calc(var(--p) * -190px), 0) rotate(calc(var(--p) * 42deg));
 }
-.bp-tri--sm polygon { stroke: rgba(46, 91, 255, 0.5); }
+.bp-tri--sm polygon { stroke: rgba(189, 82, 50, 0.5); }
 
 /* ── Survey node — a plotted "you are here" point that pans across the sheet ── */
 .bp-node {
@@ -1277,7 +1290,7 @@ body {
   width: 26px;
   height: 26px;
   margin: -13px 0 0 -13px;
-  border: 1.5px solid rgba(46, 91, 255, 0.4);
+  border: 1.5px solid rgba(189, 82, 50, 0.4);
   border-radius: 50%;
 }
 .bp-node-ring--2 {
@@ -1310,6 +1323,56 @@ body {
 .bp-dim-tick--a { top: 0; }
 .bp-dim-tick--b { bottom: 0; }
 
+/* ── Near fly-past plane — foreground markers that rush toward the camera and dissolve,
+   selling the depth fly-through. Pure transform/opacity, so it's GPU-composited and cheap. ── */
+.bp-fly {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+/* Each one starts small + faint (far away), then balloons huge while sweeping off toward an
+   edge and fading out before the end — you fly straight through it. Different directions +
+   sizes read as a stream of foreground objects rushing past. */
+.bp-fly--a {
+  top: 48%;
+  left: 38%;
+  width: clamp(70px, 12vw, 190px);
+  aspect-ratio: 1;
+  border: 3px solid rgba(189, 82, 50, 0.55);
+  transform:
+    translate(-50%, -50%)
+    translate3d(calc(var(--p) * -34vw), calc(var(--p) * -18vh), 0)
+    scale(calc(0.35 + var(--p) * 7));
+  opacity: calc(0.62 - var(--p) * 0.72);
+}
+.bp-fly--b {
+  top: 54%;
+  left: 60%;
+  width: clamp(54px, 9vw, 150px);
+  aspect-ratio: 1;
+  border: 3px solid rgba(26, 23, 20, 0.22);
+  border-radius: 50%;
+  transform:
+    translate(-50%, -50%)
+    translate3d(calc(var(--p) * 38vw), calc(var(--p) * 20vh), 0)
+    scale(calc(0.3 + var(--p) * 8));
+  opacity: calc(0.55 - var(--p) * 0.66);
+}
+.bp-fly--c {
+  top: 60%;
+  left: 50%;
+  width: clamp(40px, 7vw, 110px);
+  aspect-ratio: 1;
+  border: 3px solid rgba(189, 82, 50, 0.4);
+  transform:
+    translate(-50%, -50%)
+    translate3d(0, calc(var(--p) * -30vh), 0)
+    rotate(calc(var(--p) * 35deg))
+    scale(calc(0.2 + var(--p) * 9));
+  opacity: calc(0.5 - var(--p) * 0.62);
+}
+
 /* Keep the new pieces quiet on beat 0 (identity) and the EXPLORE finale so the
    name, photo, and nav cards stay the clear focus. */
 .hero-blueprint[data-beat="0"] .bp-tri,
@@ -1332,10 +1395,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   border-radius: 5px;
   padding: 0.34rem 0.5rem;
-  background: var(--paper, #faf8f2);
+  background: var(--paper, #f7f1e8);
 }
 .hero-monogram-img {
   display: block;
@@ -1348,7 +1411,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #56544e;
+  color: #5c5349;
 }
 
 /* ── Pinned stage — left column swaps per beat, right (portrait) persists ── */
@@ -1380,9 +1443,9 @@ body {
 }
 .hero-title.hero-id-name {
   margin: 0;
-  font-size: clamp(3rem, 9vw, 8rem);
+  font-size: clamp(2.6rem, 8vw, 6.5rem);
   line-height: 0.92;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 .hero-id-name .title-line { display: block; }
 
@@ -1391,6 +1454,13 @@ body {
    by the sticky wrapper's overflow:hidden (the trailing letter was being cut off). The
    stacked "BIBEK / PATHAK" beat 0 keeps the full clamp above. */
 @media (min-width: 861px) {
+  /* Beat 00 (BIBEK / PATHAK) — Fraunces is wider than the old display sans, so the long
+     "PATHAK" word overran the left column and the trailing "K" was clipped by the sticky
+     frame's overflow:hidden. Cap it so the stacked name fits the column. */
+  .hero-stage-left[data-beat="0"] .hero-id-name {
+    font-size: clamp(2.5rem, 5.6vw, 5.8rem);
+    letter-spacing: -0.02em;
+  }
   .hero-stage-left[data-beat="1"] .hero-id-name {
     font-size: clamp(2.6rem, 7vw, 5.5rem);
   }
@@ -1406,7 +1476,7 @@ body {
 /* Compact the EXPLORE beat across all sizes so it never overflows downward. */
 .hero-stage-left[data-beat="2"] { gap: 0.7rem; min-height: 0; }
 .hero-stage-left[data-beat="2"] .hero-id-sub { gap: 0.05rem; }
-.hero-id-rule { width: 100%; max-width: 26rem; height: 2px; background: #0a0a0a; }
+.hero-id-rule { width: 100%; max-width: 26rem; height: 2px; background: #1a1714; }
 .hero-id-sub { align-items: flex-start; text-align: left; }
 
 /* Beat 01 — proof cards (engineered mini panels) */
@@ -1425,21 +1495,21 @@ body {
   gap: 0.25rem;
   padding: 0.85rem 0.9rem;
   background: #fff;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   border-radius: 6px;
   box-shadow: 3px 3px 0 0 var(--cobalt);
 }
 .hero-proof-idx {
   font-family: var(--font-inter), ui-monospace, monospace;
-  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.14em; color: #8a877e;
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.14em; color: #6f6557;
 }
 .hero-proof-name {
   font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
-  font-size: 1.05rem; letter-spacing: 0; line-height: 1; color: #0a0a0a;
+  font-size: 1.05rem; letter-spacing: 0; line-height: 1; color: #1a1714;
 }
 .hero-proof-tag {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.58rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #56544e;
+  font-size: 0.58rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #5c5349;
 }
 
 /* right column — PERSISTENT portrait over a hard cobalt block (shifts subtly per beat) */
@@ -1468,14 +1538,14 @@ body {
   position: absolute;
   left: 9%; right: 9%; top: 18%; bottom: 2%;
   background: var(--cobalt);
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
 }
 .hero-photo-chip {
   position: absolute;
   left: -2%; bottom: 10%;
   width: 2.4rem; height: 2.4rem;
   background: #fbe7b0;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   z-index: 2;
 }
 .hero-photo-img {
@@ -1493,8 +1563,8 @@ body {
   height: 26px;
   z-index: 4;
 }
-.hero-bracket--tl { top: 9%; left: 3%; border-top: 2px solid #0a0a0a; border-left: 2px solid #0a0a0a; }
-.hero-bracket--br { bottom: 2%; right: 3%; border-bottom: 2px solid #0a0a0a; border-right: 2px solid #0a0a0a; }
+.hero-bracket--tl { top: 9%; left: 3%; border-top: 2px solid #1a1714; border-left: 2px solid #1a1714; }
+.hero-bracket--br { bottom: 2%; right: 3%; border-bottom: 2px solid #1a1714; border-right: 2px solid #1a1714; }
 .hero-tagline {
   align-self: flex-end;
   max-width: 24rem;
@@ -1505,12 +1575,12 @@ body {
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.45;
-  color: #0a0a0a;
-  background: var(--paper, #faf8f2);
-  border: 2px solid #0a0a0a;
+  color: #1a1714;
+  background: var(--paper, #f7f1e8);
+  border: 2px solid #1a1714;
   border-radius: 6px;
   padding: 0.85rem 1rem;
-  box-shadow: 6px 6px 0 0 var(--cobalt, #2e5bff);
+  box-shadow: 6px 6px 0 0 var(--cobalt, #bd5232);
 }
 .hero-tagline-key {
   position: relative;
@@ -1523,7 +1593,7 @@ body {
   right: 0;
   bottom: -1px;
   height: 3px;
-  background: var(--cobalt, #2e5bff);
+  background: var(--cobalt, #bd5232);
   transform: scaleX(0);
   transform-origin: left center;
 }
@@ -1531,18 +1601,19 @@ body {
   align-self: flex-end;
   font-family: var(--font-inter), ui-monospace, monospace;
   font-size: 0.56rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
-  color: #56544e;
+  color: #5c5349;
   background: #fff;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   border-radius: 4px;
   padding: 0.18rem 0.5rem;
 }
 
-/* Display tracking for Sora (the --font-brut-display face). Sora is a normal-metrics sans,
-   so big titles read best with slightly tight tracking. Centralized here — do NOT re-set
-   letter-spacing on the base .hero-title / .brut-title rules below or it overrides this. */
-.hero-title { letter-spacing: -0.01em; }
-.brut-title { letter-spacing: -0.01em; }
+/* Display tracking for Fraunces (the --font-brut-display face), a high-contrast display
+   serif. Large display serifs read best at near-zero tracking; font-optical-sizing picks
+   the dramatic display cut at big sizes. Centralized here, do NOT re-set letter-spacing on
+   the base .hero-title / .brut-title rules below or it overrides this. */
+.hero-title { letter-spacing: -0.005em; font-optical-sizing: auto; }
+.brut-title { letter-spacing: -0.005em; font-optical-sizing: auto; }
 
 /* Stage stacks on small screens — photo below the left column, lighter composition.
    The hero is a pinned 100svh frame with overflow:hidden, so on phones everything
@@ -1636,14 +1707,14 @@ body {
   font-weight: 700;
   line-height: 0.92;
   font-size: clamp(2.6rem, 9vw, 7.5rem);
-  color: #0a0a0a;
+  color: #1a1714;
   visibility: hidden; /* GSAP reveals it */
 }
 
 .title-char {
   display: inline-block;
   white-space: pre; /* preserve spaces in the split title */
-  color: #0a0a0a;
+  color: #1a1714;
 }
 
 .hero-subtitle {
@@ -1656,7 +1727,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #56544e;
+  color: #5c5349;
 }
 
 .subtitle-line {
@@ -1702,8 +1773,8 @@ body {
 .brut-btn-cobalt:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 #000; }
 .brut-btn-dark {
   color: #fff;
-  background: #0a0a0a;
-  border: 2px solid #0a0a0a;
+  background: #1a1714;
+  border: 2px solid #1a1714;
   box-shadow: 4px 4px 0 0 var(--cobalt);
 }
 .brut-btn-dark:hover { transform: translate(2px, 2px); box-shadow: 0 0 0 0 var(--cobalt); }
@@ -1716,8 +1787,8 @@ body {
   height: 2.75rem;
   width: 2.75rem;
   color: #fff;
-  background: #0a0a0a;
-  border: 2px solid #0a0a0a;
+  background: #1a1714;
+  border: 2px solid #1a1714;
   border-radius: 6px;
   box-shadow: 4px 4px 0 0 var(--cobalt);
   transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1747,7 +1818,7 @@ body {
   font-size: 0.55rem;
   font-weight: 600;
   letter-spacing: 0.14em;
-  color: #8a877e;
+  color: #6f6557;
 }
 .hero-explore-plus {
   position: absolute;
@@ -1767,10 +1838,10 @@ body {
   align-items: flex-start;
   gap: 0.2rem;
   padding: 0.72rem 0.9rem;
-  color: #0a0a0a;
+  color: #1a1714;
   text-align: left;
   background: #ffffff;
-  border: 2px solid #0a0a0a;
+  border: 2px solid #1a1714;
   border-radius: 6px;
   box-shadow: 4px 4px 0 0 var(--cobalt);
   transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1802,7 +1873,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #56544e;
+  color: #5c5349;
 }
 
 .hero-explore-arrow {
@@ -1884,7 +1955,7 @@ body {
 
 .hero-chapter.is-active {
   color: var(--cobalt);
-  background: rgba(46, 91, 255, 0.12);
+  background: rgba(189, 82, 50, 0.12);
 }
 
 .hero-chapter.is-active .hero-chapter-idx {
@@ -1917,7 +1988,7 @@ body {
   top: 0;
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, rgba(46, 91, 255, 0.55), var(--cobalt));
+  background: linear-gradient(90deg, rgba(189, 82, 50, 0.55), var(--cobalt));
   transition: width 0.15s linear;
 }
 
@@ -1932,20 +2003,21 @@ body {
    ============================================================================ */
 .theme-brut {
   /* surfaces */
-  --paper:    #faf8f2;
-  --paper-2:  #f0ede4;
-  --ink:      #0a0a0a;
-  --ink-2:    #56544e;
-  --ink-3:    #8a877e;
+  --paper:    #f7f1e8;
+  --paper-2:  #efe6d8;
+  --ink:      #1a1714;
+  --ink-2:    #5c5349;
+  --ink-3:    #6f6557;
   /* the single dominant accent */
-  --accent:       #2e5bff;
+  --accent:       #bd5232;
   --accent-ink:   #ffffff;
-  --accent-soft:  #dfe6ff;
+  --accent-soft:  #f4ddd0;
+  --accent-deep:  #9e3f27;  /* darker terracotta for filled "highlight" cards, so white text clears AA (6.5:1) */
   /* flat pastel block fills (desaturated, used sparingly for variety) */
-  --butter:   #fbe7b0;
-  --lavender: #e6ddfb;
-  --mint:     #cdebdc;
-  --blush:    #fbd9e5;
+  --butter:   #f1d6a4;
+  --lavender: #e9c7ad;
+  --mint:     #cdd3b2;
+  --blush:    #f0cdbd;
   /* brutalist primitives */
   --brut-border: 2px solid var(--ink);
   --brut-shadow:    5px 5px 0 0 var(--ink);
@@ -1959,7 +2031,7 @@ body {
      barely-lit surface gradient (top a hair brighter, as if lit from above). */
   --brut-lit:     inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --brut-ambient: 0 14px 22px -16px rgba(12, 14, 26, 0.34);
-  --paper-lit:    linear-gradient(177deg, #fffefa 0%, var(--paper) 44%);
+  --paper-lit:    linear-gradient(177deg, #fffdf6 0%, var(--paper) 44%);
 
   color: var(--ink);
   font-family: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
@@ -2042,7 +2114,7 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent-ink);
-  background: linear-gradient(180deg, #5478ff 0%, var(--accent) 72%);
+  background: var(--accent);
   border: var(--brut-border);
   border-radius: var(--brut-radius);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32), var(--brut-shadow-sm), var(--brut-ambient);
@@ -2146,17 +2218,15 @@ body {
 .brut-bg {
   background-color: var(--paper);
   background-image:
-    radial-gradient(135% 110% at calc(15% + var(--brut-sun) * 7%) -12%,
-      rgba(255, 206, 156, 0.20) 0%, rgba(255, 206, 156, 0) 55%),
-    radial-gradient(120% 95% at calc(92% - var(--brut-sun) * 6%) 4%,
-      rgba(196, 184, 255, 0.16) 0%, rgba(196, 184, 255, 0) 52%),
-    radial-gradient(150% 120% at calc(35% + var(--brut-sun) * 5%) 118%,
-      rgba(158, 232, 198, 0.15) 0%, rgba(158, 232, 198, 0) 55%),
+    /* one soft warm light raking from the top — a single warm wash, not a coloured
+       glow. Drifts a few % on desktop via --brut-sun; static on mobile / reduced-motion. */
+    radial-gradient(150% 125% at calc(50% + var(--brut-sun) * 6%) -18%,
+      rgba(214, 156, 99, 0.17) 0%, rgba(214, 156, 99, 0.06) 34%, rgba(214, 156, 99, 0) 64%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='paperfiber'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncG type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncB type='linear' slope='0.06' intercept='0.94'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperfiber)'/%3E%3C/svg%3E");
-  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
-  background-position: center, center, center, top left;
-  background-size: cover, cover, cover, 200px 200px;
-  background-blend-mode: normal, normal, normal, multiply;
+  background-repeat: no-repeat, repeat;
+  background-position: center, top left;
+  background-size: cover, 200px 200px;
+  background-blend-mode: normal, multiply;
 }
 
 /* visible keyboard focus inside brut pages */

@@ -83,7 +83,7 @@ function Tag({ label, variant = "default", brut = false }: { label: string; vari
     if (brut) {
         // Light brutalism — square ink-bordered chips regardless of semantic variant.
         return (
-            <span className="inline-flex items-center rounded-[3px] border-2 border-[#0a0a0a] bg-[#faf8f2] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0a0a0a]">
+            <span className="inline-flex items-center rounded-[3px] border-2 border-[#1a1714] bg-[#f7f1e8] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#1a1714]">
                 {label}
             </span>
         );
@@ -142,7 +142,7 @@ function ProjectCard({ data, brut = false }: { data: ProjectCardData; brut?: boo
             className={cn(
                 "p-4 space-y-3",
                 brut
-                    ? "rounded-[6px] border-2 border-[#0a0a0a] bg-white shadow-[3px_3px_0_0_#2e5bff]"
+                    ? "rounded-[6px] border-2 border-[#1a1714] bg-white shadow-[3px_3px_0_0_#bd5232]"
                     : "rounded-lg border border-white/10 bg-[rgba(18,20,26,0.9)]"
             )}
         >
@@ -205,7 +205,7 @@ function MetricCard({ data, brut = false }: { data: MetricCardData; brut?: boole
             className={cn(
                 "p-4 space-y-2",
                 brut
-                    ? "rounded-[6px] border-2 border-[#0a0a0a] bg-white shadow-[3px_3px_0_0_#2e5bff]"
+                    ? "rounded-[6px] border-2 border-[#1a1714] bg-white shadow-[3px_3px_0_0_#bd5232]"
                     : "rounded-lg border border-emerald-500/[0.15] bg-gradient-to-br from-emerald-500/10 to-cyan-500/5"
             )}
         >

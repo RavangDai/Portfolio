@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Download, FolderGit2, BadgeCheck, Trophy, Mail, Plus } from "lucide-react";
@@ -133,29 +134,61 @@ export const Component = () => {
     return () => ctx.revert();
   }, [isReady]);
 
-  // ── Scroll handling — drives the beat and the blueprint parallax ──
+  // ── Scroll handling — drives the beat (immediate) and a lerp-smoothed --p for the
+  // blueprint depth fly-through. Easing --p toward the scroll target gives the camera dolly
+  // an inertial, floaty feel; the beat text still switches on the raw progress so copy never
+  // lags. Honors reduced-motion (no smoothing) and never re-renders React per scroll tick. ──
   useEffect(() => {
-    const handleScroll = () => {
-      const el = containerRef.current;
-      if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let targetP = 0;
+    let currentP = 0;
+    let raf = 0;
 
+    const computeProgress = () => {
+      const el = containerRef.current;
+      if (!el) return 0;
       const rect = el.getBoundingClientRect();
       const total = el.offsetHeight - window.innerHeight;
       const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
-      const progress = total > 0 ? scrolled / total : 0;
+      return total > 0 ? scrolled / total : 0;
+    };
+
+    const setVar = (p: number) => sceneRef.current?.style.setProperty("--p", p.toFixed(4));
+
+    const tick = () => {
+      currentP += (targetP - currentP) * 0.12;
+      if (Math.abs(targetP - currentP) < 0.0005) {
+        currentP = targetP;
+        setVar(currentP);
+        raf = 0;
+        return;
+      }
+      setVar(currentP);
+      raf = requestAnimationFrame(tick);
+    };
+
+    const onScroll = () => {
+      const progress = computeProgress();
+      targetP = progress;
 
       const newSection = Math.min(Math.floor(progress * TOTAL_BEATS), TOTAL_BEATS - 1);
       setCurrentSection((s) => (s === newSection ? s : newSection));
 
-      // Feed raw progress to the scene as a CSS var so the grid + monuments parallax
-      // smoothly without forcing a React re-render on every scroll tick.
-      sceneRef.current?.style.setProperty("--p", progress.toFixed(4));
+      if (reduce) {
+        currentP = targetP;
+        setVar(currentP);
+        return;
+      }
+      if (!raf) raf = requestAnimationFrame(tick);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   const splitTitle = (text: string) =>
@@ -170,45 +203,14 @@ export const Component = () => {
   return (
     <div ref={containerRef} className="hero-container">
       <div className="hero-sticky">
-        {/* ── Blueprint scene — intentional technical layer only (grid · crosshair ·
-            coordinates · build year · sector · scan line). Parallax via --p. ── */}
+        {/* Hero depth scene, decluttered: just the camera push-in (--p on the wrapper) and the
+            near fly-past markers. The grid, ghost BP monogram, and static monuments were removed
+            so the name + portrait read clean. */}
         <div ref={sceneRef} className="hero-blueprint" data-beat={currentSection} aria-hidden>
-          <div className="bp-grid" />
-          <div className="bp-grid bp-grid--fine" />
-
-          {/* Ghost monogram — the subject on the drafting table; scales up as you scroll in. */}
-          <span className="bp-initials bp-monument">BP</span>
-
-          {/* Set-square triangles — the tools that draw the blueprint; rotate + drift with scroll. */}
-          <svg className="bp-tri bp-tri--lg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="50,4 96,96 4,96" />
-          </svg>
-          <svg className="bp-tri bp-tri--sm" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="50,4 96,96 4,96" />
-          </svg>
-
-          {/* Geometric monuments — cobalt bar + ochre square slide down the sheet on scroll. */}
-          <span className="bp-bar bp-monument" />
-          <span className="bp-square bp-monument" />
-
-          {/* Survey node — a plotted "you are here" point that tracks across the sheet. */}
-          <span className="bp-node bp-monument">
-            <span className="bp-node-ring" />
-            <span className="bp-node-ring bp-node-ring--2" />
-            <span className="bp-node-dot" />
-          </span>
-
-          {/* Dimension line — measurement / precision, echoing the tagline. */}
-          <span className="bp-dim bp-monument">
-            <span className="bp-dim-tick bp-dim-tick--a" />
-            <span className="bp-dim-tick bp-dim-tick--b" />
-          </span>
-
-          <div className="bp-cross">
-            <span className="bp-cross-h" />
-            <span className="bp-cross-v" />
-          </div>
-          <span className="bp-scan" />
+          {/* Near fly-past plane — foreground markers that rush toward the camera and dissolve */}
+          <span className="bp-fly bp-fly--a" />
+          <span className="bp-fly bp-fly--b" />
+          <span className="bp-fly bp-fly--c" />
         </div>
 
         {/* Top bar — monogram + readout */}

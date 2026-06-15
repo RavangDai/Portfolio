@@ -59,7 +59,7 @@ export function Footer() {
                 <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="h-7 w-auto" />
                 <span className="brut-h text-base tracking-tight text-[var(--ink)]">BIBEK.TECH</span>
               </button>
-              <p className="max-w-[220px] text-[0.82rem] leading-relaxed text-[var(--ink-2)]">
+              <p className="max-w-[220px] text-[0.9rem] leading-relaxed text-[var(--ink-2)]">
                 Full-stack engineer &amp; AI developer building clean, performant web experiences.
               </p>
               <div className="flex items-center gap-2.5 pt-1">

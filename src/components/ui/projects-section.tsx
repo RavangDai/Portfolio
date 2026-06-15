@@ -111,7 +111,7 @@ function FeaturedCard({ project, index, pastel }: { project: Project; index: num
           <p className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-2)]">
             {project.tag}
           </p>
-          <p className="text-sm leading-relaxed text-[var(--ink-2)]">{project.description}</p>
+          <p className="text-base leading-relaxed text-[var(--ink-2)]">{project.description}</p>
           <div className="mt-auto flex flex-col gap-4 pt-2">
             <TechChips tech={project.tech} max={6} />
             <ProjectLinks project={project} />
@@ -135,7 +135,7 @@ function ProjectCard({ project, index, pastel }: { project: Project; index: numb
         <p className="brut-mono text-[0.66rem] uppercase tracking-[0.1em] text-[var(--ink-2)]">
           {project.tag} · {project.year}
         </p>
-        <p className="text-[0.84rem] leading-relaxed text-[var(--ink-2)] line-clamp-3">
+        <p className="text-[0.95rem] leading-relaxed text-[var(--ink-2)] line-clamp-3">
           {project.description}
         </p>
         <div className="mt-auto flex flex-col gap-3.5 pt-1">
@@ -186,7 +186,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             Built &amp; <span className="text-[var(--accent)]">Shipped.</span>
           </h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <p className="max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
+            <p className="max-w-md text-base leading-relaxed text-[var(--ink-2)]">
               Real products taken from zero to deployed: full-stack apps, AI tooling,
               and computer-vision systems.
             </p>

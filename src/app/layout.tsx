@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Sora } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { MainNavbar } from "@/components/ui/main-navbar";
@@ -28,10 +28,10 @@ const inter = Inter({
 });
 
 // Big identity titles ONLY (hero BIBEK PATHAK / BUILDER / EXPLORE + major page titles like
-// "Built & Shipped") use Sora — a clean, geometric, highly readable display sans — via --font-brut-display.
-const displayFont = Sora({
+// "Built & Shipped") use Fraunces, a warm high-contrast display serif, via --font-brut-display.
+// Loaded variable (no fixed weight) so large titles get its dramatic display optical cut.
+const displayFont = Fraunces({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
   variable: "--font-brut-display",
   display: "swap",
 });

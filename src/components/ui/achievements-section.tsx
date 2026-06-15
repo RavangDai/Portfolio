@@ -28,7 +28,7 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
           <h1 className="brut-title text-[clamp(3rem,9vw,6.5rem)]">
             Achieve<span className="text-[var(--accent)]">-</span>ments.
           </h1>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
+          <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
             Competition wins, academic recognition, and certifications earned while
             building and shipping real products.
           </p>
@@ -69,7 +69,7 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                 <article
                   className={cn(
                     "brut-card-i relative flex flex-col gap-4 p-5 sm:flex-row sm:gap-5 sm:p-6",
-                    hi && "!bg-[var(--accent)] text-[var(--accent-ink)]"
+                    hi && "!bg-[var(--accent-deep)] text-[var(--accent-ink)]"
                   )}
                 >
                   {/* Icon box */}
@@ -113,15 +113,15 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                     <p
                       className={cn(
                         "mt-0.5 brut-mono text-[0.66rem] uppercase tracking-[0.12em]",
-                        hi ? "text-[var(--accent-ink)]/80" : "text-[var(--ink-2)]"
+                        hi ? "text-[var(--accent-ink)]/90" : "text-[var(--ink-2)]"
                       )}
                     >
                       {item.org}
                     </p>
                     <p
                       className={cn(
-                        "mt-3 text-[0.86rem] leading-relaxed",
-                        hi ? "text-[var(--accent-ink)]/90" : "text-[var(--ink-2)]"
+                        "mt-3 text-[0.95rem] leading-relaxed",
+                        hi ? "text-[var(--accent-ink)]" : "text-[var(--ink-2)]"
                       )}
                     >
                       {item.desc}

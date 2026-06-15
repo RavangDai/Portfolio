@@ -309,16 +309,16 @@ export function Chatbot() {
     // On the light brutalist routes the widget becomes a proper light paper block: hard 2px
     // ink border, hard cobalt offset shadow, ink text, cobalt accents. The palette below is
     // exposed as CSS vars on the panel root and inherited by the nested message renderers.
-    const accentPrimary = isBrut ? "#2e5bff" : accent.primary;
+    const accentPrimary = isBrut ? "#bd5232" : accent.primary;
     const chatVars = (isBrut
         ? {
-              "--chat-fg": "#56544e",
-              "--chat-fg-strong": "#0a0a0a",
-              "--chat-fg-dim": "#8a877e",
-              "--chat-line": "#0a0a0a",
-              "--chat-code-bg": "rgba(46,91,255,0.12)",
-              "--chat-link": "#2e5bff",
-              "--chat-accent": "#2e5bff",
+              "--chat-fg": "#5c5349",
+              "--chat-fg-strong": "#1a1714",
+              "--chat-fg-dim": "#6f6557",
+              "--chat-line": "#1a1714",
+              "--chat-code-bg": "rgba(189,82,50,0.12)",
+              "--chat-link": "#bd5232",
+              "--chat-accent": "#bd5232",
           }
         : {
               "--chat-fg": "rgba(255,255,255,0.72)",
@@ -481,15 +481,15 @@ export function Chatbot() {
                             isBrut ? "rounded-[6px]" : "rounded-full"
                         )}
                         style={isBrut ? {
-                            background: "#faf8f2",
-                            border: "2px solid #0a0a0a",
-                            boxShadow: "4px 4px 0 0 #2e5bff",
+                            background: "#f7f1e8",
+                            border: "2px solid #1a1714",
+                            boxShadow: "4px 4px 0 0 #bd5232",
                         } : { background: "rgba(10,12,20,0.92)", backdropFilter: "blur(6px) saturate(160%)", WebkitBackdropFilter: "blur(6px) saturate(160%)", border: `1px solid ${accent.primary}40`, boxShadow: `0 0 20px ${accent.glow}` }}
                         aria-label="Reopen chat"
                     >
                         <motion.div className="h-1.5 w-1.5 rounded-full" style={{ background: accentPrimary }}
                             animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity }} />
-                        <span className={cn("text-[11px] font-medium", isBrut ? "text-[#0a0a0a]" : "text-white/60")}>resume chat</span>
+                        <span className={cn("text-[11px] font-medium", isBrut ? "text-[#1a1714]" : "text-white/60")}>resume chat</span>
                     </motion.button>
                 )}
             </AnimatePresence>
@@ -506,9 +506,9 @@ export function Chatbot() {
                     className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden"
                     style={isBrut ? {
                         borderRadius: "6px",
-                        background: "#faf8f2",
-                        border: "2px solid #0a0a0a",
-                        boxShadow: "4px 4px 0 0 #2e5bff",
+                        background: "#f7f1e8",
+                        border: "2px solid #1a1714",
+                        boxShadow: "4px 4px 0 0 #bd5232",
                     } : {
                         borderRadius: "999px",
                         background: "rgba(10,10,12,0.92)",
@@ -521,19 +521,19 @@ export function Chatbot() {
                     aria-label="Open AI chat"
                 >
                     {/* Left accent bar */}
-                    <div className="h-7 w-[3px] rounded-full shrink-0" style={{ background: isBrut ? "#2e5bff" : "rgba(255,255,255,0.4)" }} />
+                    <div className="h-7 w-[3px] rounded-full shrink-0" style={{ background: isBrut ? "#bd5232" : "rgba(255,255,255,0.4)" }} />
                     <div className="flex flex-col gap-0.5">
-                        <span className={cn("text-[13px] font-bold tracking-tight leading-none", isBrut ? "text-[#0a0a0a]" : "text-white")} style={{ letterSpacing: "-0.01em" }}>
-                            Bibek<span className={cn("font-light", isBrut ? "text-[#2e5bff]" : "text-white/45")}>.AI</span>
+                        <span className={cn("text-[13px] font-bold tracking-tight leading-none", isBrut ? "text-[#1a1714]" : "text-white")} style={{ letterSpacing: "-0.01em" }}>
+                            Bibek<span className={cn("font-light", isBrut ? "text-[#bd5232]" : "text-white/45")}>.AI</span>
                         </span>
-                        <span className={cn("text-[9px] font-medium tracking-[0.20em] uppercase leading-none", isBrut ? "text-[#8a877e]" : "text-white/30")}>ask me anything</span>
+                        <span className={cn("text-[9px] font-medium tracking-[0.20em] uppercase leading-none", isBrut ? "text-[#6f6557]" : "text-white/30")}>ask me anything</span>
                     </div>
                     {/* Live dot */}
                     <div className="relative h-2 w-2 shrink-0 ml-1">
                         <motion.span className="absolute inset-0 rounded-full"
-                            style={{ background: isBrut ? "rgba(46,91,255,0.5)" : "rgba(255,255,255,0.5)" }}
+                            style={{ background: isBrut ? "rgba(189,82,50,0.5)" : "rgba(255,255,255,0.5)" }}
                             animate={{ scale: [1, 2.2, 1], opacity: [0.5, 0, 0.5] }} transition={{ duration: 2.2, repeat: Infinity }} />
-                        <span className="relative flex h-2 w-2 rounded-full" style={{ background: isBrut ? "#2e5bff" : "rgba(255,255,255,0.8)" }} />
+                        <span className="relative flex h-2 w-2 rounded-full" style={{ background: isBrut ? "#bd5232" : "rgba(255,255,255,0.8)" }} />
                     </div>
                     {/* Shimmer sweep (dark only) */}
                     {!isBrut && (
@@ -573,10 +573,10 @@ export function Chatbot() {
                         style={isBrut ? {
                             ...chatVars,
                             maxHeight: "min(82vh, calc(100dvh - 1.5rem))",
-                            background: "#faf8f2",
-                            border: "2px solid #0a0a0a",
-                            boxShadow: "6px 6px 0 0 #2e5bff",
-                            color: "#0a0a0a",
+                            background: "#f7f1e8",
+                            border: "2px solid #1a1714",
+                            boxShadow: "6px 6px 0 0 #bd5232",
+                            color: "#1a1714",
                         } : {
                             ...chatVars,
                             maxHeight: "min(82vh, calc(100dvh - 1.5rem))",
@@ -605,10 +605,10 @@ export function Chatbot() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     {/* Avatar */}
-                                    <div className={cn("relative h-9 w-9 shrink-0 flex items-center justify-center text-[13px] font-black", isBrut ? "rounded-[5px] text-[#0a0a0a]" : "rounded-full text-white")}
+                                    <div className={cn("relative h-9 w-9 shrink-0 flex items-center justify-center text-[13px] font-black", isBrut ? "rounded-[5px] text-[#1a1714]" : "rounded-full text-white")}
                                         style={isBrut ? {
-                                            background: "#faf8f2",
-                                            border: "2px solid #0a0a0a",
+                                            background: "#f7f1e8",
+                                            border: "2px solid #1a1714",
                                         } : {
                                             background: "rgba(255,255,255,0.06)",
                                             border: "1px solid rgba(255,255,255,0.18)",
@@ -622,12 +622,12 @@ export function Chatbot() {
                                         )}
                                     </div>
                                     <div>
-                                        <p className={cn("text-[14px] font-bold leading-none", isBrut ? "text-[#0a0a0a]" : "text-white")} style={{ letterSpacing: "-0.01em" }}>
-                                            Bibek<span className={cn("font-light", isBrut ? "text-[#2e5bff]" : "text-white/40")}>.AI</span>
+                                        <p className={cn("text-[14px] font-bold leading-none", isBrut ? "text-[#1a1714]" : "text-white")} style={{ letterSpacing: "-0.01em" }}>
+                                            Bibek<span className={cn("font-light", isBrut ? "text-[#bd5232]" : "text-white/40")}>.AI</span>
                                         </p>
                                         <div className="flex items-center gap-1.5 mt-1">
-                                            <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: isBrut ? "#2e5bff" : "rgba(255,255,255,0.5)" }} />
-                                            <span className={cn("text-[10px] tracking-wide", isBrut ? "text-[#8a877e]" : "text-white/35")}>online · ready to chat</span>
+                                            <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: isBrut ? "#bd5232" : "rgba(255,255,255,0.5)" }} />
+                                            <span className={cn("text-[10px] tracking-wide", isBrut ? "text-[#6f6557]" : "text-white/35")}>online · ready to chat</span>
                                         </div>
                                     </div>
                                 </div>
@@ -636,7 +636,7 @@ export function Chatbot() {
                                         className={cn(
                                             "h-8 w-8 flex items-center justify-center transition-all duration-200",
                                             isBrut
-                                                ? cn("rounded-[4px] border-2 border-[#0a0a0a]", voiceEnabled ? "bg-[#2e5bff] text-white" : "bg-[#faf8f2] text-[#0a0a0a] hover:bg-[#2e5bff] hover:text-white")
+                                                ? cn("rounded-[4px] border-2 border-[#1a1714]", voiceEnabled ? "bg-[#bd5232] text-white" : "bg-[#f7f1e8] text-[#1a1714] hover:bg-[#bd5232] hover:text-white")
                                                 : cn("rounded-full", voiceEnabled ? "text-white/85 bg-white/[0.08] hover:bg-white/[0.12]" : "text-white/30 hover:text-white/80 hover:bg-white/[0.08]")
                                         )}
                                         aria-label={voiceEnabled ? "Disable voice" : "Enable voice"}
@@ -647,7 +647,7 @@ export function Chatbot() {
                                         className={cn(
                                             "h-8 w-8 flex items-center justify-center transition-all duration-200",
                                             isBrut
-                                                ? "rounded-[4px] border-2 border-[#0a0a0a] bg-[#faf8f2] text-[#0a0a0a] hover:bg-[#2e5bff] hover:text-white"
+                                                ? "rounded-[4px] border-2 border-[#1a1714] bg-[#f7f1e8] text-[#1a1714] hover:bg-[#bd5232] hover:text-white"
                                                 : "rounded-full text-white/30 hover:text-white/80 hover:bg-white/[0.08]"
                                         )}
                                         aria-label="Close">
@@ -678,10 +678,10 @@ export function Chatbot() {
                                         className={cn("flex gap-2.5", isAssistant ? "justify-start items-start" : "justify-end")}
                                     >
                                         {isAssistant && (
-                                            <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[9px] font-black mt-0.5", isBrut ? "rounded-[4px] text-[#0a0a0a]" : "rounded-full text-white")}
+                                            <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[9px] font-black mt-0.5", isBrut ? "rounded-[4px] text-[#1a1714]" : "rounded-full text-white")}
                                                 style={isBrut ? {
-                                                    background: "#faf8f2",
-                                                    border: "2px solid #0a0a0a",
+                                                    background: "#f7f1e8",
+                                                    border: "2px solid #1a1714",
                                                 } : {
                                                     background: "rgba(255,255,255,0.07)",
                                                     border: "1px solid rgba(255,255,255,0.15)",
@@ -713,7 +713,7 @@ export function Chatbot() {
                                                                 className={cn(
                                                                     "px-3 py-1.5 text-[10.5px] font-medium transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
                                                                     isBrut
-                                                                        ? "rounded-[4px] border-2 border-[#0a0a0a] text-[#0a0a0a] bg-[#faf8f2] hover:bg-[#2e5bff] hover:text-white"
+                                                                        ? "rounded-[4px] border-2 border-[#1a1714] text-[#1a1714] bg-[#f7f1e8] hover:bg-[#bd5232] hover:text-white"
                                                                         : "rounded-full text-white/55 border border-white/[0.10] hover:border-white/25 hover:text-white/90 hover:bg-white/[0.04]"
                                                                 )}>
                                                                 {c}
@@ -725,9 +725,9 @@ export function Chatbot() {
                                         ) : (
                                             <div className={cn("max-w-[78%] text-[12.5px] leading-[1.6] px-4 py-2.5", isBrut ? "rounded-[6px] text-white" : "rounded-2xl rounded-br-sm text-white/90")}
                                                 style={isBrut ? {
-                                                    background: "#2e5bff",
-                                                    border: "2px solid #0a0a0a",
-                                                    boxShadow: "3px 3px 0 0 #0a0a0a",
+                                                    background: "#bd5232",
+                                                    border: "2px solid #1a1714",
+                                                    boxShadow: "3px 3px 0 0 #1a1714",
                                                 } : {
                                                     background: "rgba(255,255,255,0.08)",
                                                     border: "1px solid rgba(255,255,255,0.14)",
@@ -746,11 +746,11 @@ export function Chatbot() {
                                 <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                     className="flex items-start gap-2.5">
-                                    <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[9px] font-black", isBrut ? "rounded-[4px] text-[#0a0a0a]" : "rounded-full text-white")}
-                                        style={isBrut ? { background: "#faf8f2", border: "2px solid #0a0a0a" } : { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)" }}>B</div>
+                                    <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[9px] font-black", isBrut ? "rounded-[4px] text-[#1a1714]" : "rounded-full text-white")}
+                                        style={isBrut ? { background: "#f7f1e8", border: "2px solid #1a1714" } : { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)" }}>B</div>
                                     <div className="flex items-center py-[7px]">
                                         {isBrut
-                                            ? <span className="text-[12px] font-medium tracking-wide text-[#56544e] animate-pulse" style={{ fontFamily: "var(--font-brut-mono), monospace" }}>thinking...</span>
+                                            ? <span className="text-[12px] font-medium tracking-wide text-[#5c5349] animate-pulse" style={{ fontFamily: "var(--font-brut-mono), monospace" }}>thinking...</span>
                                             : <ShiningText text="thinking..." />}
                                     </div>
                                 </motion.div>

@@ -76,7 +76,7 @@ export function ContactSection() {
               <h2 className="brut-title text-[clamp(2.6rem,7vw,4.8rem)]">
                 Let&apos;s build <span className="text-[var(--accent)]">something.</span>
               </h2>
-              <p className="mt-5 max-w-xs text-sm leading-relaxed text-[var(--ink-2)]">
+              <p className="mt-5 max-w-xs text-base leading-relaxed text-[var(--ink-2)]">
                 Whether it&apos;s a data project, full-stack app, or something
                 experimental. Reach out.
               </p>
@@ -206,7 +206,7 @@ export function ContactSection() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.55, ease }}
-                      className="mx-auto max-w-[260px] text-sm leading-relaxed text-[var(--ink-2)]"
+                      className="mx-auto max-w-[260px] text-base leading-relaxed text-[var(--ink-2)]"
                     >
                       Thanks for reaching out. It landed in my inbox and I&apos;ll get back to you soon.
                     </motion.p>

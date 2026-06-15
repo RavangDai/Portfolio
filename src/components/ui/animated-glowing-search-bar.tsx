@@ -36,13 +36,13 @@ export default function GlowingChatInput({
             disabled={disabled}
             placeholder={placeholder}
             type="text"
-            className="relative h-[50px] w-full rounded-[6px] border-2 border-[#0a0a0a] bg-[#faf8f2] pl-4 pr-[54px] text-[13px] text-[#0a0a0a] placeholder:text-[#8a877e] focus:outline-none focus:shadow-[4px_4px_0_0_#2e5bff] transition-shadow disabled:opacity-50"
+            className="relative h-[50px] w-full rounded-[6px] border-2 border-[#1a1714] bg-[#f7f1e8] pl-4 pr-[54px] text-[13px] text-[#1a1714] placeholder:text-[#6f6557] focus:outline-none focus:shadow-[4px_4px_0_0_#bd5232] transition-shadow disabled:opacity-50"
             style={{ letterSpacing: "-0.01em" }}
           />
           <button
             type="submit"
             disabled={disabled || !value.trim()}
-            className="absolute right-[6px] top-1/2 flex h-[38px] w-[38px] -translate-y-1/2 items-center justify-center rounded-[4px] border-2 border-[#0a0a0a] bg-[#2e5bff] text-white transition-opacity duration-200 disabled:opacity-30"
+            className="absolute right-[6px] top-1/2 flex h-[38px] w-[38px] -translate-y-1/2 items-center justify-center rounded-[4px] border-2 border-[#1a1714] bg-[#bd5232] text-white transition-opacity duration-200 disabled:opacity-30"
             aria-label="Send"
           >
             <Send className="h-3.5 w-3.5" />

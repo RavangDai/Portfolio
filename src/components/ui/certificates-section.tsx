@@ -48,7 +48,7 @@ function CertCard({ certificate, pastel }: { certificate: Certificate; pastel: s
         </div>
 
         <h3 className="brut-h text-xl leading-tight">{certificate.title}</h3>
-        <p className="text-[0.82rem] leading-relaxed text-[var(--ink-2)]">{certificate.summary}</p>
+        <p className="text-[0.95rem] leading-relaxed text-[var(--ink-2)]">{certificate.summary}</p>
 
         <div className="flex flex-wrap gap-1.5">
           {certificate.skills.map((skill) => (
@@ -104,7 +104,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           <h1 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
             Proof wall. <span className="text-[var(--accent)]">Real receipts.</span>
           </h1>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--ink-2)]">
+          <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
             Issuer-backed credentials, each linking to its public verification page.
           </p>
         </motion.header>
