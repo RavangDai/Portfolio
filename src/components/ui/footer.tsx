@@ -51,7 +51,8 @@ export function Footer() {
 
   return (
       <footer className="theme-brut relative w-full border-t-2 border-[var(--ink)] bg-[var(--paper)]">
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 pt-10 pb-7 sm:pt-14 sm:pb-8">
+        {/* Extra bottom padding on small screens clears the fixed mobile tab bar (main-navbar.tsx). */}
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 pt-10 pb-24 sm:pt-14 md:pb-8">
           <div className="grid grid-cols-2 gap-x-6 gap-y-8 border-b-2 border-[var(--ink)] pb-8 sm:gap-10 lg:grid-cols-[1.8fr_1fr_1fr_auto] lg:gap-12 lg:pb-10">
             {/* Brand */}
             <AnimatedContainer delay={0.05} className="col-span-2 space-y-4 lg:col-span-1">
@@ -123,9 +124,19 @@ export function Footer() {
               <p className="brut-mono text-[0.72rem] text-[var(--ink-3)]">
                 © {new Date().getFullYear()} Bibek Pathak. All rights reserved.
               </p>
-              <p className="brut-mono text-[0.72rem] text-[var(--ink-3)]">
-                Built with Next.js · Tailwind · Framer Motion
-              </p>
+              <div className="flex items-center gap-3">
+                <p className="brut-mono text-[0.72rem] text-[var(--ink-3)]">
+                  Built with Next.js · Tailwind · Framer Motion
+                </p>
+                <span className="text-[var(--ink-3)]/40" aria-hidden>·</span>
+                {/* Discreet owner-only entry point. Middleware redirects to /admin/login when unauthenticated. */}
+                <Link
+                  href="/admin"
+                  className="brut-mono text-[0.72rem] text-[var(--ink-3)] transition-colors hover:text-[var(--accent)]"
+                >
+                  Admin
+                </Link>
+              </div>
             </div>
           </AnimatedContainer>
         </div>

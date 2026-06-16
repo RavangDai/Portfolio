@@ -467,6 +467,10 @@ export function Chatbot() {
     // The admin panel ships its own chrome and content tools — no public assistant there.
     if (pathname.startsWith("/admin")) return null;
 
+    // On content routes the mobile bottom tab bar (see main-navbar.tsx) occupies the
+    // viewport bottom, so lift the launcher above it on small screens. Home has no tab bar.
+    const onTabBarRoute = pathname !== "/" && !pathname.startsWith("/admin");
+
     return (
         <>
             {/* ─── COLLAPSED pill ─── */}
@@ -477,7 +481,8 @@ export function Chatbot() {
                         initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
                         whileHover={{ scale: 1.05, y: -1 }}
                         className={cn(
-                            "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2 px-4 py-2.5 cursor-pointer focus:outline-none",
+                            "fixed right-4 sm:right-6 z-50 flex items-center gap-2 px-4 py-2.5 cursor-pointer focus:outline-none",
+                            onTabBarRoute ? "bottom-24 md:bottom-6" : "bottom-4 sm:bottom-6",
                             isBrut ? "rounded-[6px]" : "rounded-full"
                         )}
                         style={isBrut ? {
@@ -503,7 +508,10 @@ export function Chatbot() {
                     transition={{ type: "spring", stiffness: 260, damping: 20, delay: 1.5 }}
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.96 }}
-                    className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden"
+                    className={cn(
+                        "fixed right-4 sm:right-6 z-50 flex items-center gap-3 px-5 py-3 cursor-pointer focus:outline-none overflow-hidden",
+                        onTabBarRoute ? "bottom-24 md:bottom-6" : "bottom-4 sm:bottom-6"
+                    )}
                     style={isBrut ? {
                         borderRadius: "6px",
                         background: "#f7f1e8",
