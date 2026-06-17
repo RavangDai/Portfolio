@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { SiteInfo } from "@/lib/content/types";
 
 // The brutalist blueprint hero is client-driven (scroll-linked transforms + GSAP). Load it on
 // the client so SSR stays simple; while the chunk loads, show a paper placeholder that matches
@@ -10,6 +11,6 @@ const HorizonHero = dynamic(
   { ssr: false, loading: () => <div className="hero-loading" /> }
 );
 
-export function HomeHero() {
-  return <HorizonHero />;
+export function HomeHero({ site }: { site: SiteInfo }) {
+  return <HorizonHero site={site} />;
 }

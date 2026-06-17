@@ -1,4 +1,5 @@
 import { HomeHero } from "@/components/ui/home-hero";
+import { getContent } from "@/lib/storage";
 
 // The scroll ends in the hero's own EXPLORE beat, whose buttons route to
 // /projects, /certificates, /achievements, /contact (their own pages).
@@ -7,7 +8,8 @@ import { HomeHero } from "@/components/ui/home-hero";
 // rendered on the server so crawlers always receive a real <h1> + bio carrying the
 // name variations that matter for search. It's visually hidden and out of flow, so
 // it never affects the hero's position: sticky layout.
-export default function HomePage() {
+export default async function HomePage() {
+  const { site } = await getContent();
   return (
     <>
       <section className="sr-only">
@@ -21,7 +23,7 @@ export default function HomePage() {
           ways to get in touch.
         </p>
       </section>
-      <HomeHero />
+      <HomeHero site={site} />
     </>
   );
 }

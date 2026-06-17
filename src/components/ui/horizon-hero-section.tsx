@@ -7,6 +7,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Download, FolderGit2, BadgeCheck, Trophy, Mail, Plus } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
+import type { SiteInfo } from "@/lib/content/types";
+import { DEFAULT_CONTENT } from "@/lib/content/defaults";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,7 +61,9 @@ const PROOF = [
   { name: "VectorVance", tag: "Computer Vision" },
 ] as const;
 
-export const Component = () => {
+// Editable hero copy + links come from the content doc (`site.*`), so the CMS drives them without
+// a redeploy. Falls back to DEFAULT_CONTENT.site for the read-only / no-token case.
+export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -176,6 +180,9 @@ export const Component = () => {
     ));
 
   const beat = BEATS[currentSection];
+  // Beats 0 (IDENTITY) and 1 (BUILDER) sublines are CMS-editable; beat 2 (EXPLORE) stays authored.
+  const beatLine1 = currentSection === 0 ? site.heroLine1 : currentSection === 1 ? site.builderLine1 : beat.line1;
+  const beatLine2 = currentSection === 0 ? site.heroLine2 : currentSection === 1 ? site.builderLine2 : beat.line2;
 
   return (
     <div ref={containerRef} className="hero-container">
@@ -213,7 +220,7 @@ export const Component = () => {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--cobalt)] opacity-60" />
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--cobalt)]" />
                   </span>
-                  Status: Available
+                  Status: {site.statusText}
                 </span>
               )}
 
@@ -231,8 +238,8 @@ export const Component = () => {
               <div className="hero-id-rule" />
 
               <div ref={subtitleRef} className="hero-subtitle hero-id-sub">
-                <p className="subtitle-line">{beat.line1}</p>
-                <p className="subtitle-line">{beat.line2}</p>
+                <p className="subtitle-line">{beatLine1}</p>
+                <p className="subtitle-line">{beatLine2}</p>
               </div>
 
               {/* Beat 00 — CTAs */}
@@ -242,14 +249,14 @@ export const Component = () => {
                     View Projects
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
-                  <button className="brut-btn-dark" onClick={() => window.open("/Bibek_Pathak_Resume_Mar26.pdf", "_blank")}>
+                  <button className="brut-btn-dark" onClick={() => window.open(site.resumeUrl, "_blank")}>
                     Download Resume
                     <Download className="h-3.5 w-3.5" />
                   </button>
-                  <a href="https://github.com/RavangDai" target="_blank" rel="noreferrer" aria-label="GitHub" className="brut-icon-dark">
+                  <a href={site.githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub" className="brut-icon-dark">
                     <FaGithub className="h-5 w-5" />
                   </a>
-                  <a href="https://www.linkedin.com/in/bibek-pathak-10398a301/" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="brut-icon-dark">
+                  <a href={site.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="brut-icon-dark">
                     <FaLinkedinIn className="h-5 w-5" />
                   </a>
                 </div>
