@@ -2407,7 +2407,9 @@ body {
   right: -0.06em;
   bottom: 0.01em;
   height: 0.09em;
-  background: var(--accent, #bd5232);
+  /* Overridable so a title on a filled (dark) accent card can swap the terracotta stroke for a
+     light marker that clears the background; defaults to the accent everywhere else. */
+  background: var(--ink-underline, var(--accent, #bd5232));
   border-radius: 2px 7px 3px 8px;
   transform: rotate(-0.5deg);
   clip-path: inset(0 calc(100% - var(--hl, 0%)) 0 0);

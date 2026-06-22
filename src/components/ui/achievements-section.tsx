@@ -123,9 +123,22 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                       className={cn("brut-h text-xl sm:text-2xl", hi && "text-[var(--accent-ink)]")}
                       // .brut-h sets color:var(--ink) as unlayered CSS, which beats Tailwind's
                       // layered text-* utility — so force white inline on the highlight card.
-                      style={hi ? { color: "var(--accent-ink)" } : undefined}
+                      // The --ink-* vars feed HighlightText: on the dark terracotta card the
+                      // glyphs ink to white and the marker sweeps butter (matching the tape) so
+                      // neither blends into the background; light cards keep ink + terracotta.
+                      style={
+                        hi
+                          ? {
+                              color: "var(--accent-ink)",
+                              ["--ink-muted" as string]: "rgba(255,255,255,0.72)",
+                              ["--ink-underline" as string]: "#f1d6a4",
+                            }
+                          : undefined
+                      }
                     >
-                      <HighlightText mode="reveal" ink underline inkColor="ink">{item.title}</HighlightText>
+                      <HighlightText mode="reveal" ink underline inkColor={hi ? "accent-ink" : "ink"}>
+                        {item.title}
+                      </HighlightText>
                     </h3>
                     <p
                       className={cn(

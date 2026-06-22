@@ -41,6 +41,7 @@ const WASH = {
 const INK = {
   accent: "var(--accent, #bd5232)",
   "accent-deep": "var(--accent-deep, #9e3f27)",
+  "accent-ink": "var(--accent-ink, #ffffff)", // for titles on filled (dark) accent cards
   ink: "var(--ink, #1a1714)",
 } as const;
 
