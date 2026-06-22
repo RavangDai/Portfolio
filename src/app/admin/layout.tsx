@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Home } from "lucide-react";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 
 const NAV = [
@@ -15,8 +16,19 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <div className="theme-brut brut-bg min-h-screen">
       {/* Top bar */}
       <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b-2 border-[var(--ink)] bg-[var(--paper)] px-4 sm:px-6">
-        <span className="brut-kicker">BIBEK.TECH / ADMIN</span>
-        <LogoutButton />
+        <Link href="/" className="brut-kicker transition-colors hover:text-[var(--accent)]">
+          BIBEK.TECH / ADMIN
+        </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/"
+            className="brut-mono inline-flex items-center gap-1.5 rounded-[var(--brut-radius)] border-2 border-[var(--ink)] bg-[var(--paper)] px-3 py-1.5 text-xs font-semibold text-[var(--ink)] transition-colors hover:bg-[var(--accent-soft)]"
+          >
+            <Home className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">View site</span>
+          </Link>
+          <LogoutButton />
+        </div>
       </header>
 
       <div className="flex">
