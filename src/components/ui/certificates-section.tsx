@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, CheckCircle2, ExternalLink } from "lucide-react";
 import type { Certificate } from "@/lib/content/types";
 import { getIcon } from "@/lib/content/icons";
+import { HighlightText } from "@/components/ui/highlight";
+import { Tape } from "@/components/ui/tape";
 
 const PASTELS = ["var(--mint)", "var(--lavender)", "var(--butter)"];
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -40,14 +42,16 @@ function CertCard({ certificate, pastel }: { certificate: Certificate; pastel: s
             <Icon className="h-4 w-4 text-[var(--accent)]" />
           </span>
           <div className="min-w-0">
-            <p className="brut-mono text-[0.6rem] uppercase tracking-[0.16em] text-[var(--ink-2)]">
+            <p className="brut-mono text-[0.72rem] uppercase tracking-[0.16em] text-[var(--ink-2)]">
               {certificate.issuer}
             </p>
-            <p className="text-[0.66rem] font-medium text-[var(--ink-3)]">{certificate.category}</p>
+            <p className="text-[0.78rem] font-medium text-[var(--ink-3)]">{certificate.category}</p>
           </div>
         </div>
 
-        <h3 className="brut-h text-xl leading-tight">{certificate.title}</h3>
+        <h3 className="brut-h text-xl leading-tight">
+          <HighlightText mode="reveal" ink underline inkColor="ink">{certificate.title}</HighlightText>
+        </h3>
         <p className="text-[0.95rem] leading-relaxed text-[var(--ink-2)]">{certificate.summary}</p>
 
         <div className="flex flex-wrap gap-1.5">
@@ -102,7 +106,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
         >
           <p className="brut-kicker mb-4">Certificates · Verified</p>
           <h1 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
-            Proof wall. <span className="text-[var(--accent)]">Real receipts.</span>
+            Proof wall. <HighlightText mode="scroll" ink underline from="right">Real receipts.</HighlightText>
           </h1>
           <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
             Issuer-backed credentials, each linking to its public verification page.
@@ -121,7 +125,14 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
               key={certificate.id}
               variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6, ease }}
+              className="relative"
             >
+              {i === 0 && (
+                <Tape color="mint" rotate={-5} style={{ top: "-0.55rem", left: "1.3rem", width: "3.4rem", height: "1.2rem" }} />
+              )}
+              {i === 2 && (
+                <Tape color="clay" rotate={6} style={{ top: "-0.55rem", right: "1.3rem", width: "3rem", height: "1.2rem" }} />
+              )}
               <CertCard certificate={certificate} pastel={PASTELS[i % PASTELS.length]} />
             </motion.div>
           ))}

@@ -83,7 +83,7 @@ function Tag({ label, variant = "default", brut = false }: { label: string; vari
     if (brut) {
         // Light brutalism — square ink-bordered chips regardless of semantic variant.
         return (
-            <span className="inline-flex items-center rounded-[3px] border-2 border-[#1a1714] bg-[#f7f1e8] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#1a1714]">
+            <span className="inline-flex items-center rounded-[3px] border-2 border-[#1a1714] bg-[#f7f1e8] px-2 py-0.5 text-[11.5px] font-semibold uppercase tracking-wide text-[#1a1714]">
                 {label}
             </span>
         );
@@ -91,7 +91,7 @@ function Tag({ label, variant = "default", brut = false }: { label: string; vari
     return (
         <span
             className={cn(
-                "inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                "inline-flex items-center rounded-md px-2 py-0.5 text-[11.5px] font-medium uppercase tracking-wide",
                 variant === "ai" && "bg-cyan-500/15 text-cyan-300 border border-cyan-500/20",
                 variant === "production" && "bg-emerald-500/15 text-emerald-300 border border-emerald-500/20",
                 variant === "default" && "bg-white/[0.06] text-white/60 border border-white/[0.08]"
@@ -181,7 +181,7 @@ function ProjectCard({ data, brut = false }: { data: ProjectCardData; brut?: boo
 
             {/* Status */}
             {data.status && (
-                <p className="text-[11px] text-[var(--chat-fg-dim)] italic">{linkify(data.status)}</p>
+                <p className="text-[12px] text-[var(--chat-fg-dim)] italic">{linkify(data.status)}</p>
             )}
 
             {/* Prompt for more info */}
@@ -209,7 +209,7 @@ function MetricCard({ data, brut = false }: { data: MetricCardData; brut?: boole
                     : "rounded-lg border border-emerald-500/[0.15] bg-gradient-to-br from-emerald-500/10 to-cyan-500/5"
             )}
         >
-            <p className="text-[11px] uppercase tracking-wide text-[var(--chat-fg-dim)]">{data.label}</p>
+            <p className="text-[12px] uppercase tracking-wide text-[var(--chat-fg-dim)]">{data.label}</p>
             <CountUpMetric value={data.value} unit={data.unit} />
             {data.context && <p className="text-[12px] text-[var(--chat-fg)]">{data.context}</p>}
         </motion.div>

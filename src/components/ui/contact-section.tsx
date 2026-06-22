@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { HighlightText } from "@/components/ui/highlight";
+import { Tape } from "@/components/ui/tape";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -74,7 +76,8 @@ export function ContactSection() {
             <div>
               <p className="brut-kicker mb-4">Get In Touch</p>
               <h2 className="brut-title text-[clamp(2.6rem,7vw,4.8rem)]">
-                Let&apos;s build <span className="text-[var(--accent)]">something.</span>
+                Let&apos;s build{" "}
+                <HighlightText mode="scroll" ink underline>something.</HighlightText>
               </h2>
               <p className="mt-5 max-w-xs text-base leading-relaxed text-[var(--ink-2)]">
                 Whether it&apos;s a data project, full-stack app, or something
@@ -83,10 +86,14 @@ export function ContactSection() {
             </div>
 
             <div className="flex flex-col gap-5">
-              {/* Email */}
-              <div className="brut-card flex items-center justify-between gap-3 p-4">
+              {/* Email — pinned sticky-note */}
+              <div
+                className="brut-note flex items-center justify-between gap-3 p-4"
+                style={{ "--tilt": "-2deg" } as React.CSSProperties}
+              >
+                <Tape rotate={-4} style={{ top: "-0.55rem", left: "1.1rem", width: "3.4rem", height: "1.2rem" }} />
                 <div className="min-w-0">
-                  <p className="brut-kicker mb-1.5 text-[0.58rem]">Email</p>
+                  <p className="brut-kicker mb-1.5 text-[0.72rem]">Email</p>
                   <div className="relative overflow-hidden">
                     <AnimatePresence mode="popLayout" initial={false}>
                       {copied ? (
@@ -134,21 +141,29 @@ export function ContactSection() {
                 </button>
               </div>
 
-              {/* Location */}
-              <div className="brut-card p-4">
-                <p className="brut-kicker mb-1.5 text-[0.58rem]">Based at</p>
+              {/* Location — pinned sticky-note */}
+              <div
+                className="brut-note p-4"
+                style={{ "--tilt": "1.5deg" } as React.CSSProperties}
+              >
+                <Tape color="blush" rotate={5} style={{ top: "-0.55rem", right: "1.2rem", width: "3rem", height: "1.2rem" }} />
+                <p className="brut-kicker mb-1.5 text-[0.72rem]">Based at</p>
                 <p className="text-sm font-medium text-[var(--ink)]">Hammond, Louisiana, USA</p>
                 <p className="mt-0.5 text-xs text-[var(--ink-3)]">Open to remote &amp; hybrid</p>
               </div>
 
-              {/* Focus */}
-              <div className="brut-card p-4">
-                <p className="brut-kicker mb-1.5 text-[0.58rem]">Focus</p>
+              {/* Focus — pinned sticky-note */}
+              <div
+                className="brut-note p-4"
+                style={{ "--tilt": "-1deg" } as React.CSSProperties}
+              >
+                <Tape color="mint" rotate={-6} style={{ top: "-0.55rem", left: "1.4rem", width: "3.2rem", height: "1.2rem" }} />
+                <p className="brut-kicker mb-1.5 text-[0.72rem]">Focus</p>
                 <p className="text-sm font-medium text-[var(--ink)]">Full-stack · Data / AI</p>
               </div>
 
               {/* Status */}
-              <div className="inline-flex w-fit items-center gap-2 rounded-[4px] border-2 border-[var(--ink)] bg-[var(--accent)] px-3 py-1.5 brut-mono text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[var(--accent-ink)]">
+              <div className="inline-flex w-fit items-center gap-2 rounded-[4px] border-2 border-[var(--ink)] bg-[var(--accent)] px-3 py-1.5 brut-mono text-[0.74rem] font-bold uppercase tracking-[0.12em] text-[var(--accent-ink)]">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-ink)] opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent-ink)]" />
@@ -306,7 +321,7 @@ function BrutField({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-1.5 block brut-kicker text-[0.58rem]">
+      <label htmlFor={htmlFor} className="mb-1.5 block brut-kicker text-[0.72rem]">
         {label}
       </label>
       {children}

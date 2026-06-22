@@ -5,6 +5,8 @@ import { ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Achievement, Stat } from "@/lib/content/types";
 import { getIcon } from "@/lib/content/icons";
+import { HighlightText } from "@/components/ui/highlight";
+import { Tape } from "@/components/ui/tape";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -15,7 +17,7 @@ interface AchievementsSectionProps {
 
 export function AchievementsSection({ achievements, stats }: AchievementsSectionProps) {
   return (
-    <div className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36">
+    <div id="achievements" className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36">
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 md:px-8">
         {/* ── Header ── */}
         <motion.div
@@ -26,7 +28,9 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
         >
           <p className="brut-kicker mb-4">Track Record</p>
           <h1 className="brut-title text-[clamp(3rem,9vw,6.5rem)]">
-            Achieve<span className="text-[var(--accent)]">-</span>ments.
+            <HighlightText mode="scroll" ink underline>
+              Achieve<span className="text-[var(--accent)]">-</span>ments.
+            </HighlightText>
           </h1>
           <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
             Competition wins, academic recognition, and certifications earned while
@@ -47,7 +51,7 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                 <span className="brut-h brut-mono text-[clamp(2rem,5vw,3rem)] text-[var(--ink)]">
                   {stat.value}
                 </span>
-                <span className="brut-kicker text-[0.58rem] tracking-[0.18em]">{stat.label}</span>
+                <span className="brut-kicker text-[0.72rem] tracking-[0.18em]">{stat.label}</span>
               </div>
             ))}
           </motion.div>
@@ -76,6 +80,10 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                   // on light paper with white text — unreadable).
                   style={hi ? { background: "var(--accent-deep)" } : undefined}
                 >
+                  {hi && (
+                    <Tape color="butter" rotate={4} style={{ top: "-0.55rem", right: "1.6rem", width: "3.6rem", height: "1.2rem" }} />
+                  )}
+
                   {/* Icon box */}
                   <div
                     className={cn(
@@ -117,11 +125,11 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                       // layered text-* utility — so force white inline on the highlight card.
                       style={hi ? { color: "var(--accent-ink)" } : undefined}
                     >
-                      {item.title}
+                      <HighlightText mode="reveal" ink underline inkColor="ink">{item.title}</HighlightText>
                     </h3>
                     <p
                       className={cn(
-                        "mt-0.5 brut-mono text-[0.66rem] uppercase tracking-[0.12em]",
+                        "mt-0.5 brut-mono text-[0.78rem] uppercase tracking-[0.12em]",
                         hi ? "text-[var(--accent-ink)]/90" : "text-[var(--ink-2)]"
                       )}
                     >
@@ -142,7 +150,7 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                          "mt-3.5 inline-flex items-center gap-1.5 brut-mono text-[0.66rem] font-bold uppercase tracking-[0.12em] underline-offset-4 hover:underline",
+                          "mt-3.5 inline-flex items-center gap-1.5 brut-mono text-[0.78rem] font-bold uppercase tracking-[0.12em] underline-offset-4 hover:underline",
                           hi ? "text-[var(--accent-ink)]" : "text-[var(--accent)]"
                         )}
                       >

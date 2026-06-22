@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Manrope, EB_Garamond } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { MainNavbar } from "@/components/ui/main-navbar";
@@ -17,21 +17,23 @@ import {
   buildJsonLd,
 } from "@/lib/seo";
 
-// Body + ALL UI text/labels use Inter (label classes add uppercase + letter-spacing in CSS).
-// Exposed as --font-inter; --font-raleway and --font-brut-mono are aliased to it in globals.css
-// so every existing reference resolves to Inter with no per-call edits.
-const inter = Inter({
+// Body + ALL UI text/labels use Manrope, a clean humanist geometric sans (label classes add
+// uppercase + letter-spacing in CSS). Kept on the --font-inter variable name so the legacy
+// aliases (--font-raleway, --font-brut-mono) and every existing reference resolve to Manrope
+// with no per-call edits.
+const bodyFont = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-inter",
   display: "swap",
 });
 
-// Big identity titles ONLY (hero BIBEK PATHAK / BUILDER / EXPLORE + major page titles like
-// "Built & Shipped") use Fraunces, a warm high-contrast display serif, via --font-brut-display.
-// Loaded variable (no fixed weight) so large titles get its dramatic display optical cut.
-const displayFont = Fraunces({
+// Headings + big identity titles (hero name + major page titles) use EB Garamond, a classic
+// literary serif, via --font-brut-display. The italic axis powers editorial standfirst/emphasis.
+const displayFont = EB_Garamond({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
   variable: "--font-brut-display",
   display: "swap",
 });
@@ -93,7 +95,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark scroll-smooth ${inter.variable} ${displayFont.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`dark scroll-smooth ${bodyFont.variable} ${displayFont.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-[#080808] text-white antialiased min-h-screen" suppressHydrationWarning>
         {/* Person + WebSite structured data — helps Google build a name/brand
             knowledge result for "Bibek Pathak / BibekTech / RavangDai". */}

@@ -8,6 +8,8 @@ html {
 
 body {
   overflow-x: clip;
+  font-size: var(--text-body, 1.0625rem);   /* 17px base for Manrope body */
+  text-rendering: optimizeLegibility;
 }
 
 /* Animations always play, regardless of the OS "reduce motion" setting.
@@ -18,8 +20,8 @@ body {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-brut-display), "EB Garamond", Georgia, "Times New Roman", serif;
   --font-mono: var(--font-inter), ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -185,15 +187,21 @@ body {
      colour, shared with the light pages' --accent and threaded into the hero too. */
   --cobalt: #bd5232;
 
+  /* "pop" accent — folds back into the warm terracotta brand. An earlier pass made this a
+     cobalt blue, which read as generic/off-brand, so every var(--pop) is terracotta again.
+     --pop-soft is a translucent terracotta wash, safe to sit BEHIND ink text (highlighter). */
+  --pop:      #bd5232;
+  --pop-soft: rgba(189, 82, 50, 0.16);
+
   /* Scroll-driven "sun" position (0..1) for the paper light field in .brut-bg.
      Stays 0 unless site-background.tsx nudges it on desktop scroll; mobile and
      reduced-motion never touch it, so the refracted light is static there. */
   --brut-sun: 0;
 
-  /* Typography: Inter is the single text/label font. These legacy var names are kept as
-     aliases → Inter so every existing reference (body, kickers, chips, buttons, telemetry,
-     nav, chatbot) resolves to Inter without per-call edits. Big identity titles use the
-     separate --font-brut-display (Fraunces, a warm high-contrast display serif). */
+  /* Typography: Manrope is the single text/label font (carried on --font-inter for continuity).
+     These legacy var names are kept as aliases → Manrope so every existing reference (body,
+     kickers, chips, buttons, telemetry, nav, chatbot) resolves to Manrope without per-call edits.
+     Headings + big identity titles use --font-brut-display (EB Garamond, a classic literary serif). */
   --font-raleway: var(--font-inter);
   --font-brut-mono: var(--font-inter);
 
@@ -991,7 +999,7 @@ body {
   border: 2px solid #1a1714;
   background: #f7f1e8;
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -1190,7 +1198,7 @@ body {
 .bp-tele {
   position: absolute;
   font-family: var(--font-brut-mono), ui-monospace, monospace;
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1407,7 +1415,7 @@ body {
 }
 .hero-coords {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1423,6 +1431,17 @@ body {
   gap: clamp(1.5rem, 5vw, 4rem);
   align-items: center;
   text-align: left;
+  /* 3D context so the per-beat left panel can flip like a turning page (see hero-beat-in). */
+  perspective: 1500px;
+}
+/* Holds the column's height while the exiting "page" is out of flow (framer popLayout), so the
+   stage + persistent portrait don't jump during the turn; centers the active page. */
+.hero-stage-left-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 62vh;
+  display: flex;
+  align-items: center;
 }
 .hero-stage-left {
   display: flex;
@@ -1431,11 +1450,12 @@ body {
   justify-content: center;
   gap: 1rem;
   min-height: 62vh; /* stable column height so the persistent photo doesn't jump between beats */
-  animation: hero-beat-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  width: 100%;
+  backface-visibility: hidden;
 }
 .hero-sector {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -1501,7 +1521,7 @@ body {
 }
 .hero-proof-idx {
   font-family: var(--font-inter), ui-monospace, monospace;
-  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.14em; color: #6f6557;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; color: #6f6557;
 }
 .hero-proof-name {
   font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
@@ -1509,7 +1529,7 @@ body {
 }
 .hero-proof-tag {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.58rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #5c5349;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #5c5349;
 }
 
 /* right column — PERSISTENT portrait over a hard cobalt block (shifts subtly per beat) */
@@ -1600,7 +1620,7 @@ body {
 .hero-scroll-tag {
   align-self: flex-end;
   font-family: var(--font-inter), ui-monospace, monospace;
-  font-size: 0.56rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
   color: #5c5349;
   background: #fff;
   border: 2px solid #1a1714;
@@ -1608,12 +1628,13 @@ body {
   padding: 0.18rem 0.5rem;
 }
 
-/* Display tracking for Fraunces (the --font-brut-display face), a high-contrast display
-   serif. Large display serifs read best at near-zero tracking; font-optical-sizing picks
-   the dramatic display cut at big sizes. Centralized here, do NOT re-set letter-spacing on
-   the base .hero-title / .brut-title rules below or it overrides this. */
-.hero-title { letter-spacing: -0.005em; font-optical-sizing: auto; }
-.brut-title { letter-spacing: -0.005em; font-optical-sizing: auto; }
+/* Display tracking for EB Garamond (the --font-brut-display face), a classic text serif.
+   It takes only gentle negative tracking at display size (a grotesk's -0.04em would jam the
+   serifs). Centralized here, do NOT re-set letter-spacing on the base .hero-title / .brut-title
+   rules below or it overrides this. Tokens carry literal fallbacks so the (unthemed) hero still
+   resolves them. */
+.hero-title { letter-spacing: var(--ls-hero, -0.02em); font-optical-sizing: auto; }
+.brut-title { letter-spacing: var(--ls-section, -0.015em); font-optical-sizing: auto; }
 
 /* Stage stacks on small screens — photo below the left column, lighter composition.
    The hero is a pinned 100svh frame with overflow:hidden, so on phones everything
@@ -1622,6 +1643,7 @@ body {
 @media (max-width: 860px) {
   .hero-content { padding: 0 1.25rem; }
   .hero-stage { grid-template-columns: 1fr; gap: 1rem; width: 100%; }
+  .hero-stage-left-wrap { min-height: 0; }
   .hero-stage-left { min-height: 0; gap: 0.6rem; }
   .hero-id-name { font-size: clamp(2.2rem, 11vw, 3.6rem); }
   .hero-subtitle { font-size: clamp(0.74rem, 3vw, 0.92rem); }
@@ -1640,7 +1662,7 @@ body {
   .hero-id-name { font-size: clamp(2rem, 10vw, 2.8rem); }
   .hero-stage { gap: 0.75rem; }
   .brut-btn-cobalt,
-  .brut-btn-dark { padding: 0.62rem 0.95rem; font-size: 0.66rem; }
+  .brut-btn-dark { padding: 0.62rem 0.95rem; font-size: 0.78rem; }
 }
 
 .hero-canvas {
@@ -1696,19 +1718,14 @@ body {
   );
 }
 
-@keyframes hero-beat-in {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
-}
-
 .hero-title {
   margin: 0;
-  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-brut-display), "EB Garamond", Georgia, serif;
   font-weight: 700;
-  line-height: 0.92;
+  line-height: 0.94;
   font-size: clamp(2.6rem, 9vw, 7.5rem);
   color: #1a1714;
-  visibility: hidden; /* GSAP reveals it */
+  text-wrap: balance;
 }
 
 .title-char {
@@ -1718,7 +1735,6 @@ body {
 }
 
 .hero-subtitle {
-  visibility: hidden; /* GSAP reveals it */
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -1754,7 +1770,7 @@ body {
   gap: 0.5rem;
   padding: 0.72rem 1.2rem;
   font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1815,7 +1831,7 @@ body {
 /* Engineered navigation panels — numbered, ink-bordered, cobalt offset, press on hover. */
 .hero-explore-idx {
   font-family: var(--font-inter), ui-monospace, monospace;
-  font-size: 0.55rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   color: #6f6557;
@@ -1869,7 +1885,7 @@ body {
 
 .hero-explore-desc {
   font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1925,17 +1941,17 @@ body {
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(26, 23, 20, 0.42);
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .hero-chapter:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: #1a1714;
 }
 
 .hero-chapter-idx {
   font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
@@ -1945,22 +1961,21 @@ body {
 
 .hero-chapter-name {
   font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: inherit;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
 .hero-chapter.is-active {
-  color: var(--cobalt);
-  background: rgba(189, 82, 50, 0.12);
+  color: var(--pop);
+  background: rgba(189, 82, 50, 0.10);
 }
 
 .hero-chapter.is-active .hero-chapter-idx {
   opacity: 1;
-  color: var(--cobalt);
+  color: var(--pop);
 }
 
 /* On narrow screens keep only the active chapter's name; numbers stay for the rest. */
@@ -1978,7 +1993,7 @@ body {
   width: 140px;
   height: 2px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(26, 23, 20, 0.12);
   overflow: hidden;
 }
 
@@ -1988,8 +2003,15 @@ body {
   top: 0;
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, rgba(189, 82, 50, 0.55), var(--cobalt));
+  background: linear-gradient(90deg, rgba(189, 82, 50, 0.5), var(--pop));
   transition: width 0.15s linear;
+}
+
+/* On short viewports the centered beat content can reach the bottom edge, so drop the
+   pinned chapter indicator there to avoid overlap (the scroll comet at the top still
+   conveys progress). */
+@media (max-height: 660px) {
+  .scroll-progress { display: none; }
 }
 
 /* The cosmos scroll fly-through runs on every device — the 300vh container drives the
@@ -2025,6 +2047,27 @@ body {
   --brut-shadow-accent: 5px 5px 0 0 var(--accent);
   --brut-radius: 6px;
 
+  /* ── Type scale ──
+     Semantic tokens (the project had none — sizes were hand-set per class). Modular ~1.25,
+     fluid clamp() for headings (display max capped ≤ ~5.5rem so it never shouts), fixed rem for
+     body. EB Garamond is a true text serif: gentle negative tracking on display (NOT a grotesk's
+     -0.04em) and a touch more leading at body size. */
+  --text-hero:     clamp(2.75rem, 6.5vw, 5.5rem);
+  --text-section:  clamp(2rem, 4.5vw, 3.5rem);
+  --text-h3:       clamp(1.4rem, 2.4vw, 1.85rem);   /* card / list titles */
+  --text-subtitle: clamp(1.125rem, 1.8vw, 1.5rem);  /* standfirst / lead-in */
+  --text-lead:     1.1875rem;                        /* 19px intro paragraphs */
+  --text-body:     1.0625rem;                        /* 17px default body */
+  --text-small:    0.875rem;                         /* 14px captions / meta */
+  --text-nav:      0.9375rem;                        /* 15px nav links */
+  --text-button:   0.9375rem;                        /* 15px button label */
+  --text-kicker:   0.72rem;                          /* uppercase eyebrow */
+  --lh-hero: 1.02;  --lh-section: 1.08;  --lh-h3: 1.15;
+  --lh-body: 1.7;   --lh-lead: 1.6;      --lh-tight: 1.3;
+  --ls-hero: -0.02em;  --ls-section: -0.015em;  --ls-h3: -0.01em;
+  --ls-body: 0;        --ls-nav: 0.01em;         --ls-button: 0.02em;
+  --ls-kicker: 0.22em;
+
   /* Skeuomorphic accents — kept deliberately faint so the hard 2px border + offset
      shadow stay the lead voice (neobrutalism). Just enough real-light cueing to feel
      tactile: a top-edge highlight, a soft contact shadow under the hard one, and a
@@ -2043,36 +2086,64 @@ body {
 }
 
 /* ── Typography ── */
-/* General headings (card titles, sub-heads, stat numbers) — Inter, heavy + tight. */
+/* Card / list titles + sub-heads — EB Garamond, an editorial serif weight. (Stat numbers add
+   .brut-mono, declared later, which re-wins font-family back to Manrope tabular-nums.) */
 .brut-h {
-  font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  font-family: var(--font-brut-display), "EB Garamond", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: var(--ls-h3, -0.01em);
+  line-height: var(--lh-h3, 1.15);
   color: var(--ink);
+  text-wrap: balance;
 }
 
-/* Big identity titles ONLY (hero BIBEK PATHAK / BUILDER / EXPLORE + major page titles like
-   "Built & Shipped") — the display font (Sora). */
+/* Section + major page titles ("Built & Shipped", etc.) — EB Garamond display serif. */
 .brut-title {
-  font-family: var(--font-brut-display), "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-brut-display), "EB Garamond", Georgia, serif;
   font-weight: 700;
-  line-height: 0.95;
+  line-height: var(--lh-section, 1.08);
   color: var(--ink);
+  text-wrap: balance;
 }
 
 .brut-kicker {
-  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.66rem;
+  font-family: var(--font-brut-mono), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--text-kicker, 0.72rem);
   font-weight: 600;
-  letter-spacing: 0.28em;
+  letter-spacing: var(--ls-kicker, 0.22em);
   text-transform: uppercase;
   color: var(--ink-2);
 }
 
 .brut-mono {
-  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-brut-mono), ui-sans-serif, system-ui, sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;   /* aligned figures for stats/data */
+}
+
+/* ── Editorial body roles ──
+   Opt-in helpers so the readable book leading lives where it belongs (paragraphs), without
+   loosening the tight brutalist UI globally. */
+.brut-prose {
+  font-size: var(--text-body, 1.0625rem);
+  line-height: var(--lh-body, 1.7);
+  max-width: 68ch;
+  text-wrap: pretty;
+  font-variant-numeric: oldstyle-nums;   /* literary figures in running text */
+}
+.brut-lead {
+  font-size: var(--text-lead, 1.1875rem);
+  line-height: var(--lh-lead, 1.6);
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+/* Standfirst / sub-title — EB Garamond italic, the editorial voice between a title and the body. */
+.brut-standfirst {
+  font-family: var(--font-brut-display), "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-subtitle, clamp(1.125rem, 1.8vw, 1.5rem));
+  line-height: 1.45;
+  color: var(--ink-2);
 }
 
 /* ── Surfaces / cards ── */
@@ -2109,7 +2180,7 @@ body {
   gap: 0.5rem;
   padding: 0.7rem 1.15rem;
   font-family: var(--font-brut-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2134,7 +2205,7 @@ body {
   gap: 0.45rem;
   padding: 0.6rem 1rem;
   font-family: var(--font-brut-mono), ui-monospace, monospace;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2162,7 +2233,7 @@ body {
   gap: 0.35rem;
   padding: 0.2rem 0.5rem;
   font-family: var(--font-brut-mono), ui-monospace, monospace;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2234,5 +2305,464 @@ body {
 .theme-brut button:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* ============================================================================
+   SCRAPBOOK CRAFT — highlighter pen, tape, sticky-notes.
+   Defined UN-scoped (not under .theme-brut) so the hero (which isn't themed) can
+   use them too. Every animation degrades to a static, fully-visible state under
+   prefers-reduced-motion; tilts flatten on phones to avoid overflow.
+   ============================================================================ */
+
+/* ── Highlighter pen ──
+   A translucent marker is swiped behind a phrase when it scrolls into view (the
+   <Highlight> component flips --hl 0% -> 100%). `isolation` makes the ::before sit
+   behind the text but ABOVE the section it lives on, so the mark is always visible.
+   --hl-color is a LIGHT wash (set per instance) so the ink text stays readable. */
+
+/* --hl MUST be a registered property: a transition on a clip-path that reads an *unregistered*
+   custom prop does not fire (the value just snaps). Registered as <percentage>, --hl itself
+   interpolates 0% -> 100%, and the ::before clip-path tracks it frame-by-frame. inherits so the
+   value reaches ::before. */
+@property --hl {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+.brut-hl {
+  position: relative;
+  isolation: isolate;
+  white-space: pre-wrap;
+  /* the swipe lives here, on the element whose --hl the <Highlight> component flips. A wipe must
+     read at a near-constant pace, so use a gentle ease-in-out — NOT an ease-out (which decelerates,
+     front-loading ~95% of the sweep into the first ~120ms and reading as an instant snap). */
+  transition: --hl 0.75s cubic-bezier(0.5, 0, 0.2, 1);
+}
+.brut-hl::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0.05em;
+  bottom: -0.08em;
+  left: -0.14em;
+  right: -0.14em;                         /* full span; the marker is REVEALED via clip-path */
+  /* felt-tip unevenness: a faint diagonal sheen + a hint of ink pooling at the far end, over the
+     light --hl-color wash (kept subtle so ink text stays legible on top). */
+  background:
+    linear-gradient(101deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 26%, rgba(0, 0, 0, 0.045) 94%),
+    var(--hl-color, #f1d6a4);
+  border-radius: 3px 6px 4px 7px;        /* hand-drawn, uneven marker edge */
+  transform: rotate(-0.5deg);
+  /* GPU-friendly wipe: clip from the left, opening as --hl 0% -> 100% (felt-tip drawing across). */
+  clip-path: inset(0 calc(100% - var(--hl, 0%)) 0 0 round 4px);
+}
+.brut-hl[data-from="right"]::before {
+  clip-path: inset(0 0 0 calc(100% - var(--hl, 0%)) round 4px);
+}
+
+/* Underline variant — instead of a block BEHIND the text, the marker wipes in as a thin band at
+   the baseline (a hand-drawn underline). Reuses the same --hl width-sweep; just re-anchors the
+   ::before to the bottom of the line. Em units keep the band scaled to the (clamp) display type. */
+.brut-hl--underline::before {
+  top: auto;
+  bottom: 0.02em;
+  height: 0.26em;
+  border-radius: 2px 7px 3px 8px;        /* uneven, hand-drawn marker ends */
+  transform: rotate(-0.7deg);
+}
+
+/* ── Foreground ink ──
+   The glyphs themselves shift muted → accent as the phrase is read. A solid accent clone
+   (.brut-ink__fill, rendered aria-hidden) is wiped over a muted base by the same registered
+   --hl (two SOLID colours, not a background-clip:text gradient). Used for headings + key words.
+   .brut-ink is declared AFTER .brut-title / .brut-h so the muted base colour wins on headings. */
+.brut-ink {
+  position: relative;
+  isolation: isolate;
+  white-space: pre-wrap;
+  color: var(--ink-muted, var(--ink-2, #5c5349));   /* muted, fully readable before it inks */
+  /* reveal mode eases the one-shot sweep; scroll mode (below) turns this off to track 1:1. */
+  transition: --hl 0.75s cubic-bezier(0.5, 0, 0.2, 1);
+}
+.brut-ink__fill {
+  position: absolute;
+  inset: 0;
+  color: var(--ink-accent, var(--accent, #bd5232));
+  pointer-events: none;
+  /* GPU-friendly wipe: reveal the inked clone left→right as --hl 0% → 100%. */
+  clip-path: inset(0 calc(100% - var(--hl, 0%)) 0 0);
+}
+.brut-ink[data-from="right"] .brut-ink__fill {
+  clip-path: inset(0 0 0 calc(100% - var(--hl, 0%)));
+}
+
+/* Hand-drawn terracotta marker sweep at the baseline (the "subtle underline / gradient sweep"),
+   self-contained so ink can underline without the legacy wash block behind it. The underline is
+   ALWAYS the accent (terracotta) and independent of the text-fill colour, so a title can settle
+   into crisp ink while still earning a terracotta accent stroke. */
+.brut-ink--underline::after {
+  content: "";
+  position: absolute;
+  left: -0.06em;
+  right: -0.06em;
+  bottom: 0.01em;
+  height: 0.09em;
+  background: var(--accent, #bd5232);
+  border-radius: 2px 7px 3px 8px;
+  transform: rotate(-0.5deg);
+  clip-path: inset(0 calc(100% - var(--hl, 0%)) 0 0);
+  pointer-events: none;
+}
+.brut-ink--underline[data-from="right"]::after {
+  clip-path: inset(0 0 0 calc(100% - var(--hl, 0%)));
+}
+
+/* Scroll-linked instances write --hl every frame from JS, so the eased transition must be off
+   (otherwise the value chases the scrollbar and smears). Tracks the scroll position exactly. */
+.brut-ink[data-mode="scroll"],
+.brut-hl[data-mode="scroll"] {
+  transition: none;
+}
+
+/* Reduced motion: deliberately honoured for the ink even though the app forces motion on
+   globally. Show the final inked + underlined state instantly, with no movement. The scroll /
+   reveal drivers also bail in JS (matchMedia) so they never overwrite this with a swept value. */
+@media (prefers-reduced-motion: reduce) {
+  .brut-hl,
+  .brut-ink {
+    transition: none !important;
+    --hl: 100%;
+  }
+}
+
+/* ── Tape strip ──
+   A piece of matte tape pinning a surface to the paper. Absolutely positioned by the
+   consumer (top/left). Faint diagonal sheen + a thin border read it as real tape. */
+.brut-tape {
+  position: absolute;
+  /* Sit ABOVE the surface it pins — cards become a stacking context on :hover/:active (transform),
+     so without this the strip slips behind them. Scoped to the tape's positioned wrapper, so it
+     can't ride above the fixed navbar. */
+  z-index: 3;
+  width: 4.5rem;
+  height: 1.5rem;
+  /* Real washi / masking tape: a warm translucent film that lets the paper grain show
+     through, with soft edges and a faint matte sheen. Default is a natural tan. */
+  background-color: var(--tape, rgba(226, 210, 180, 0.72));
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(0, 0, 0, 0.06)),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.16) 0 4px, transparent 4px 9px);
+  border: 1px solid rgba(26, 23, 20, 0.09);
+  /* a real contact shadow under the strip + a thin lit top edge so it reads as a physical object
+     resting ON the surface. */
+  box-shadow: 0 2px 4px rgba(26, 23, 20, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: rotate(var(--tape-rot, -6deg));
+  pointer-events: none;
+}
+.brut-tape--butter { --tape: rgba(236, 206, 148, 0.72); }  /* warm gold washi */
+.brut-tape--blush  { --tape: rgba(214, 158, 138, 0.7);  }  /* clay / dusty rose */
+.brut-tape--mint   { --tape: rgba(188, 196, 162, 0.7);  }  /* sage */
+.brut-tape--clay   { --tape: rgba(189, 82, 50, 0.45);   }  /* sheer terracotta */
+
+/* ── Sticky-note card ──
+   Paper card pinned to the board at a slight tilt; straightens + lifts on hover.
+   Uses themed tokens (resolves inside .theme-brut), with safe fallbacks elsewhere. */
+.brut-note {
+  position: relative;
+  background: var(--paper-lit, linear-gradient(177deg, #fffdf6 0%, #f7f1e8 44%));
+  border: 2px solid var(--ink, #1a1714);
+  border-radius: 4px;
+  box-shadow: 4px 4px 0 0 var(--ink, #1a1714);
+  transform: rotate(var(--tilt, -2deg));
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.brut-note:hover {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow: 7px 9px 0 0 var(--ink, #1a1714);
+}
+@media (prefers-reduced-motion: reduce) {
+  .brut-note { transform: none; }
+  .brut-note:hover { transform: none; box-shadow: 6px 6px 0 0 var(--ink, #1a1714); }
+}
+/* Phones: drop the tilt so rotated corners can't push past a tight viewport. */
+@media (max-width: 640px) {
+  .brut-note { transform: none; }
+}
+
+/* ============================================================================
+   CALM HERO (heroc) — the reference-style single-screen intro that replaces the
+   pinned 3-beat scene. Lives inside .theme-brut (light); the global SiteBackground
+   paints the paper behind it. Right column: portrait taped to the page + corner
+   brackets + decorative icons that idle-float, then drop with gravity on first scroll.
+   ============================================================================ */
+.heroc {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7rem clamp(1rem, 4vw, 3rem) 5rem;
+  overflow: hidden;
+}
+.heroc-inner {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+}
+.heroc-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.heroc-greet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: clamp(0.95rem, 2vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+.heroc-wave {
+  display: inline-block;
+  transform-origin: 70% 80%;
+  animation: heroc-wave 2.6s ease-in-out infinite;
+}
+@keyframes heroc-wave {
+  0%, 60%, 100% { transform: rotate(0); }
+  70% { transform: rotate(14deg); }
+  80% { transform: rotate(-8deg); }
+  90% { transform: rotate(10deg); }
+}
+.heroc-name {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 6rem);
+  line-height: 0.95;
+}
+.heroc-role {
+  margin: 0;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: clamp(0.82rem, 1.8vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.heroc-blurb {
+  margin: 0.25rem 0 0;
+  max-width: 30rem;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.heroc-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+}
+.heroc-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  width: 2.75rem;
+  color: var(--ink);
+  background: var(--paper-lit);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-lit), var(--brut-shadow-sm), var(--brut-ambient);
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.14s ease, color 0.14s ease;
+}
+.heroc-icon:hover {
+  transform: translate(2px, 2px);
+  box-shadow: var(--brut-lit), 0 0 0 0 var(--ink);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.heroc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.heroc-dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.heroc-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-out 1.8s ease-out infinite;
+}
+
+/* Right column */
+.heroc-right { display: flex; justify-content: center; }
+.heroc-photo {
+  position: relative;
+  width: min(100%, 26rem);
+  aspect-ratio: 5 / 6;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.heroc-photo-block {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 16%;
+  bottom: 2%;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+}
+.heroc-photo-img {
+  position: relative;
+  z-index: 3;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+}
+.heroc-bracket { position: absolute; width: 26px; height: 26px; z-index: 4; }
+.heroc-bracket--tl { top: 12%; left: 2%; border-top: 2px solid var(--ink); border-left: 2px solid var(--ink); }
+.heroc-bracket--br { bottom: 2%; right: 2%; border-bottom: 2px solid var(--ink); border-right: 2px solid var(--ink); }
+
+/* Decorative icons — bordered chips in real warm fills; idle-float, then gravity-drop. */
+.heroc-fall {
+  position: absolute;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 0 var(--ink);
+}
+.heroc-fall svg { height: 1.2rem; width: 1.2rem; }
+.heroc-fall--1 { top: -4%; left: 3%;  --fall: 54vh; background: var(--butter);  animation: heroc-float 3s ease-in-out infinite; }
+.heroc-fall--2 { top: 24%; right: -7%; --fall: 40vh; background: var(--blush);   animation: heroc-float 3.4s ease-in-out infinite 0.3s; }
+.heroc-fall--3 { bottom: 26%; left: -8%; --fall: 28vh; background: var(--mint);  animation: heroc-float 2.8s ease-in-out infinite 0.6s; }
+@keyframes heroc-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.heroc-photo.is-falling .heroc-fall { animation: heroc-drop 1.3s cubic-bezier(0.34, 0.04, 0.3, 1) forwards; }
+.heroc-photo.is-falling .heroc-fall--2 { animation-delay: 0.08s; }
+.heroc-photo.is-falling .heroc-fall--3 { animation-delay: 0.16s; }
+@keyframes heroc-drop {
+  0%   { transform: translateY(0) rotate(0); }
+  55%  { transform: translateY(var(--fall)) rotate(10deg); }
+  70%  { transform: translateY(calc(var(--fall) - 22px)) rotate(6deg); }
+  85%  { transform: translateY(var(--fall)) rotate(9deg); }
+  92%  { transform: translateY(calc(var(--fall) - 8px)) rotate(8deg); }
+  100% { transform: translateY(var(--fall)) rotate(9deg); }
+}
+
+/* Scroll cue */
+.heroc-scrollcue {
+  position: absolute;
+  left: 50%;
+  bottom: 1.6rem;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-brut-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-decoration: none;
+}
+.heroc-scrollcue-arrow { font-size: 0.9rem; animation: heroc-cue 1.8s ease-in-out infinite; }
+@keyframes heroc-cue {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+@media (max-width: 860px) {
+  .heroc { padding: 6rem 1.25rem 4.5rem; min-height: 92svh; }
+  .heroc-inner { grid-template-columns: 1fr; gap: 1.75rem; }
+  .heroc-photo { width: min(70%, 17rem); }
+  .heroc-name { font-size: clamp(2.4rem, 12vw, 3.6rem); }
+  .heroc-scrollcue { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroc-fall,
+  .heroc-wave,
+  .heroc-dot::after,
+  .heroc-scrollcue-arrow { animation: none !important; }
+}
+
+/* ── Paper-tear seam (see paper-tear.tsx) — the two ripped halves slide together on scroll, then
+   tape seals the closed rip ── */
+.ptear {
+  position: relative;
+  height: 6rem;
+  width: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ptear-gap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2.4rem;
+  transform: translateY(-50%);
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(26, 23, 20, 0.22) 0%, #c8b698 38%, #cdbd9f 100%);
+}
+.ptear-bottom,
+.ptear-top {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4rem;
+  will-change: transform;
+}
+.ptear-bottom { bottom: 0; z-index: 1; }
+.ptear-top { top: 0; z-index: 2; }
+.ptear-bottom svg,
+.ptear-top svg { display: block; width: 100%; height: 100%; }
+/* .ptear-tape also carries .brut-tape (real washi look); this only re-sizes + centers it. The
+   transform is owned by framer-motion (scaleX/rotate), so no CSS rotate here. */
+.ptear-tape {
+  top: 50%;
+  left: 50%;
+  width: 7.5rem;
+  height: 1.65rem;
+  margin: -0.825rem 0 0 -3.75rem;
+  z-index: 3;
+  will-change: transform;
 }
 

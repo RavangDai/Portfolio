@@ -9,10 +9,11 @@ import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const NAV_LINKS = [
-  { name: "Home",         href: "/"             },
-  { name: "Projects",     href: "/projects"     },
-  { name: "Certificates", href: "/certificates" },
-  { name: "Contact",      href: "/contact"      },
+  { name: "Home",         href: "#top"          },
+  { name: "Projects",     href: "#projects"     },
+  { name: "Certificates", href: "#certificates" },
+  { name: "Achievements", href: "#achievements" },
+  { name: "Contact",      href: "#contact"      },
 ];
 
 const SOCIALS = [
@@ -45,9 +46,9 @@ export function Footer() {
   const pathname = usePathname();
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // Home is the cosmos hero only — its scroll ends in the EXPLORE beat. Hiding the footer
-  // there keeps that the true end of the page. The admin panel ships its own chrome, so skip it too.
-  if (pathname === "/" || pathname.startsWith("/admin")) return null;
+  // The site is one scrolling page now, so the footer is its true end (shown on /). The admin
+  // panel ships its own chrome, so skip it there.
+  if (pathname.startsWith("/admin")) return null;
 
   return (
       <footer className="theme-brut relative w-full border-t-2 border-[var(--ink)] bg-[var(--paper)]">
@@ -84,23 +85,23 @@ export function Footer() {
 
             {/* Navigation */}
             <AnimatedContainer delay={0.12} className="space-y-4">
-              <h4 className="brut-kicker text-[0.62rem]">Navigation</h4>
+              <h4 className="brut-kicker text-[0.74rem]">Navigation</h4>
               <nav className="flex flex-col gap-2">
                 {NAV_LINKS.map((link) => (
-                  <Link
+                  <a
                     key={link.href}
                     href={link.href}
                     className="inline-flex w-fit text-[0.85rem] font-medium text-[var(--ink-2)] transition-colors duration-200 hover:text-[var(--accent)]"
                   >
                     {link.name}
-                  </Link>
+                  </a>
                 ))}
               </nav>
             </AnimatedContainer>
 
             {/* Stack */}
             <AnimatedContainer delay={0.2} className="space-y-4">
-              <h4 className="brut-kicker text-[0.62rem]">Stack</h4>
+              <h4 className="brut-kicker text-[0.74rem]">Stack</h4>
               <div className="flex flex-col gap-2">
                 {["React · Next.js", "Python · FastAPI", "TypeScript", "PostgreSQL · MongoDB", "Docker · Git"].map((item) => (
                   <span key={item} className="text-[0.85rem] text-[var(--ink-2)]">{item}</span>
@@ -121,18 +122,18 @@ export function Footer() {
 
           <AnimatedContainer delay={0.32}>
             <div className="flex flex-col items-center justify-between gap-2 pt-6 sm:flex-row">
-              <p className="brut-mono text-[0.72rem] text-[var(--ink-3)]">
+              <p className="brut-mono text-[0.8rem] text-[var(--ink-3)]">
                 © {new Date().getFullYear()} Bibek Pathak. All rights reserved.
               </p>
               <div className="flex items-center gap-3">
-                <p className="brut-mono text-[0.72rem] text-[var(--ink-3)]">
+                <p className="brut-mono text-[0.8rem] text-[var(--ink-3)]">
                   Built with Next.js · Tailwind · Framer Motion
                 </p>
                 <span className="text-[var(--ink-3)]/40" aria-hidden>·</span>
                 {/* Discreet owner-only entry point. Middleware redirects to /admin/login when unauthenticated. */}
                 <Link
                   href="/admin"
-                  className="brut-mono text-[0.72rem] text-[var(--ink-3)] transition-colors hover:text-[var(--accent)]"
+                  className="brut-mono text-[0.8rem] text-[var(--ink-3)] transition-colors hover:text-[var(--accent)]"
                 >
                   Admin
                 </Link>

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, ArrowUpRight } from "lucide-react";
 import type { Project } from "@/lib/content/types";
+import { HighlightText } from "@/components/ui/highlight";
+import { Tape } from "@/components/ui/tape";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -107,8 +109,10 @@ function FeaturedCard({ project, index, pastel }: { project: Project; index: num
             <span className="brut-kicker">Featured · {project.year}</span>
             <StatusBadge status={project.status} />
           </div>
-          <h3 className="brut-h text-3xl md:text-4xl">{project.name}</h3>
-          <p className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-2)]">
+          <h3 className="brut-h text-3xl md:text-4xl">
+            <HighlightText mode="reveal" ink underline inkColor="ink">{project.name}</HighlightText>
+          </h3>
+          <p className="brut-mono text-[0.8rem] uppercase tracking-[0.12em] text-[var(--ink-2)]">
             {project.tag}
           </p>
           <p className="text-base leading-relaxed text-[var(--ink-2)]">{project.description}</p>
@@ -129,10 +133,12 @@ function ProjectCard({ project, index, pastel }: { project: Project; index: numb
       <ProjectImage project={project} pastel={pastel} />
       <div className="flex flex-1 flex-col gap-3.5 p-5">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="brut-h text-2xl">{project.name}</h3>
+          <h3 className="brut-h text-2xl">
+            <HighlightText mode="reveal" ink underline inkColor="ink">{project.name}</HighlightText>
+          </h3>
           <StatusBadge status={project.status} />
         </div>
-        <p className="brut-mono text-[0.66rem] uppercase tracking-[0.1em] text-[var(--ink-2)]">
+        <p className="brut-mono text-[0.78rem] uppercase tracking-[0.1em] text-[var(--ink-2)]">
           {project.tag} · {project.year}
         </p>
         <p className="text-[0.95rem] leading-relaxed text-[var(--ink-2)] line-clamp-3">
@@ -183,14 +189,14 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
         >
           <p className="brut-kicker mb-4">Selected Work · 2025-2026</p>
           <h1 className="brut-title text-[clamp(2.8rem,9vw,6rem)]">
-            Built &amp; <span className="text-[var(--accent)]">Shipped.</span>
+            Built &amp; <HighlightText mode="scroll" ink underline>Shipped.</HighlightText>
           </h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <p className="max-w-md text-base leading-relaxed text-[var(--ink-2)]">
               Real products taken from zero to deployed: full-stack apps, AI tooling,
               and computer-vision systems.
             </p>
-            <span className="brut-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--ink-3)]">
+            <span className="brut-mono text-[0.8rem] uppercase tracking-[0.12em] text-[var(--ink-3)]">
               {projects.length} project{projects.length !== 1 ? "s" : ""}
             </span>
           </div>
@@ -206,8 +212,9 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           <motion.div
             variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
             transition={{ duration: 0.6, ease }}
-            className="md:col-span-2"
+            className="relative md:col-span-2"
           >
+            <Tape color="butter" rotate={-5} style={{ top: "-0.6rem", left: "1.8rem", width: "4rem", height: "1.35rem" }} />
             <FeaturedCard project={featured} index={0} pastel={PASTELS[0]} />
           </motion.div>
 
@@ -216,7 +223,11 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               key={project.id}
               variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6, ease }}
+              className="relative"
             >
+              {i === 0 && (
+                <Tape color="blush" rotate={5} style={{ top: "-0.55rem", right: "1.4rem", width: "3.4rem", height: "1.2rem" }} />
+              )}
               <ProjectCard project={project} index={i + 1} pastel={PASTELS[(i + 1) % PASTELS.length]} />
             </motion.div>
           ))}

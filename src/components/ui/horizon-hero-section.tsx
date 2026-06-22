@@ -7,8 +7,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Download, FolderGit2, BadgeCheck, Trophy, Mail, Plus } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { SiteInfo } from "@/lib/content/types";
 import { DEFAULT_CONTENT } from "@/lib/content/defaults";
+import { HighlightText } from "@/components/ui/highlight";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,13 +21,13 @@ type Beat = {
   cta?: "primary" | "explore";
 };
 
-// Navigation targets surfaced as the final "EXPLORE" beat — the scroll ends here in a button
-// grid instead of falling into stacked sections.
+// Navigation targets surfaced as the final "EXPLORE" beat. The site is one scrolling page now,
+// so these jump to the on-page section anchors rather than separate routes.
 const EXPLORE_LINKS = [
-  { href: "/projects", label: "Projects", desc: "10+ builds", Icon: FolderGit2 },
-  { href: "/certificates", label: "Certificates", desc: "Credentials", Icon: BadgeCheck },
-  { href: "/achievements", label: "Achievements", desc: "Wins & honors", Icon: Trophy },
-  { href: "/contact", label: "Contact", desc: "Let's talk", Icon: Mail },
+  { href: "#projects", label: "Projects", desc: "10+ builds", Icon: FolderGit2 },
+  { href: "#certificates", label: "Certificates", desc: "Credentials", Icon: BadgeCheck },
+  { href: "#achievements", label: "Achievements", desc: "Wins & honors", Icon: Trophy },
+  { href: "#contact", label: "Contact", desc: "Let's talk", Icon: Mail },
 ] as const;
 
 // Narrative beats — the pinned blueprint stage swaps its left column across these.
@@ -51,7 +53,7 @@ const BEATS: Beat[] = [
 
 const TOTAL_BEATS = BEATS.length;
 
-// Authored chapter labels for the branded scroll indicator (aligned 1:1 with BEATS).
+// Authored chapter labels for the per-beat "SECTOR" readout (aligned 1:1 with BEATS).
 const CHAPTERS = ["IDENTITY", "BUILDER", "EXPLORE"] as const;
 
 // Beat 01 proof cards — concrete evidence that I build & ship.
@@ -66,82 +68,39 @@ const PROOF = [
 export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
 
   const [currentSection, setCurrentSection] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   // ── Ready on mount (no WebGL boot to wait for) ───────────────────────────────
   useEffect(() => {
     setIsReady(true);
   }, []);
 
-  // ── GSAP text reveal — re-runs on every beat change ──────────────────────────
-  useEffect(() => {
-    if (!isReady) return;
-
-    const ctx = gsap.context(() => {
-      if (titleRef.current) {
-        gsap.set(titleRef.current, { visibility: "visible" });
-        const titleChars = titleRef.current.querySelectorAll(".title-char");
-        gsap.from(titleChars, {
-          y: 120,
-          opacity: 0,
-          duration: 1,
-          stagger: 0.04,
-          ease: "power4.out",
-        });
-      }
-
-      if (subtitleRef.current) {
-        gsap.set(subtitleRef.current, { visibility: "visible" });
-        const subtitleLines = subtitleRef.current.querySelectorAll(".subtitle-line");
-        gsap.from(subtitleLines, {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.12,
-          delay: 0.1,
-          ease: "power3.out",
-        });
-      }
-    });
-
-    return () => ctx.revert();
-  }, [isReady, currentSection]);
-
-  // ── Tagline statement card — fade/lift in once, then draw the cobalt underline ──
+  // ── Tagline statement card — fade/lift in once ──
   useEffect(() => {
     if (!isReady || !taglineRef.current) return;
     const el = taglineRef.current;
-    const underline = el.querySelector<HTMLElement>(".hero-tagline-underline");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reduce) {
       gsap.set(el, { visibility: "visible", opacity: 1, y: 0 });
-      if (underline) gsap.set(underline, { scaleX: 1 });
       return;
     }
 
     const ctx = gsap.context(() => {
       gsap.set(el, { visibility: "visible", opacity: 0, y: 16 });
-      if (underline) gsap.set(underline, { scaleX: 0, transformOrigin: "left center" });
-      const tl = gsap.timeline({ delay: 0.5 });
-      tl.to(el, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" });
-      if (underline) {
-        tl.to(underline, { scaleX: 1, duration: 0.6, ease: "power2.out" }, "-=0.05");
-      }
+      gsap.to(el, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.5 });
     }, el);
 
     return () => ctx.revert();
   }, [isReady]);
 
   // ── Scroll handling — GSAP ScrollTrigger scrubs --p across the 300vh container, which drives
-  // the blueprint depth fly-through (camera dolly + fly-past) and the beat index. `scrub` eases
-  // the catch-up to the scroll position for a smooth, inertial feel; the sticky CSS frame still
-  // does the pinning. Reduced-motion drops the smoothing (direct 1:1 link). ──
+  // the camera dolly + fly-past and the beat index. `scrub` eases the catch-up for a smooth,
+  // inertial feel; the sticky CSS frame does the pinning. Reduced-motion drops the smoothing. ──
   useEffect(() => {
     if (!containerRef.current) return;
     gsap.registerPlugin(ScrollTrigger);
@@ -187,11 +146,9 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
   return (
     <div ref={containerRef} className="hero-container">
       <div className="hero-sticky">
-        {/* Hero depth scene, decluttered: just the camera push-in (--p on the wrapper) and the
-            near fly-past markers. The grid, ghost BP monogram, and static monuments were removed
-            so the name + portrait read clean. */}
+        {/* Calm creamy scene: just the camera push-in (--p on the wrapper) + the near fly-past
+            markers. No grid / drafting marks — the paper stays clean behind the name + portrait. */}
         <div ref={sceneRef} className="hero-blueprint" data-beat={currentSection} aria-hidden>
-          {/* Near fly-past plane — foreground markers that rush toward the camera and dissolve */}
           <span className="bp-fly bp-fly--a" />
           <span className="bp-fly bp-fly--b" />
           <span className="bp-fly bp-fly--c" />
@@ -208,8 +165,18 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
         {/* ── Pinned stage: left column swaps per beat, right (photo) persists ── */}
         <div className="hero-content">
           <div className="hero-stage">
-            {/* LEFT — keyed so it re-mounts + animates each beat */}
-            <div key={currentSection} className="hero-stage-left" data-beat={currentSection}>
+            {/* LEFT — each beat is a "page": the old one tears away sideways as the next turns in */}
+            <div className="hero-stage-left-wrap">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={currentSection}
+                  className="hero-stage-left"
+                  data-beat={currentSection}
+                  initial={{ opacity: 0, y: reduceMotion ? 0 : 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: reduceMotion ? 0 : -40 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
               <span className="hero-sector">
                 SECTOR {String(currentSection).padStart(2, "0")} · {CHAPTERS[currentSection]}
               </span>
@@ -224,7 +191,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                 </span>
               )}
 
-              <h1 ref={titleRef} className="hero-title hero-id-name">
+              <h1 className="hero-title hero-id-name">
                 {currentSection === 0 ? (
                   <>
                     <span className="title-line">{splitTitle("BIBEK")}</span>
@@ -237,15 +204,17 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
 
               <div className="hero-id-rule" />
 
-              <div ref={subtitleRef} className="hero-subtitle hero-id-sub">
-                <p className="subtitle-line">{beatLine1}</p>
+              <div className="hero-subtitle hero-id-sub">
+                <p className="subtitle-line">
+                  <HighlightText mode="reveal" ink>{beatLine1}</HighlightText>
+                </p>
                 <p className="subtitle-line">{beatLine2}</p>
               </div>
 
               {/* Beat 00 — CTAs */}
               {currentSection === 0 && (
                 <div className="hero-actions">
-                  <button className="brut-btn-cobalt group" onClick={() => (window.location.href = "/projects")}>
+                  <button className="brut-btn-cobalt group" onClick={() => (window.location.href = "#projects")}>
                     View Projects
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
@@ -289,6 +258,8 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                   ))}
                 </div>
               )}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             {/* RIGHT — persistent portrait (subtly shifts per beat) */}
@@ -309,9 +280,8 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
               </div>
               <p ref={taglineRef} className="hero-tagline" style={{ visibility: "hidden" }}>
                 I build scalable digital products with{" "}
-                <span className="hero-tagline-key">
+                <span className="hero-tagline-key" style={{ color: "var(--cobalt)" }}>
                   intelligence &amp; precision
-                  <span className="hero-tagline-underline" aria-hidden />
                 </span>
                 .
               </p>

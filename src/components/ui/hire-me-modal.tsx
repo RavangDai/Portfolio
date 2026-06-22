@@ -166,17 +166,17 @@ export function HireMeModal({ open, onClose }: { open: boolean; onClose: () => v
                   <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div>
-                        <label htmlFor="h-name" className="mb-1.5 block brut-kicker text-[0.58rem]">Name</label>
+                        <label htmlFor="h-name" className="mb-1.5 block brut-kicker text-[0.72rem]">Name</label>
                         <input id="h-name" name="name" type="text" placeholder="Your name" className="brut-input" required />
                       </div>
                       <div>
-                        <label htmlFor="h-email" className="mb-1.5 block brut-kicker text-[0.58rem]">Email</label>
+                        <label htmlFor="h-email" className="mb-1.5 block brut-kicker text-[0.72rem]">Email</label>
                         <input id="h-email" name="email" type="email" placeholder="you@company.com" className="brut-input" required />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="h-message" className="mb-1.5 block brut-kicker text-[0.58rem]">Message</label>
+                      <label htmlFor="h-message" className="mb-1.5 block brut-kicker text-[0.72rem]">Message</label>
                       <textarea
                         id="h-message"
                         name="message"

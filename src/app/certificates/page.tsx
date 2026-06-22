@@ -1,19 +1,6 @@
-import { CertificatesSection } from "@/components/ui/certificates-section";
-import { PageTransition } from "@/components/ui/page-transition";
-import { getContent } from "@/lib/storage";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Certificates",
-  description:
-    "Bibek Pathak's professional certifications and verified credentials in software, SQL, and data.",
-  alternates: { canonical: "/certificates" },
-};
-
-export default async function CertificatesPage() {
-  const { certificates } = await getContent();
-  return (
-    <PageTransition>
-      <CertificatesSection certificates={certificates} />
-    </PageTransition>
-  );
+// The site is a single scrolling page now; this legacy route funnels into the on-page section.
+export default function CertificatesPage() {
+  redirect("/#certificates");
 }

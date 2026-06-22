@@ -1,17 +1,6 @@
-import { ContactSection } from "@/components/ui/contact-section";
-import { PageTransition } from "@/components/ui/page-transition";
+import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Contact",
-  description:
-    "Get in touch with Bibek Pathak, open to internships and engineering roles, remote or onsite.",
-  alternates: { canonical: "/contact" },
-};
-
+// The site is a single scrolling page now; this legacy route funnels into the on-page section.
 export default function ContactPage() {
-  return (
-    <PageTransition>
-      <ContactSection />
-    </PageTransition>
-  );
+  redirect("/#contact");
 }

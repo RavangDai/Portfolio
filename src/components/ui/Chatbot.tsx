@@ -275,7 +275,7 @@ function InlineFormatted({ text }: { text: string }) {
         <>
             {parts.map((p, i) =>
                 p.type === "bold" ? <span key={i} className="font-semibold text-[var(--chat-fg-strong)]">{p.text}</span>
-                : p.type === "code" ? <span key={i} className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-[var(--chat-code-bg)] text-[var(--chat-fg)]">{p.text}</span>
+                : p.type === "code" ? <span key={i} className="px-1.5 py-0.5 rounded text-[12px] font-mono bg-[var(--chat-code-bg)] text-[var(--chat-fg)]">{p.text}</span>
                 : <span key={i}>{linkify(p.text)}</span>
             )}
         </>
@@ -494,7 +494,7 @@ export function Chatbot() {
                     >
                         <motion.div className="h-1.5 w-1.5 rounded-full" style={{ background: accentPrimary }}
                             animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 2, repeat: Infinity }} />
-                        <span className={cn("text-[11px] font-medium", isBrut ? "text-[#1a1714]" : "text-white/60")}>resume chat</span>
+                        <span className={cn("text-[12px] font-medium", isBrut ? "text-[#1a1714]" : "text-white/60")}>resume chat</span>
                     </motion.button>
                 )}
             </AnimatePresence>
@@ -534,7 +534,7 @@ export function Chatbot() {
                         <span className={cn("text-[13px] font-bold tracking-tight leading-none", isBrut ? "text-[#1a1714]" : "text-white")} style={{ letterSpacing: "-0.01em" }}>
                             Bibek<span className={cn("font-light", isBrut ? "text-[#bd5232]" : "text-white/45")}>.AI</span>
                         </span>
-                        <span className={cn("text-[9px] font-medium tracking-[0.20em] uppercase leading-none", isBrut ? "text-[#6f6557]" : "text-white/30")}>ask me anything</span>
+                        <span className={cn("text-[11px] font-medium tracking-[0.20em] uppercase leading-none", isBrut ? "text-[#6f6557]" : "text-white/30")}>ask me anything</span>
                     </div>
                     {/* Live dot */}
                     <div className="relative h-2 w-2 shrink-0 ml-1">
@@ -635,7 +635,7 @@ export function Chatbot() {
                                         </p>
                                         <div className="flex items-center gap-1.5 mt-1">
                                             <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: isBrut ? "#bd5232" : "rgba(255,255,255,0.5)" }} />
-                                            <span className={cn("text-[10px] tracking-wide", isBrut ? "text-[#6f6557]" : "text-white/35")}>online · ready to chat</span>
+                                            <span className={cn("text-[11.5px] tracking-wide", isBrut ? "text-[#6f6557]" : "text-white/35")}>online · ready to chat</span>
                                         </div>
                                     </div>
                                 </div>
@@ -686,7 +686,7 @@ export function Chatbot() {
                                         className={cn("flex gap-2.5", isAssistant ? "justify-start items-start" : "justify-end")}
                                     >
                                         {isAssistant && (
-                                            <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[9px] font-black mt-0.5", isBrut ? "rounded-[4px] text-[#1a1714]" : "rounded-full text-white")}
+                                            <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[11px] font-black mt-0.5", isBrut ? "rounded-[4px] text-[#1a1714]" : "rounded-full text-white")}
                                                 style={isBrut ? {
                                                     background: "#f7f1e8",
                                                     border: "2px solid #1a1714",
@@ -719,7 +719,7 @@ export function Chatbot() {
                                                                 onClick={() => handleChipClick(c)}
                                                                 disabled={isLoading}
                                                                 className={cn(
-                                                                    "px-3 py-1.5 text-[10.5px] font-medium transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
+                                                                    "px-3 py-1.5 text-[11.5px] font-medium transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed",
                                                                     isBrut
                                                                         ? "rounded-[4px] border-2 border-[#1a1714] text-[#1a1714] bg-[#f7f1e8] hover:bg-[#bd5232] hover:text-white"
                                                                         : "rounded-full text-white/55 border border-white/[0.10] hover:border-white/25 hover:text-white/90 hover:bg-white/[0.04]"
@@ -754,7 +754,7 @@ export function Chatbot() {
                                 <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                     className="flex items-start gap-2.5">
-                                    <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[9px] font-black", isBrut ? "rounded-[4px] text-[#1a1714]" : "rounded-full text-white")}
+                                    <div className={cn("h-6 w-6 shrink-0 flex items-center justify-center text-[11px] font-black", isBrut ? "rounded-[4px] text-[#1a1714]" : "rounded-full text-white")}
                                         style={isBrut ? { background: "#f7f1e8", border: "2px solid #1a1714" } : { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)" }}>B</div>
                                     <div className="flex items-center py-[7px]">
                                         {isBrut

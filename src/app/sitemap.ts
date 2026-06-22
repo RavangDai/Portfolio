@@ -1,21 +1,15 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 
-// Lists the public, indexable routes for crawlers. Admin/API are intentionally absent.
+// The public site is a single scrolling page now (sections live at #projects, #certificates,
+// etc.), so the sitemap lists just the one canonical URL. Admin/API stay out of the index.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-  const routes: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
-    { path: "", priority: 1.0, freq: "weekly" },
-    { path: "/projects", priority: 0.9, freq: "weekly" },
-    { path: "/certificates", priority: 0.7, freq: "monthly" },
-    { path: "/achievements", priority: 0.7, freq: "monthly" },
-    { path: "/contact", priority: 0.6, freq: "monthly" },
+  return [
+    {
+      url: SITE_URL,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 1.0,
+    },
   ];
-
-  return routes.map(({ path, priority, freq }) => ({
-    url: `${SITE_URL}${path}`,
-    lastModified: now,
-    changeFrequency: freq,
-    priority,
-  }));
 }

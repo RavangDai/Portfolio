@@ -24,8 +24,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const INPUT = "brut-input text-sm";
 const TEXTAREA = `${INPUT} resize-none`;
-const BTN_SM = "brut-mono rounded-[var(--brut-radius)] border-2 border-[var(--ink)] bg-[var(--paper)] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wide hover:bg-[var(--accent-soft)] transition-colors disabled:opacity-50";
-const BTN_DEL = "brut-mono rounded-[var(--brut-radius)] border-2 border-[var(--ink)] bg-[var(--blush)] px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wide hover:bg-[var(--accent)] hover:text-white transition-colors disabled:opacity-50";
+const BTN_SM = "brut-mono rounded-[var(--brut-radius)] border-2 border-[var(--ink)] bg-[var(--paper)] px-3 py-1 text-[0.78rem] font-bold uppercase tracking-wide hover:bg-[var(--accent-soft)] transition-colors disabled:opacity-50";
+const BTN_DEL = "brut-mono rounded-[var(--brut-radius)] border-2 border-[var(--ink)] bg-[var(--blush)] px-3 py-1 text-[0.78rem] font-bold uppercase tracking-wide hover:bg-[var(--accent)] hover:text-white transition-colors disabled:opacity-50";
 
 export function AdminAchievementsClient({ initial, initialStats }: { initial: Achievement[]; initialStats: Stat[] }) {
   const [achievements, setAchievements] = useState<Achievement[]>(initial);
@@ -110,7 +110,7 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
             <button onClick={() => setStats((s) => [...s, { ...EMPTY_STAT }])} className={BTN_SM}>
               + Add stat
             </button>
-            <button onClick={saveStats} disabled={savingStats} className="brut-btn !px-3 !py-1.5 !text-[0.65rem]">
+            <button onClick={saveStats} disabled={savingStats} className="brut-btn !px-3 !py-1.5 !text-[0.78rem]">
               {savingStats ? "Saving…" : "Save stats"}
             </button>
           </div>
@@ -120,7 +120,7 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
             <div key={i} className="brut-card p-3 space-y-2">
               <input className={INPUT} value={s.value} onChange={(e) => setStats((st) => st.map((x, j) => j === i ? { ...x, value: e.target.value } : x))} placeholder="10+" />
               <input className={INPUT} value={s.label} onChange={(e) => setStats((st) => st.map((x, j) => j === i ? { ...x, label: e.target.value } : x))} placeholder="Projects Shipped" />
-              <button onClick={() => setStats((st) => st.filter((_, j) => j !== i))} className="brut-mono text-[0.65rem] font-bold uppercase tracking-wide text-[var(--accent)] hover:underline">Remove</button>
+              <button onClick={() => setStats((st) => st.filter((_, j) => j !== i))} className="brut-mono text-[0.78rem] font-bold uppercase tracking-wide text-[var(--accent)] hover:underline">Remove</button>
             </div>
           ))}
         </div>
