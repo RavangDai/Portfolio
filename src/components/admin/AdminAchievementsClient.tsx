@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { Achievement, Stat } from "@/lib/content/types";
 import { ICON_NAMES } from "@/lib/content/icons";
+import { handleUnauthorized } from "@/lib/admin-client";
 
 const ACHIEVEMENT_CATEGORIES = ["Academic", "Certification", "Competition", "Project"] as const;
 
@@ -28,14 +30,18 @@ const BTN_SM = "brut-mono rounded-[var(--brut-radius)] border-2 border-[var(--in
 const BTN_DEL = "brut-mono rounded-[var(--brut-radius)] border-2 border-[var(--ink)] bg-[var(--blush)] px-3 py-1 text-[0.78rem] font-bold uppercase tracking-wide hover:bg-[var(--accent)] hover:text-white transition-colors disabled:opacity-50";
 
 export function AdminAchievementsClient({ initial, initialStats }: { initial: Achievement[]; initialStats: Stat[] }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [achievements, setAchievements] = useState<Achievement[]>(initial);
   const [stats, setStats] = useState<Stat[]>(initialStats);
   const [editing, setEditing] = useState<Achievement | null>(null);
   const [form, setForm] = useState<Omit<Achievement, "id">>(EMPTY_ACH);
   const [id, setId] = useState("");
+  const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingStats, setSavingStats] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   function flash(text: string, ok: boolean) {
@@ -43,21 +49,25 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
     setTimeout(() => setMsg(null), 3500);
   }
 
-  function startAdd() { setEditing(null); setId(""); setForm(EMPTY_ACH); }
+  function startAdd() { setEditing(null); setId(""); setForm(EMPTY_ACH); setOpen(true); }
   function startEdit(a: Achievement) {
     setEditing(a); setId(a.id);
     const { id: _, ...rest } = a;
     setForm(rest);
+    setOpen(true);
   }
-  function cancel() { setEditing(null); setId(""); setForm(EMPTY_ACH); }
+  function cancel() { setEditing(null); setId(""); setForm(EMPTY_ACH); setOpen(false); }
   function update<K extends keyof typeof form>(key: K, value: typeof form[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
   async function save() {
-    if (!id.trim()) return flash("ID is required", false);
+    const newId = id.trim();
+    if (!newId) return flash("ID is required", false);
+    if (!editing && achievements.some((a) => a.id === newId))
+      return flash(`ID "${newId}" already exists.`, false);
     setSaving(true);
-    const ach: Achievement = { id: id.trim(), ...form };
+    const ach: Achievement = { id: newId, ...form };
     if (!ach.url) delete ach.url;
     const updated = editing
       ? achievements.map((a) => (a.id === editing.id ? ach : a))
@@ -66,18 +76,20 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updated),
     });
     setSaving(false);
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) { setAchievements(updated); cancel(); flash(editing ? "Updated." : "Added.", true); }
     else { const d = await res.json().catch(() => ({})); flash(d.error ?? "Save failed.", false); }
   }
 
   async function remove(a: Achievement) {
-    if (!confirm(`Delete "${a.title}"?`)) return;
     setDeleting(a.id);
     const updated = achievements.filter((x) => x.id !== a.id);
     const res = await fetch("/api/admin/content/achievements", {
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updated),
     });
     setDeleting(null);
+    setConfirmingId(null);
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) { setAchievements(updated); flash("Deleted.", true); }
     else flash("Delete failed.", false);
   }
@@ -88,19 +100,20 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
       method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(stats),
     });
     setSavingStats(false);
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) flash("Stats saved.", true);
     else flash("Stats save failed.", false);
   }
 
-  const isOpen = editing !== null || id !== "" || form.title !== "";
-
   return (
     <div className="max-w-4xl space-y-8">
-      {msg && (
-        <div className={`rounded-[var(--brut-radius)] border-2 border-[var(--ink)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] ${msg.ok ? "bg-[var(--mint)]" : "bg-[var(--blush)]"}`}>
-          {msg.text}
-        </div>
-      )}
+      <div role="status" aria-live="polite">
+        {msg && (
+          <div className={`rounded-[var(--brut-radius)] border-2 border-[var(--ink)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] ${msg.ok ? "bg-[var(--mint)]" : "bg-[var(--blush)]"}`}>
+            {msg.text}
+          </div>
+        )}
+      </div>
 
       {/* Stats editor */}
       <div className="space-y-3">
@@ -131,12 +144,12 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
       {/* Achievements */}
       <div className="flex items-center justify-between gap-4">
         <h1 className="brut-title text-3xl">Achievements</h1>
-        {!isOpen && (
+        {!open && (
           <button onClick={startAdd} className="brut-btn">+ Add Achievement</button>
         )}
       </div>
 
-      {isOpen && (
+      {open && (
         <div className="brut-card p-5 space-y-4">
           <h2 className="brut-h text-base">{editing ? "Edit Achievement" : "New Achievement"}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -192,10 +205,19 @@ export function AdminAchievementsClient({ initial, initialStats }: { initial: Ac
               <p className="brut-mono text-xs text-[var(--ink-3)] truncate">{a.org} · {a.date} · {a.category}</p>
             </div>
             <div className="flex shrink-0 gap-2">
-              <button onClick={() => startEdit(a)} className={BTN_SM}>Edit</button>
-              <button onClick={() => remove(a)} disabled={deleting === a.id} className={BTN_DEL}>
-                {deleting === a.id ? "…" : "Delete"}
-              </button>
+              {confirmingId === a.id ? (
+                <>
+                  <button onClick={() => remove(a)} disabled={deleting === a.id} className={BTN_DEL}>
+                    {deleting === a.id ? "…" : "Confirm"}
+                  </button>
+                  <button onClick={() => setConfirmingId(null)} className={BTN_SM}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => startEdit(a)} className={BTN_SM}>Edit</button>
+                  <button onClick={() => setConfirmingId(a.id)} className={BTN_DEL}>Delete</button>
+                </>
+              )}
             </div>
           </div>
         ))}

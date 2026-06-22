@@ -1,19 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, sanitizeFilename } from "@/lib/storage";
+import { isSameOrigin } from "@/lib/http";
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-
-function isSameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  const host = request.headers.get("host");
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
 
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) {
@@ -47,6 +37,6 @@ export async function POST(request: NextRequest) {
   }
 
   const folder = isResume ? "portfolio/resume" : "portfolio/images";
-  const url = await uploadFile(file, `${folder}/${file.name}`);
+  const url = await uploadFile(file, `${folder}/${sanitizeFilename(file.name)}`);
   return NextResponse.json({ url });
 }

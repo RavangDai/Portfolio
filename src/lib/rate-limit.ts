@@ -1,5 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import type { NextRequest, NextResponse } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 const ATTEMPT_COOKIE = "login_attempts";
 const MAX_ATTEMPTS = 5;
@@ -10,6 +12,62 @@ function getSecret(): Uint8Array {
   if (!s) throw new Error("JWT_SECRET env var is not set");
   return new TextEncoder().encode(s);
 }
+
+// --- Durable limiter (Upstash) -------------------------------------------------
+// The real brute-force defense: server-side, keyed by client IP, so it cannot be
+// bypassed by simply discarding cookies between requests. Active only when the
+// Upstash env vars are present (i.e. production); otherwise we fall back to the
+// best-effort cookie scheme below so local dev still throttles.
+
+let ratelimit: Ratelimit | null | undefined;
+
+function getRatelimit(): Ratelimit | null {
+  if (ratelimit !== undefined) return ratelimit;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) {
+    ratelimit = null;
+    return null;
+  }
+  ratelimit = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(MAX_ATTEMPTS, `${WINDOW_SECS} s`),
+    prefix: "ratelimit:admin-login",
+    analytics: false,
+  });
+  return ratelimit;
+}
+
+function clientIp(request: NextRequest): string {
+  const xff = request.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0]!.trim();
+  const real = request.headers.get("x-real-ip");
+  if (real) return real.trim();
+  return "anon"; // last resort — shared bucket (Next 16 dropped request.ip)
+}
+
+/**
+ * Decide whether a login attempt is allowed.
+ *
+ * Durable path (Upstash configured): `.limit()` both checks and counts this attempt
+ * against the IP's window — the caller does no cookie bookkeeping.
+ *
+ * Fallback path (no Upstash): read-only check of the signed attempt cookie; the caller
+ * must call `recordFailedAttempt` / `clearAttempts` to update it.
+ */
+export async function loginRateLimit(
+  request: NextRequest
+): Promise<{ allowed: boolean; remaining: number; durable: boolean }> {
+  const rl = getRatelimit();
+  if (rl) {
+    const { success, remaining } = await rl.limit(clientIp(request));
+    return { allowed: success, remaining, durable: true };
+  }
+  const { allowed, remaining } = await checkRateLimitCookie(request);
+  return { allowed, remaining, durable: false };
+}
+
+// --- Cookie fallback -----------------------------------------------------------
 
 interface Attempts {
   count: number;
@@ -31,7 +89,9 @@ async function readAttempts(request: NextRequest): Promise<Attempts> {
 }
 
 async function writeCookie(response: NextResponse, attempts: Attempts): Promise<void> {
-  const token = await new SignJWT(attempts as unknown as Record<string, unknown>)
+  // Tag the payload so this token can never be mistaken for an admin session
+  // (the middleware requires role === "admin").
+  const token = await new SignJWT({ ...attempts, role: "login_attempts" })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime(`${WINDOW_SECS}s`)
     .sign(getSecret());
@@ -44,7 +104,7 @@ async function writeCookie(response: NextResponse, attempts: Attempts): Promise<
   });
 }
 
-export async function checkRateLimit(
+async function checkRateLimitCookie(
   request: NextRequest
 ): Promise<{ allowed: boolean; remaining: number }> {
   const { count, since } = await readAttempts(request);

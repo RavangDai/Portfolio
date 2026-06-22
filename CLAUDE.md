@@ -62,7 +62,9 @@ All editable site data is **one JSON document** (`SiteContent`: projects, certif
 
 - `middleware.ts` guards `/admin/:path*` and `/api/admin/:path*`. `/admin/login` is the only exempt path. Page routes redirect to login; API routes return 401 JSON.
 - JWT via **jose** (HS256, 24h), stored in an httpOnly cookie `admin_session`. Helpers in `lib/auth.ts`.
-- Login (`api/auth/login`) checks `ADMIN_EMAIL` + `ADMIN_PASSWORD_HASH` (bcrypt), is same-origin only, and is rate-limited (`lib/rate-limit.ts`, 15-min lockout). Always runs `bcrypt.compare` even on email mismatch (timing-safe).
+- Login (`api/auth/login`) checks `ADMIN_EMAIL` + `ADMIN_PASSWORD_HASH` (bcrypt), is same-origin only, and is rate-limited (`lib/rate-limit.ts`). Always runs `bcrypt.compare` even on email mismatch (timing-safe).
+- **Rate limiting is two-tier.** When `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` are set, it uses a durable server-side, IP-keyed Upstash sliding window (5 / 15 min) that can't be bypassed by discarding cookies. Without them (local dev) it falls back to the original signed-cookie limiter. The middleware **fails closed** if `JWT_SECRET` is missing (it never verifies against a default) and requires the `role: "admin"` claim, so other same-secret tokens (e.g. the `login_attempts` cookie) can't be reused as a session.
+- The shared same-origin guard lives in `lib/http.ts` (used by login, content, and upload routes) and requires a same-origin `Origin`/`Referer` on state-changing requests.
 
 ## Chatbot (`api/chat/route.ts`)
 
@@ -97,6 +99,7 @@ Local secrets live in `.env.local` (gitignored). Used across the app:
 - `JWT_SECRET` — signs/verifies admin sessions (auth + middleware).
 - `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` — admin login (hash is bcrypt).
 - `BLOB_READ_WRITE_TOKEN` — Vercel Blob; without it the site serves `DEFAULT_CONTENT` read-only.
+- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — optional; enable durable server-side login rate limiting. Without them, login uses the cookie fallback (see Admin auth).
 - `GEMINI_API_KEY` — chatbot LLM tier (absent → chatbot returns a "not configured" message).
 - `GITHUB_TOKEN` — optional; lifts GitHub API rate limit from 60 to 5000/hr.
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `CONTACT_TO`, `CONTACT_FROM` — contact form.

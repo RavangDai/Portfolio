@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getContent } from "@/lib/storage";
 
 export default async function AdminDashboard() {
-  const content = await getContent();
+  // Read fresh (no 60s cache) so counts and "Last saved" reflect the latest write.
+  const content = await getContent({ fresh: true });
   const updatedAt = content.updatedAt
     ? new Date(content.updatedAt).toLocaleString()
     : "Never (using defaults)";

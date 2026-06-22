@@ -1,18 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getContent, putContent } from "@/lib/storage";
+import { getContent, getContentResult, putContent } from "@/lib/storage";
 import { SECTION_SCHEMAS, isSectionKey } from "@/lib/content/schema";
-
-function isSameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  const host = request.headers.get("host");
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
+import { isSameOrigin } from "@/lib/http";
 
 export async function GET(
   _request: NextRequest,
@@ -49,20 +39,38 @@ export async function PUT(
   const schema = SECTION_SCHEMAS[section];
   const result = schema.safeParse(body);
   if (!result.success) {
+    // Surface which field(s) failed so the editor can show something actionable
+    // instead of a bare "Validation failed".
+    const summary = result.error.issues
+      .slice(0, 4)
+      .map((i) => `${i.path.join(".") || "value"}: ${i.message}`)
+      .join("; ");
     return NextResponse.json(
-      { error: "Validation failed", details: result.error.flatten() },
+      { error: summary ? `Validation failed — ${summary}` : "Validation failed", details: result.error.flatten() },
       { status: 422 }
     );
   }
 
-  const content = await getContent();
-  await putContent({ ...content, [section]: result.data });
+  // Read the current document, but only proceed if the read genuinely succeeded.
+  // A transient blob read failure must NOT cause us to merge onto DEFAULT_CONTENT and
+  // overwrite every other section.
+  const current = await getContentResult();
+  if (!current.ok) {
+    return NextResponse.json(
+      { error: "Could not read current content; not saving to avoid data loss." },
+      { status: 503 }
+    );
+  }
 
-  // Invalidate the relevant public pages so visitors see the new content immediately
+  await putContent({ ...current.data, [section]: result.data });
+
+  // Invalidate the relevant public pages so visitors see the new content immediately,
+  // plus the admin dashboard so its counts / "Last saved" reflect this write.
   revalidatePath("/projects");
   revalidatePath("/certificates");
   revalidatePath("/achievements");
   revalidatePath("/");
+  revalidatePath("/admin");
 
   return NextResponse.json(result.data);
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { Project } from "@/lib/content/types";
+import { handleUnauthorized } from "@/lib/admin-client";
 
 const EMPTY: Omit<Project, "id"> = {
   name: "", tag: "", description: "", tech: [], year: new Date().getFullYear(),
@@ -27,12 +29,16 @@ interface Props {
 }
 
 export function AdminProjectsClient({ initial }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [projects, setProjects] = useState<Project[]>(initial);
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState<Omit<Project, "id">>(EMPTY);
   const [id, setId] = useState("");
+  const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   function flash(text: string, ok: boolean) {
@@ -44,6 +50,7 @@ export function AdminProjectsClient({ initial }: Props) {
     setEditing(null);
     setId("");
     setForm(EMPTY);
+    setOpen(true);
   }
 
   function startEdit(p: Project) {
@@ -51,12 +58,14 @@ export function AdminProjectsClient({ initial }: Props) {
     setId(p.id);
     const { id: _, ...rest } = p;
     setForm(rest);
+    setOpen(true);
   }
 
   function cancel() {
     setEditing(null);
     setId("");
     setForm(EMPTY);
+    setOpen(false);
   }
 
   function updateField<K extends keyof typeof form>(key: K, value: typeof form[K]) {
@@ -64,10 +73,13 @@ export function AdminProjectsClient({ initial }: Props) {
   }
 
   async function save() {
-    if (!id.trim()) return flash("ID is required", false);
+    const newId = id.trim();
+    if (!newId) return flash("ID is required", false);
+    if (!editing && projects.some((p) => p.id === newId))
+      return flash(`ID "${newId}" already exists.`, false);
     setSaving(true);
 
-    const project: Project = { id: id.trim(), ...form };
+    const project: Project = { id: newId, ...form };
     // Clean optional empty strings
     if (!project.github) delete project.github;
     if (!project.live) delete project.live;
@@ -84,6 +96,7 @@ export function AdminProjectsClient({ initial }: Props) {
     });
 
     setSaving(false);
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) {
       setProjects(updated);
       cancel();
@@ -95,7 +108,6 @@ export function AdminProjectsClient({ initial }: Props) {
   }
 
   async function remove(project: Project) {
-    if (!confirm(`Delete "${project.name}"?`)) return;
     setDeleting(project.id);
     const updated = projects.filter((p) => p.id !== project.id);
     const res = await fetch("/api/admin/content/projects", {
@@ -104,6 +116,8 @@ export function AdminProjectsClient({ initial }: Props) {
       body: JSON.stringify(updated),
     });
     setDeleting(null);
+    setConfirmingId(null);
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) {
       setProjects(updated);
       flash("Project deleted.", true);
@@ -112,27 +126,27 @@ export function AdminProjectsClient({ initial }: Props) {
     }
   }
 
-  const isOpen = editing !== null || id !== "" || form.name !== "";
-
   return (
     <div className="max-w-4xl space-y-6">
-      {/* Message */}
-      {msg && (
-        <div className={`rounded-[var(--brut-radius)] border-2 border-[var(--ink)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] ${msg.ok ? "bg-[var(--mint)]" : "bg-[var(--blush)]"}`}>
-          {msg.text}
-        </div>
-      )}
+      {/* Message — live region so screen readers announce save/delete results */}
+      <div role="status" aria-live="polite">
+        {msg && (
+          <div className={`rounded-[var(--brut-radius)] border-2 border-[var(--ink)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] ${msg.ok ? "bg-[var(--mint)]" : "bg-[var(--blush)]"}`}>
+            {msg.text}
+          </div>
+        )}
+      </div>
 
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <h1 className="brut-title text-3xl">Projects</h1>
-        {!isOpen && (
+        {!open && (
           <button onClick={startAdd} className="brut-btn">+ Add Project</button>
         )}
       </div>
 
       {/* Form */}
-      {isOpen && (
+      {open && (
         <div className="brut-card p-5 space-y-4">
           <h2 className="brut-h text-base">{editing ? "Edit Project" : "New Project"}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -146,7 +160,7 @@ export function AdminProjectsClient({ initial }: Props) {
               <input className={INPUT} value={form.tag} onChange={(e) => updateField("tag", e.target.value)} placeholder="React · Full-stack" />
             </Field>
             <Field label="Year">
-              <input type="number" className={INPUT} value={form.year} onChange={(e) => updateField("year", parseInt(e.target.value))} />
+              <input type="number" className={INPUT} value={form.year} onChange={(e) => { const n = parseInt(e.target.value, 10); updateField("year", Number.isNaN(n) ? form.year : n); }} />
             </Field>
             <Field label="Status">
               <select className={INPUT} value={form.status} onChange={(e) => updateField("status", e.target.value as Project["status"])}>
@@ -191,10 +205,19 @@ export function AdminProjectsClient({ initial }: Props) {
               <p className="brut-mono text-xs text-[var(--ink-3)] truncate">{p.tag} · {p.year} · {p.status}</p>
             </div>
             <div className="flex shrink-0 gap-2">
-              <button onClick={() => startEdit(p)} className={BTN_SM}>Edit</button>
-              <button onClick={() => remove(p)} disabled={deleting === p.id} className={BTN_DEL}>
-                {deleting === p.id ? "…" : "Delete"}
-              </button>
+              {confirmingId === p.id ? (
+                <>
+                  <button onClick={() => remove(p)} disabled={deleting === p.id} className={BTN_DEL}>
+                    {deleting === p.id ? "…" : "Confirm"}
+                  </button>
+                  <button onClick={() => setConfirmingId(null)} className={BTN_SM}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => startEdit(p)} className={BTN_SM}>Edit</button>
+                  <button onClick={() => setConfirmingId(p.id)} className={BTN_DEL}>Delete</button>
+                </>
+              )}
             </div>
           </div>
         ))}

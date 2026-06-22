@@ -5,9 +5,12 @@ const COOKIE_NAME = "admin_session";
 
 // Inline the secret resolution so the middleware bundle stays minimal.
 // jose uses Web Crypto APIs and runs fine on Vercel Edge Runtime.
-function getSecret(): Uint8Array {
+// Returns null when JWT_SECRET is unset so the guard fails *closed* — never verify
+// against a hardcoded default (that would let a forged token in if the env var is
+// missing in a deploy).
+function getSecret(): Uint8Array | null {
   const s = process.env.JWT_SECRET;
-  if (!s) return new TextEncoder().encode("__missing_secret__");
+  if (!s) return null;
   return new TextEncoder().encode(s);
 }
 
@@ -18,12 +21,15 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/admin/login") return NextResponse.next();
 
   const token = request.cookies.get(COOKIE_NAME)?.value;
+  const secret = getSecret();
   let valid = false;
 
-  if (token) {
+  if (token && secret) {
     try {
-      await jwtVerify(token, getSecret());
-      valid = true;
+      const { payload } = await jwtVerify(token, secret);
+      // Require the admin role claim. Other tokens signed with the same secret
+      // (e.g. the login_attempts cookie) must not be accepted as a session.
+      valid = payload.role === "admin";
     } catch {
       valid = false;
     }

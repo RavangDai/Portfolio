@@ -83,21 +83,31 @@ export const siteInfoSchema = z.object({
   resumeUrl: imageRef,
 });
 
+// Reject collections that contain duplicate ids — they cause React key collisions in
+// the admin list and ambiguous edit/delete targeting.
+const uniqueIds = <T extends { id: string }>(items: T[]) =>
+  new Set(items.map((i) => i.id)).size === items.length;
+
+const projectsArray = z.array(projectSchema).max(50).refine(uniqueIds, "Duplicate id");
+const certificatesArray = z.array(certificateSchema).max(50).refine(uniqueIds, "Duplicate id");
+const achievementsArray = z.array(achievementSchema).max(50).refine(uniqueIds, "Duplicate id");
+const statsArray = z.array(statSchema).max(8);
+
 export const siteContentSchema = z.object({
-  projects: z.array(projectSchema).max(50),
-  certificates: z.array(certificateSchema).max(50),
-  achievements: z.array(achievementSchema).max(50),
-  stats: z.array(statSchema).max(8),
+  projects: projectsArray,
+  certificates: certificatesArray,
+  achievements: achievementsArray,
+  stats: statsArray,
   site: siteInfoSchema,
   updatedAt: z.string().optional(),
 });
 
 // Per-section schemas for PUT /api/admin/content/[section]
 export const SECTION_SCHEMAS = {
-  projects: z.array(projectSchema).max(50),
-  certificates: z.array(certificateSchema).max(50),
-  achievements: z.array(achievementSchema).max(50),
-  stats: z.array(statSchema).max(8),
+  projects: projectsArray,
+  certificates: certificatesArray,
+  achievements: achievementsArray,
+  stats: statsArray,
   site: siteInfoSchema,
 } as const;
 

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { SiteInfo } from "@/lib/content/types";
+import { handleUnauthorized } from "@/lib/admin-client";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -15,6 +17,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const INPUT = "brut-input text-sm";
 
 export function AdminSiteClient({ initial }: { initial: SiteInfo }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [form, setForm] = useState<SiteInfo>(initial);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -37,6 +41,7 @@ export function AdminSiteClient({ initial }: { initial: SiteInfo }) {
       body: JSON.stringify(form),
     });
     setSaving(false);
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) flash("Site info saved.", true);
     else { const d = await res.json().catch(() => ({})); flash(d.error ?? "Save failed.", false); }
   }
@@ -50,6 +55,8 @@ export function AdminSiteClient({ initial }: { initial: SiteInfo }) {
     fd.append("type", "resume");
     const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
     setUploading(false);
+    e.target.value = "";
+    if (handleUnauthorized(res, router, pathname, flash)) return;
     if (res.ok) {
       const { url } = await res.json();
       update("resumeUrl", url);
@@ -58,16 +65,17 @@ export function AdminSiteClient({ initial }: { initial: SiteInfo }) {
       const d = await res.json().catch(() => ({}));
       flash(d.error ?? "Upload failed.", false);
     }
-    e.target.value = "";
   }
 
   return (
     <div className="max-w-2xl space-y-6">
-      {msg && (
-        <div className={`rounded-[var(--brut-radius)] border-2 border-[var(--ink)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] ${msg.ok ? "bg-[var(--mint)]" : "bg-[var(--blush)]"}`}>
-          {msg.text}
-        </div>
-      )}
+      <div role="status" aria-live="polite">
+        {msg && (
+          <div className={`rounded-[var(--brut-radius)] border-2 border-[var(--ink)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] ${msg.ok ? "bg-[var(--mint)]" : "bg-[var(--blush)]"}`}>
+            {msg.text}
+          </div>
+        )}
+      </div>
 
       <h1 className="brut-title text-3xl">Site Info</h1>
 

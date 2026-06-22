@@ -7,7 +7,10 @@ import { Suspense } from "react";
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") ?? "/admin";
+  const rawNext = params.get("next") ?? "/admin";
+  // Only allow same-site relative paths — never an absolute/protocol-relative URL —
+  // so a crafted ?next can't turn login into an open redirect.
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/admin";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

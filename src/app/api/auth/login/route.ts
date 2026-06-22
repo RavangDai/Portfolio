@@ -2,30 +2,20 @@ import { type NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { signToken, COOKIE_NAME, cookieOptions } from "@/lib/auth";
-import { checkRateLimit, recordFailedAttempt, clearAttempts } from "@/lib/rate-limit";
+import { loginRateLimit, recordFailedAttempt, clearAttempts } from "@/lib/rate-limit";
+import { isSameOrigin } from "@/lib/http";
 
 const loginSchema = z.object({
   email: z.string().trim().email().max(200),
   password: z.string().min(1).max(200),
 });
 
-function isSameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true; // same-origin requests without preflight may omit Origin
-  const host = request.headers.get("host");
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
-
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { allowed, remaining } = await checkRateLimit(request);
+  const { allowed, remaining, durable } = await loginRateLimit(request);
   if (!allowed) {
     return NextResponse.json(
       { error: "Too many failed attempts. Try again in 15 minutes." },
@@ -60,17 +50,19 @@ export async function POST(request: NextRequest) {
   const passwordMatch = await bcrypt.compare(password, adminHash);
 
   if (!emailMatch || !passwordMatch) {
+    // Durable limiter already counted this attempt; only the cookie fallback needs
+    // to record it (and surface a decremented count to the UI).
     const failResponse = NextResponse.json(
-      { error: "Invalid email or password", remaining: remaining - 1 },
+      { error: "Invalid email or password", remaining: Math.max(0, remaining - (durable ? 0 : 1)) },
       { status: 401 }
     );
-    await recordFailedAttempt(request, failResponse);
+    if (!durable) await recordFailedAttempt(request, failResponse);
     return failResponse;
   }
 
   const token = await signToken({ role: "admin" });
   const response = NextResponse.json({ success: true });
   response.cookies.set(COOKIE_NAME, token, cookieOptions);
-  await clearAttempts(response);
+  if (!durable) await clearAttempts(response);
   return response;
 }
