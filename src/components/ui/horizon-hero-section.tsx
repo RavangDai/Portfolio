@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Download, FolderGit2, BadgeCheck, Trophy, Mail, Plus } from "lucide-react";
+import { ArrowRight, Download } from "lucide-react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { SiteInfo } from "@/lib/content/types";
@@ -21,15 +20,6 @@ type Beat = {
   cta?: "primary" | "explore";
 };
 
-// Navigation targets surfaced as the final "EXPLORE" beat. The site is one scrolling page now,
-// so these jump to the on-page section anchors rather than separate routes.
-const EXPLORE_LINKS = [
-  { href: "#projects", label: "Projects", desc: "10+ builds", Icon: FolderGit2 },
-  { href: "#certificates", label: "Certificates", desc: "Credentials", Icon: BadgeCheck },
-  { href: "#achievements", label: "Achievements", desc: "Wins & honors", Icon: Trophy },
-  { href: "#contact", label: "Contact", desc: "Let's talk", Icon: Mail },
-] as const;
-
 // Narrative beats — the pinned blueprint stage swaps its left column across these.
 const BEATS: Beat[] = [
   {
@@ -43,18 +33,12 @@ const BEATS: Beat[] = [
     line1: "10+ shipped projects across full-stack web,",
     line2: "applied AI, and computer vision.",
   },
-  {
-    title: "EXPLORE",
-    line1: "Dive into the work,",
-    line2: "pick where to go next.",
-    cta: "explore",
-  },
 ];
 
 const TOTAL_BEATS = BEATS.length;
 
 // Authored chapter labels for the per-beat "SECTOR" readout (aligned 1:1 with BEATS).
-const CHAPTERS = ["IDENTITY", "BUILDER", "EXPLORE"] as const;
+const CHAPTERS = ["IDENTITY", "BUILDER"] as const;
 
 // Beat 01 proof cards — concrete evidence that I build & ship.
 const PROOF = [
@@ -139,9 +123,9 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
     ));
 
   const beat = BEATS[currentSection];
-  // Beats 0 (IDENTITY) and 1 (BUILDER) sublines are CMS-editable; beat 2 (EXPLORE) stays authored.
-  const beatLine1 = currentSection === 0 ? site.heroLine1 : currentSection === 1 ? site.builderLine1 : beat.line1;
-  const beatLine2 = currentSection === 0 ? site.heroLine2 : currentSection === 1 ? site.builderLine2 : beat.line2;
+  // Both beats' sublines are CMS-editable: IDENTITY uses hero*, BUILDER uses builder*.
+  const beatLine1 = currentSection === 0 ? site.heroLine1 : site.builderLine1;
+  const beatLine2 = currentSection === 0 ? site.heroLine2 : site.builderLine2;
 
   return (
     <div ref={containerRef} className="hero-container">
@@ -167,7 +151,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
           <div className="hero-stage">
             {/* LEFT — each beat is a "page": the old one tears away sideways as the next turns in */}
             <div className="hero-stage-left-wrap">
-              <AnimatePresence mode="popLayout" initial={false}>
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentSection}
                   className="hero-stage-left"
@@ -175,7 +159,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                   initial={{ opacity: 0, y: reduceMotion ? 0 : 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: reduceMotion ? 0 : -40 }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 >
               <span className="hero-sector">
                 SECTOR {String(currentSection).padStart(2, "0")} · {CHAPTERS[currentSection]}
@@ -234,20 +218,6 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                 </div>
               )}
 
-              {/* Beat 02 — explore navigation panels */}
-              {currentSection === 2 && (
-                <div className="hero-explore-grid">
-                  {EXPLORE_LINKS.map(({ href, label, desc, Icon }, i) => (
-                    <Link key={href} href={href} className="hero-explore-card group">
-                      <span className="hero-explore-idx">{String(i + 1).padStart(2, "0")}</span>
-                      <Plus className="hero-explore-plus" />
-                      <Icon className="hero-explore-icon" />
-                      <span className="hero-explore-label">{label}</span>
-                      <span className="hero-explore-desc">{desc}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
                 </motion.div>
               </AnimatePresence>
             </div>

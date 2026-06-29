@@ -8,7 +8,7 @@ html {
 
 body {
   overflow-x: clip;
-  font-size: var(--text-body, 1.0625rem);   /* 17px base for Manrope body */
+  font-size: var(--text-body, 1.0625rem);   /* 17px base for Plus Jakarta Sans body */
   text-rendering: optimizeLegibility;
 }
 
@@ -20,7 +20,7 @@ body {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter), "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-inter), "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: var(--font-brut-display), "EB Garamond", Georgia, "Times New Roman", serif;
   --font-mono: var(--font-inter), ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -198,9 +198,9 @@ body {
      reduced-motion never touch it, so the refracted light is static there. */
   --brut-sun: 0;
 
-  /* Typography: Manrope is the single text/label font (carried on --font-inter for continuity).
-     These legacy var names are kept as aliases → Manrope so every existing reference (body,
-     kickers, chips, buttons, telemetry, nav, chatbot) resolves to Manrope without per-call edits.
+  /* Typography: Plus Jakarta Sans is the single text/label font (carried on --font-inter for continuity).
+     These legacy var names are kept as aliases → Plus Jakarta Sans so every existing reference (body,
+     kickers, chips, buttons, telemetry, nav, chatbot) resolves to Plus Jakarta Sans without per-call edits.
      Headings + big identity titles use --font-brut-display (EB Garamond, a classic literary serif). */
   --font-raleway: var(--font-inter);
   --font-brut-mono: var(--font-inter);
@@ -1020,7 +1020,7 @@ body {
 .hero-container {
   position: relative;
   width: 100%;
-  height: 300vh; /* three scroll beats */
+  height: 200vh; /* two scroll beats */
   background: #f7f1e8; /* paper */
   color: #1a1714;
 }
@@ -1466,18 +1466,8 @@ body {
   .hero-stage-left[data-beat="1"] .hero-id-name {
     font-size: clamp(2.6rem, 7vw, 5.5rem);
   }
-  /* Beat 02 (EXPLORE) also carries the 2×2 nav grid, so it's the tallest beat.
-     Cap the title + tighten the column so the whole thing fits the sticky 100svh
-     instead of flowing past the bottom edge (overflow:hidden was clipping the
-     lower cards / letters). */
-  .hero-stage-left[data-beat="2"] .hero-id-name {
-    font-size: clamp(2.4rem, 5.5vw, 4.4rem);
-  }
 }
 
-/* Compact the EXPLORE beat across all sizes so it never overflows downward. */
-.hero-stage-left[data-beat="2"] { gap: 0.7rem; min-height: 0; }
-.hero-stage-left[data-beat="2"] .hero-id-sub { gap: 0.05rem; }
 .hero-id-rule { width: 100%; max-width: 26rem; height: 2px; background: #1a1714; }
 .hero-id-sub { align-items: flex-start; text-align: left; }
 
@@ -1525,7 +1515,6 @@ body {
   transform-origin: bottom center;
 }
 .hero-stage-right[data-beat="1"] { transform: translateX(3%) scale(0.95); }
-.hero-stage-right[data-beat="2"] { transform: translateX(5%) scale(0.9); }
 
 .hero-photo {
   position: relative;
@@ -1634,7 +1623,6 @@ body {
   .hero-stage-right { display: none; }
   .hero-scroll-tag { display: none; }
   .hero-proof { grid-template-columns: 1fr; max-width: 100%; gap: 0.5rem; }
-  .hero-explore-grid { max-width: 100%; }
   .hero-actions { gap: 0.5rem; margin-top: 0.4rem; }
 }
 
@@ -1800,98 +1788,6 @@ body {
 }
 
 /* ── EXPLORE beat — navigation hub that ends the cosmos scroll ── */
-.hero-explore-grid {
-  pointer-events: auto;
-  margin-top: 0.4rem;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-  width: 100%;
-  max-width: 32rem;
-}
-
-/* Engineered navigation panels — numbered, ink-bordered, cobalt offset, press on hover. */
-.hero-explore-idx {
-  font-family: var(--font-inter), ui-monospace, monospace;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: #6f6557;
-}
-.hero-explore-plus {
-  position: absolute;
-  top: 0.85rem;
-  right: 0.9rem;
-  height: 1rem;
-  width: 1rem;
-  color: var(--cobalt);
-  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.hero-explore-card:hover .hero-explore-plus { transform: rotate(90deg); }
-.hero-explore-icon { display: none; }
-.hero-explore-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-  padding: 0.72rem 0.9rem;
-  color: #1a1714;
-  text-align: left;
-  background: #ffffff;
-  border: 2px solid #1a1714;
-  border-radius: 6px;
-  box-shadow: 4px 4px 0 0 var(--cobalt);
-  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.16s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.hero-explore-card:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 0 var(--cobalt);
-}
-
-.hero-explore-icon {
-  height: 1.35rem;
-  width: 1.35rem;
-  color: var(--cobalt);
-}
-
-.hero-explore-label {
-  font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
-  font-weight: 800;
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-}
-
-.hero-explore-desc {
-  font-family: var(--font-brut-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #5c5349;
-}
-
-.hero-explore-arrow {
-  position: absolute;
-  top: 0.95rem;
-  right: 0.95rem;
-  height: 1rem;
-  width: 1rem;
-  color: var(--cobalt);
-  opacity: 0;
-  transform: translate(-2px, 2px);
-  transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
-}
-
-.hero-explore-card:hover .hero-explore-arrow {
-  opacity: 1;
-  transform: translate(0, 0);
-  color: var(--cobalt);
-}
-
 .scroll-progress {
   position: absolute;
   left: 50%;
@@ -2069,7 +1965,7 @@ body {
 
 /* ── Typography ── */
 /* Card / list titles + sub-heads — EB Garamond, an editorial serif weight. (Stat numbers add
-   .brut-mono, declared later, which re-wins font-family back to Manrope tabular-nums.) */
+   .brut-mono, declared later, which re-wins font-family back to Plus Jakarta Sans tabular-nums.) */
 .brut-h {
   font-family: var(--font-brut-display), "EB Garamond", Georgia, serif;
   font-weight: 600;
@@ -2360,6 +2256,11 @@ body {
    .brut-ink is declared AFTER .brut-title / .brut-h so the muted base colour wins on headings. */
 .brut-ink {
   position: relative;
+  /* inline-block gives the span a real line-box so the absolutely-positioned accent clone
+     (.brut-ink__fill, inset:0) shares the SAME half-leading as the base text and superimposes
+     exactly. As a plain inline element the clone's text dropped ~2px (line-height > glyph box),
+     which read as doubled/"overlapping" text — visible once the body font changed metrics. */
+  display: inline-block;
   isolation: isolate;
   white-space: pre-wrap;
   color: var(--ink-muted, var(--ink-2, #5c5349));   /* muted, fully readable before it inks */

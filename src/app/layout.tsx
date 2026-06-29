@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, EB_Garamond } from "next/font/google";
+import { Plus_Jakarta_Sans, EB_Garamond } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { MainNavbar } from "@/components/ui/main-navbar";
@@ -17,11 +17,11 @@ import {
   buildJsonLd,
 } from "@/lib/seo";
 
-// Body + ALL UI text/labels use Manrope, a clean humanist geometric sans (label classes add
+// Body + ALL UI text/labels use Plus Jakarta Sans, a humanist geometric sans (label classes add
 // uppercase + letter-spacing in CSS). Kept on the --font-inter variable name so the legacy
-// aliases (--font-raleway, --font-brut-mono) and every existing reference resolve to Manrope
+// aliases (--font-raleway, --font-brut-mono) and every existing reference resolve to Plus Jakarta Sans
 // with no per-call edits.
-const bodyFont = Manrope({
+const bodyFont = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-inter",
