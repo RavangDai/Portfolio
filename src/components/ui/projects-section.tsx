@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, ArrowUpRight } from "lucide-react";
@@ -20,25 +19,8 @@ function GithubIcon({ className }: { className?: string }) {
 const PASTELS = ["var(--butter)", "var(--lavender)", "var(--mint)", "var(--blush)"];
 const ease = [0.22, 1, 0.36, 1] as const;
 
-function BuildingBadge() {
-  const [dots, setDots] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setDots((d) => (d + 1) % 4), 520);
-    return () => clearInterval(id);
-  }, []);
-  return (
-    <span className="brut-chip">
-      <span className="relative flex h-1.5 w-1.5 shrink-0">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-75" />
-        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-      </span>
-      Building{".".repeat(dots)}
-    </span>
-  );
-}
-
 function StatusBadge({ status }: { status: Project["status"] }) {
-  if (status === "In progress") return <BuildingBadge />;
+  if (status === "In progress") return <span className="brut-chip">In progress</span>;
   return <span className="brut-chip-accent brut-chip">Shipped</span>;
 }
 

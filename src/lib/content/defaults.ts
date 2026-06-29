@@ -184,7 +184,6 @@ export const DEFAULT_CONTENT: SiteContent = {
   ],
 
   site: {
-    statusText: "Available",
     heroLine1: "Full-Stack Builder",
     heroLine2: "AI / ML Developer",
     builderLine1: "10+ shipped projects across full-stack web,",

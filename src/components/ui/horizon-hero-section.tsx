@@ -181,16 +181,6 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                 SECTOR {String(currentSection).padStart(2, "0")} · {CHAPTERS[currentSection]}
               </span>
 
-              {currentSection === 0 && (
-                <span className="role-badge">
-                  <span className="relative flex h-1.5 w-1.5 shrink-0">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--cobalt)] opacity-60" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--cobalt)]" />
-                  </span>
-                  Status: {site.statusText}
-                </span>
-              )}
-
               <h1 className="hero-title hero-id-name">
                 {currentSection === 0 ? (
                   <>

@@ -161,15 +161,6 @@ export function ContactSection() {
                 <p className="brut-kicker mb-1.5 text-[0.72rem]">Focus</p>
                 <p className="text-sm font-medium text-[var(--ink)]">Full-stack · Data / AI</p>
               </div>
-
-              {/* Status */}
-              <div className="inline-flex w-fit items-center gap-2 rounded-[4px] border-2 border-[var(--ink)] bg-[var(--accent)] px-3 py-1.5 brut-mono text-[0.74rem] font-bold uppercase tracking-[0.12em] text-[var(--accent-ink)]">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-ink)] opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent-ink)]" />
-                </span>
-                Open to Internships
-              </div>
             </div>
           </motion.div>
 

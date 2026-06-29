@@ -72,7 +72,6 @@ export const statSchema = z.object({
 });
 
 export const siteInfoSchema = z.object({
-  statusText: z.string().trim().min(1).max(40),
   heroLine1: shortText,
   heroLine2: shortText,
   builderLine1: shortText,

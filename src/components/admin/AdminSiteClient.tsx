@@ -82,9 +82,6 @@ export function AdminSiteClient({ initial }: { initial: SiteInfo }) {
       <div className="brut-card p-5 space-y-4">
         <h2 className="brut-kicker">Hero</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Status pill text">
-            <input className={INPUT} value={form.statusText} onChange={(e) => update("statusText", e.target.value)} placeholder="Available" />
-          </Field>
           <Field label="Hero line 1">
             <input className={INPUT} value={form.heroLine1} onChange={(e) => update("heroLine1", e.target.value)} placeholder="Full-Stack Builder" />
           </Field>

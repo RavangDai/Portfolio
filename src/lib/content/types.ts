@@ -52,8 +52,6 @@ export interface Stat {
 }
 
 export interface SiteInfo {
-  /** Hero status pill, e.g. "Available" */
-  statusText: string;
   /** Hero beat 1 sublines */
   heroLine1: string;
   heroLine2: string;
