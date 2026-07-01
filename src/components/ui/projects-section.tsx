@@ -20,7 +20,7 @@ const PASTELS = ["var(--butter)", "var(--lavender)", "var(--mint)", "var(--blush
 const ease = [0.22, 1, 0.36, 1] as const;
 
 function StatusBadge({ status }: { status: Project["status"] }) {
-  if (status === "In progress") return <span className="brut-chip">In progress</span>;
+  if (status === "In progress") return <span className="brut-chip-yellow brut-chip">In progress</span>;
   return <span className="brut-chip-accent brut-chip">Shipped</span>;
 }
 
@@ -173,6 +173,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           <h1 className="brut-title text-[clamp(2.8rem,9vw,6rem)]">
             Built &amp; <HighlightText mode="scroll" ink underline>Shipped.</HighlightText>
           </h1>
+          <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <p className="max-w-md text-base leading-relaxed text-[var(--ink-2)]">
               Real products taken from zero to deployed: full-stack apps, AI tooling,

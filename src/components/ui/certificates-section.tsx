@@ -143,6 +143,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           <h1 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
             Proof wall. <HighlightText mode="scroll" ink underline from="right">Real receipts.</HighlightText>
           </h1>
+          <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
           <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
             Issuer-backed credentials, each linking to its public verification page.
           </p>

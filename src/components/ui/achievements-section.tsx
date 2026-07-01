@@ -32,6 +32,7 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
               Achieve<span className="text-[var(--accent)]">-</span>ments.
             </HighlightText>
           </h1>
+          <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
           <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
             Competition wins, academic recognition, and certifications earned while
             building and shipping real products.
@@ -104,7 +105,9 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                       <span
                         className={cn(
                           "brut-chip",
-                          hi && "border-[var(--accent-ink)] bg-transparent text-[var(--accent-ink)]"
+                          hi
+                            ? "border-[var(--accent-ink)] bg-transparent text-[var(--accent-ink)]"
+                            : "brut-chip-yellow"
                         )}
                       >
                         {item.date}

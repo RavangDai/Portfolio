@@ -254,10 +254,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
         <div className="hero-marquee" aria-hidden>
           <div className="hero-marquee-track">
             {[...STACK, ...STACK].map((tech, i) => (
-              <span className="hero-marquee-item" key={i}>
-                {tech}
-                <span className="hero-marquee-dot" />
-              </span>
+              <span className="hero-marquee-chip" key={i}>{tech}</span>
             ))}
           </div>
         </div>

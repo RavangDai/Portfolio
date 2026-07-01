@@ -104,7 +104,10 @@ export function Footer() {
               <h4 className="brut-kicker text-[0.74rem]">Stack</h4>
               <div className="flex flex-col gap-2">
                 {["React · Next.js", "Python · FastAPI", "TypeScript", "PostgreSQL · MongoDB", "Docker · Git"].map((item) => (
-                  <span key={item} className="text-[0.85rem] text-[var(--ink-2)]">{item}</span>
+                  <span key={item} className="flex items-center text-[0.85rem] text-[var(--ink-2)]">
+                    <span aria-hidden className="mr-2 inline-block h-1.5 w-1.5 shrink-0 rounded-[1px] bg-[var(--marigold)] align-middle" />
+                    {item}
+                  </span>
                 ))}
               </div>
             </AnimatedContainer>

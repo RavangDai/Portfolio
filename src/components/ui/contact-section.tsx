@@ -79,6 +79,7 @@ export function ContactSection() {
                 Let&apos;s build{" "}
                 <HighlightText mode="scroll" ink underline>something.</HighlightText>
               </h2>
+              <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
               <p className="mt-5 max-w-xs text-base leading-relaxed text-[var(--ink-2)]">
                 Whether it&apos;s a data project, full-stack app, or something
                 experimental. Reach out.

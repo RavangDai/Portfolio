@@ -1603,9 +1603,9 @@ body {
   padding: 0.18rem 0.5rem;
 }
 
-/* ── Tech-stack ticker — a persistent hard-bordered marigold band pinned to the hero base.
-   The track holds the stack list twice; translateX(-50%) loops it seamlessly. Hard edges (no
-   mask fade) keep it brutalist. Reduced-motion holds it static and still fully legible. ── */
+/* ── Tech-stack ticker — a marigold band pinned to the hero base carrying outlined chip badges.
+   The track holds the stack list twice; translateX(-50%) loops it seamlessly. Always scrolls
+   (matches the site's reducedMotion="never" policy); hover pauses it. ── */
 .hero-marquee {
   position: absolute;
   left: 0;
@@ -1620,36 +1620,31 @@ body {
   display: flex;
   width: max-content;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 0.6rem 0;
   animation: hero-marquee-scroll 34s linear infinite;
   will-change: transform;
 }
-.hero-marquee-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.6rem;          /* label → trailing dot */
-  padding-left: 1.6rem; /* uniform spacing, including across the loop seam */
+.hero-marquee:hover .hero-marquee-track { animation-play-state: paused; }
+/* Each tech is a hard-edged white badge that pops on the marigold band. A uniform left margin
+   (not flex gap) keeps spacing identical across the loop seam. */
+.hero-marquee-chip {
+  flex: none;
+  margin-left: 0.7rem;
+  padding: 0.34rem 0.85rem;
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #1a1714;
+  background: #fff;
+  border: 2px solid #1a1714;
+  border-radius: 6px;
   white-space: nowrap;
-}
-.hero-marquee-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #1a1714;
 }
 @keyframes hero-marquee-scroll {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-marquee-track { animation: none; }
 }
 
 /* Display tracking for EB Garamond (the --font-brut-display face), a classic text serif.
@@ -1682,7 +1677,7 @@ body {
   .hero-proof-card:nth-child(2),
   .hero-proof-card:nth-child(3) { transform: none; }
   .hero-proof-card { box-shadow: 4px 4px 0 0 var(--cobalt); }
-  .hero-marquee-item { font-size: 0.72rem; gap: 1.1rem; padding-left: 1.1rem; }
+  .hero-marquee-chip { font-size: 0.66rem; margin-left: 0.5rem; padding: 0.3rem 0.7rem; letter-spacing: 0.1em; }
 }
 
 /* Very small phones — tighten further and let the portrait shrink so the
@@ -2057,6 +2052,18 @@ body {
   letter-spacing: var(--ls-kicker, 0.22em);
   text-transform: uppercase;
   color: var(--ink-2);
+}
+/* Marigold eyebrow dash — the secondary pop threaded onto every kicker site-wide
+   (section headers, footer columns, contact notes, form labels). Text stays --ink-2
+   for contrast; only this small dash carries the yellow. */
+.brut-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 3px;
+  margin-right: 0.55em;
+  vertical-align: middle;
+  background: var(--marigold);
 }
 
 .brut-mono {
