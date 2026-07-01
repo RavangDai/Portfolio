@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, CheckCircle2, ExternalLink } from "lucide-react";
@@ -7,14 +8,46 @@ import type { Certificate } from "@/lib/content/types";
 import { getIcon } from "@/lib/content/icons";
 import { HighlightText } from "@/components/ui/highlight";
 import { Tape } from "@/components/ui/tape";
+import { Carousel } from "@/components/retroui/Carousel";
 
 const PASTELS = ["var(--mint)", "var(--lavender)", "var(--butter)"];
 const ease = [0.22, 1, 0.36, 1] as const;
+// Stable reference — passing a fresh opts object each render makes Embla re-init in a loop.
+const CAROUSEL_OPTS = { align: "start" as const };
+
+// Swipe is a mobile-only affordance. useSyncExternalStore keeps this SSR-safe (server → false →
+// grid) so Embla is mounted ONLY on phones — desktop never touches the carousel.
+function useIsMobile() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(max-width: 767px)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(max-width: 767px)").matches,
+    () => false,
+  );
+}
+
+// Card + its decorative washi tape (used by both the desktop grid and the mobile carousel).
+function CertCardWithTape({ certificate, i }: { certificate: Certificate; i: number }) {
+  return (
+    <div className="relative h-full pt-2">
+      {i === 0 && (
+        <Tape color="mint" rotate={-5} style={{ top: "-0.1rem", left: "1.3rem", width: "3.4rem", height: "1.2rem", zIndex: 5 }} />
+      )}
+      {i === 1 && (
+        <Tape color="marigold" rotate={6} style={{ top: "-0.1rem", right: "1.3rem", width: "3rem", height: "1.2rem", zIndex: 5 }} />
+      )}
+      <CertCard certificate={certificate} pastel={PASTELS[i % PASTELS.length]} />
+    </div>
+  );
+}
 
 function CertCard({ certificate, pastel }: { certificate: Certificate; pastel: string }) {
   const Icon = getIcon(certificate.icon);
   return (
-    <article className="brut-card-i group flex flex-col overflow-hidden">
+    <article className="brut-card-i group flex h-full flex-col overflow-hidden">
       {/* Thumb */}
       <div
         className="relative w-full overflow-hidden border-b-2 border-[var(--ink)]"
@@ -76,6 +109,8 @@ interface CertificatesSectionProps {
 }
 
 export function CertificatesSection({ certificates }: CertificatesSectionProps) {
+  const isMobile = useIsMobile();
+
   if (!certificates.length) {
     return (
       <section
@@ -113,29 +148,39 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           </p>
         </motion.header>
 
-        {/* ── Grid ── */}
+        {/* ── Desktop: grid. Mobile: swipeable carousel (Embla mounts only on phones). ── */}
         <motion.div
-          initial="hidden"
-          animate="show"
-          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
-          className="grid gap-6 sm:grid-cols-2 md:grid-cols-3"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6, ease }}
         >
-          {certificates.map((certificate, i) => (
-            <motion.div
-              key={certificate.id}
-              variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.6, ease }}
-              className="relative"
-            >
-              {i === 0 && (
-                <Tape color="mint" rotate={-5} style={{ top: "-0.55rem", left: "1.3rem", width: "3.4rem", height: "1.2rem" }} />
-              )}
-              {i === 2 && (
-                <Tape color="clay" rotate={6} style={{ top: "-0.55rem", right: "1.3rem", width: "3rem", height: "1.2rem" }} />
-              )}
-              <CertCard certificate={certificate} pastel={PASTELS[i % PASTELS.length]} />
-            </motion.div>
-          ))}
+          {isMobile ? (
+            <Carousel opts={CAROUSEL_OPTS} className="w-full">
+              {/* Arrows — reachable group above the rail (swipe is primary; these are a fallback). */}
+              <div className="mb-5 flex justify-end gap-2.5">
+                <Carousel.Previous />
+                <Carousel.Next />
+              </div>
+              <Carousel.Content>
+                {certificates.map((certificate, i) => (
+                  <Carousel.Item key={certificate.id} className="basis-[85%] sm:basis-1/2">
+                    {/* p-4 keeps the card's 2px border + offset shadow off the viewport's
+                        overflow:hidden clip edge (per RetroUI's default carousel variant). */}
+                    <div className="p-4">
+                      <CertCardWithTape certificate={certificate} i={i} />
+                    </div>
+                  </Carousel.Item>
+                ))}
+              </Carousel.Content>
+            </Carousel>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+              {certificates.map((certificate, i) => (
+                <CertCardWithTape key={certificate.id} certificate={certificate} i={i} />
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* ── CTA ── */}

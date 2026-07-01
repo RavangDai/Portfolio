@@ -21,7 +21,7 @@ const BOT_EDGE =
   "L690,13 L648,22 L606,9 L566,20 L524,12 L482,22 L440,10 L398,21 L356,9 L314,20 " +
   "L272,13 L230,22 L188,9 L146,20 L104,12 L62,22 L24,10 L0,19 Z";
 
-export function PaperTear({ tape = "tan" }: { tape?: "tan" | "blush" | "mint" }) {
+export function PaperTear({ tape = "tan" }: { tape?: "tan" | "blush" | "mint" | "marigold" }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
 
@@ -32,7 +32,11 @@ export function PaperTear({ tape = "tan" }: { tape?: "tan" | "blush" | "mint" })
   const seal = useTransform(scrollYProgress, [0.54, 0.78], [0, 1]);
 
   const sh = "ptear-" + useId().replace(/:/g, "");
-  const tapeClass = tape === "blush" ? "brut-tape--blush" : tape === "mint" ? "brut-tape--mint" : "";
+  const tapeClass =
+    tape === "blush" ? "brut-tape--blush"
+    : tape === "mint" ? "brut-tape--mint"
+    : tape === "marigold" ? "brut-tape--marigold"
+    : "";
 
   return (
     <div ref={ref} className="ptear" aria-hidden>

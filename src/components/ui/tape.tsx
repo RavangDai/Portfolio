@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
  * so the entrance plays consistently for everyone and the SSR markup always matches.
  */
 
-type TapeColor = "butter" | "blush" | "mint" | "clay";
+type TapeColor = "butter" | "blush" | "mint" | "clay" | "marigold";
 
 export function Tape({
   color,

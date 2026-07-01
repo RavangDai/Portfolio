@@ -37,14 +37,18 @@ const BEATS: Beat[] = [
 
 const TOTAL_BEATS = BEATS.length;
 
-// Authored chapter labels for the per-beat "SECTOR" readout (aligned 1:1 with BEATS).
-const CHAPTERS = ["IDENTITY", "BUILDER"] as const;
-
 // Beat 01 proof cards — concrete evidence that I build & ship.
 const PROOF = [
   { name: "KaryaAI", tag: "Full-stack · AI" },
   { name: "DollarPilot", tag: "Hackathon Winner" },
   { name: "VectorVance", tag: "Computer Vision" },
+] as const;
+
+// Tech-stack marquee — a persistent hard-bordered ticker across the hero base (Gumroad-style
+// energy, in the warm-brutalist palette). Rendered twice back-to-back for a seamless loop.
+const STACK = [
+  "REACT", "NEXT.JS", "TYPESCRIPT", "NODE", "PYTHON",
+  "AI / ML", "COMPUTER VISION", "TAILWIND", "POSTGRES", "GSAP",
 ] as const;
 
 // Editable hero copy + links come from the content doc (`site.*`), so the CMS drives them without
@@ -138,33 +142,30 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
           <span className="bp-fly bp-fly--c" />
         </div>
 
-        {/* Top bar — monogram + readout */}
+        {/* Top bar — monogram */}
         <div className="hero-topbar" aria-hidden>
           <span className="hero-monogram">
             <Image src="/brand/mark.png" alt="Bibek Pathak" width={219} height={326} className="hero-monogram-img" priority />
           </span>
-          <span className="hero-coords">PORTFOLIO // 2026</span>
         </div>
 
         {/* ── Pinned stage: left column swaps per beat, right (photo) persists ── */}
         <div className="hero-content">
           <div className="hero-stage">
-            {/* LEFT — each beat is a "page": the old one tears away sideways as the next turns in */}
-            <div className="hero-stage-left-wrap">
+            {/* LEFT — each beat is a "page" hinged at its left edge: the IDENTITY page swings away
+                while the BUILDER page turns in from the right, like leafing through a blueprint. */}
+            <div className="hero-stage-left-wrap" style={{ perspective: reduceMotion ? undefined : 1400 }}>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentSection}
                   className="hero-stage-left"
                   data-beat={currentSection}
-                  initial={{ opacity: 0, y: reduceMotion ? 0 : 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: reduceMotion ? 0 : -40 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ transformOrigin: "left center" }}
+                  initial={{ opacity: 0, rotateY: reduceMotion ? 0 : -32, x: reduceMotion ? 0 : 64 }}
+                  animate={{ opacity: 1, rotateY: 0, x: 0 }}
+                  exit={{ opacity: 0, rotateY: reduceMotion ? 0 : 24, x: reduceMotion ? 0 : -48 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
-              <span className="hero-sector">
-                SECTOR {String(currentSection).padStart(2, "0")} · {CHAPTERS[currentSection]}
-              </span>
-
               <h1 className="hero-title hero-id-name">
                 {currentSection === 0 ? (
                   <>
@@ -208,9 +209,8 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
               {/* Beat 01 — proof cards */}
               {currentSection === 1 && (
                 <div className="hero-proof">
-                  {PROOF.map((p, i) => (
+                  {PROOF.map((p) => (
                     <div key={p.name} className="hero-proof-card">
-                      <span className="hero-proof-idx">{String(i + 1).padStart(2, "0")}</span>
                       <span className="hero-proof-name">{p.name}</span>
                       <span className="hero-proof-tag">{p.tag}</span>
                     </div>
@@ -246,6 +246,19 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                 .
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Tech-stack ticker — persistent hard-bordered marquee pinned to the hero base.
+            Rendered twice back-to-back so the -50% scroll loops seamlessly. */}
+        <div className="hero-marquee" aria-hidden>
+          <div className="hero-marquee-track">
+            {[...STACK, ...STACK].map((tech, i) => (
+              <span className="hero-marquee-item" key={i}>
+                {tech}
+                <span className="hero-marquee-dot" />
+              </span>
+            ))}
           </div>
         </div>
       </div>

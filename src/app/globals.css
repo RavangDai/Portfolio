@@ -1023,6 +1023,9 @@ body {
   height: 200vh; /* two scroll beats */
   background: #f7f1e8; /* paper */
   color: #1a1714;
+  /* Warm marigold — the hero's one loud secondary pop (sticker cards + base ticker), alongside
+     the terracotta brand accent. Local to the hero, which sits outside .theme-brut. */
+  --marigold: #f3b431;
 }
 
 /* Boot placeholder shown while the hero chunk loads — paper to match the light scene,
@@ -1395,14 +1398,6 @@ body {
   height: 1.2rem;
   width: auto;
 }
-.hero-coords {
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #5c5349;
-}
 
 /* ── Pinned stage — left column swaps per beat, right (portrait) persists ── */
 .hero-stage {
@@ -1435,19 +1430,11 @@ body {
   width: 100%;
   backface-visibility: hidden;
 }
-.hero-sector {
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.74rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--cobalt);
-}
 .hero-title.hero-id-name {
   margin: 0;
-  font-size: clamp(2.6rem, 8vw, 6.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.015em;
+  font-size: clamp(2.6rem, 8vw, 6rem);
+  line-height: 0.84;
+  letter-spacing: -0.025em;
 }
 .hero-id-name .title-line { display: block; }
 
@@ -1460,11 +1447,11 @@ body {
      "PATHAK" word overran the left column and the trailing "K" was clipped by the sticky
      frame's overflow:hidden. Cap it so the stacked name fits the column. */
   .hero-stage-left[data-beat="0"] .hero-id-name {
-    font-size: clamp(2.5rem, 5.6vw, 5.8rem);
-    letter-spacing: -0.02em;
+    font-size: clamp(3rem, 7.4vw, 6rem);
+    letter-spacing: -0.03em;
   }
   .hero-stage-left[data-beat="1"] .hero-id-name {
-    font-size: clamp(2.6rem, 7vw, 5.5rem);
+    font-size: clamp(3rem, 7.6vw, 6rem);
   }
 }
 
@@ -1481,27 +1468,44 @@ body {
   width: 100%;
   max-width: 32rem;
 }
+/* Sticker-cards — chunky rounded borders + the brand's terracotta offset shadow, each tilted a
+   touch so they read as dropped-on stickers (Gumroad energy) and straightening on hover. */
 .hero-proof-card {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.85rem 0.9rem;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.95rem 0.9rem 0.85rem;
   background: #fff;
-  border: 2px solid #1a1714;
-  border-radius: 6px;
-  box-shadow: 3px 3px 0 0 var(--cobalt);
+  border: 3px solid #1a1714;
+  border-radius: 14px;
+  box-shadow: 5px 5px 0 0 var(--cobalt);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.hero-proof-idx {
-  font-family: var(--font-inter), ui-monospace, monospace;
-  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; color: #6f6557;
+.hero-proof-card:nth-child(1) { transform: rotate(-2.4deg); }
+.hero-proof-card:nth-child(2) { transform: rotate(1.6deg); }
+.hero-proof-card:nth-child(3) { transform: rotate(-1deg); }
+.hero-proof-card:hover {
+  transform: rotate(0deg) translate(-1px, -4px);
+  box-shadow: 7px 9px 0 0 var(--cobalt);
 }
 .hero-proof-name {
-  font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
-  font-size: 1.05rem; letter-spacing: 0; line-height: 1; color: #1a1714;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; color: #1a1714;
+  word-break: break-word;
 }
+/* Marigold pill — the loud pop, ink text clears AA on the warm yellow. */
 .hero-proof-tag {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #5c5349;
+  font-size: 0.64rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #1a1714;
+  background: var(--marigold, #f3b431);
+  border: 2px solid #1a1714;
+  border-radius: 999px;
+  padding: 0.14rem 0.5rem;
+  line-height: 1.25;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-proof-card { transition: none; }
 }
 
 /* right column — PERSISTENT portrait over a hard cobalt block (shifts subtly per beat) */
@@ -1599,6 +1603,55 @@ body {
   padding: 0.18rem 0.5rem;
 }
 
+/* ── Tech-stack ticker — a persistent hard-bordered marigold band pinned to the hero base.
+   The track holds the stack list twice; translateX(-50%) loops it seamlessly. Hard edges (no
+   mask fade) keep it brutalist. Reduced-motion holds it static and still fully legible. ── */
+.hero-marquee {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  overflow: hidden;
+  background: var(--marigold, #f3b431);
+  border-top: 2px solid #1a1714;
+}
+.hero-marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  padding: 0.5rem 0;
+  animation: hero-marquee-scroll 34s linear infinite;
+  will-change: transform;
+}
+.hero-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6rem;          /* label → trailing dot */
+  padding-left: 1.6rem; /* uniform spacing, including across the loop seam */
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #1a1714;
+  white-space: nowrap;
+}
+.hero-marquee-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1a1714;
+}
+@keyframes hero-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-marquee-track { animation: none; }
+}
+
 /* Display tracking for EB Garamond (the --font-brut-display face), a classic text serif.
    It takes only gentle negative tracking at display size (a grotesk's -0.04em would jam the
    serifs). Centralized here, do NOT re-set letter-spacing on the base .hero-title / .brut-title
@@ -1612,7 +1665,7 @@ body {
    (text column + portrait) MUST fit one viewport or the bottom gets clipped. These
    rules shrink type, photo, and gaps so each beat fits without cutoff. */
 @media (max-width: 860px) {
-  .hero-content { padding: 0 1.25rem; }
+  .hero-content { padding: 0 1.25rem 2.6rem; }
   .hero-stage { grid-template-columns: 1fr; gap: 1rem; width: 100%; }
   .hero-stage-left-wrap { min-height: 0; }
   .hero-stage-left { min-height: 0; gap: 0.6rem; }
@@ -1622,8 +1675,14 @@ body {
      identity beat, and dropping the photo keeps every beat well inside the pinned frame. */
   .hero-stage-right { display: none; }
   .hero-scroll-tag { display: none; }
-  .hero-proof { grid-template-columns: 1fr; max-width: 100%; gap: 0.5rem; }
+  .hero-proof { grid-template-columns: 1fr; max-width: 100%; gap: 0.6rem; }
   .hero-actions { gap: 0.5rem; margin-top: 0.4rem; }
+  /* Stacked cards read better upright; keep the chunky shadow, drop the tilt. */
+  .hero-proof-card:nth-child(1),
+  .hero-proof-card:nth-child(2),
+  .hero-proof-card:nth-child(3) { transform: none; }
+  .hero-proof-card { box-shadow: 4px 4px 0 0 var(--cobalt); }
+  .hero-marquee-item { font-size: 0.72rem; gap: 1.1rem; padding-left: 1.1rem; }
 }
 
 /* Very small phones — tighten further and let the portrait shrink so the
@@ -1651,7 +1710,8 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0 1.5rem;
+  /* Extra bottom pad lifts the stage + portrait clear of the base ticker band. */
+  padding: 0 1.5rem 3.25rem;
   pointer-events: none; /* canvas stays interactive-free; buttons re-enable below */
 }
 
@@ -1913,6 +1973,12 @@ body {
   --accent-ink:   #ffffff;
   --accent-soft:  #f4ddd0;
   --accent-deep:  #9e3f27;  /* darker terracotta for filled "highlight" cards, so white text clears AA (6.5:1) */
+  /* playful SECONDARY pop — warm marigold. Terracotta still leads; this threads through chips, tape,
+     carousel arrows + small sticker accents site-wide (all devices, never media-gated). Ink text on
+     --marigold clears AA. */
+  --marigold:      #f3b431;
+  --marigold-soft: #fbe7b0;
+  --brut-shadow-yellow: 5px 5px 0 0 var(--marigold);
   /* flat pastel block fills (desaturated, used sparingly for variety) */
   --butter:   #f1d6a4;
   --lavender: #e9c7ad;
@@ -2124,6 +2190,40 @@ body {
   color: var(--accent-ink);
   background: var(--accent);
   border-color: var(--ink);
+}
+/* Playful marigold chip — the secondary pop. Ink text on yellow clears AA. */
+.brut-chip-yellow {
+  color: var(--ink);
+  background: var(--marigold);
+  border-color: var(--ink);
+}
+
+/* ── Carousel arrows (RetroUI carousel, restyled to warm-brutalism) ──
+   Square brutalist button: ink border + offset shadow on paper, marigold fill on hover, 44px tap
+   target (mobile-friendly). Press collapses the shadow like the other .brut buttons. */
+.carousel-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--brut-border);
+  border-radius: var(--brut-radius);
+  box-shadow: var(--brut-shadow-sm);
+  transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+}
+.carousel-arrow:hover:not(:disabled) {
+  background: var(--marigold);
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 var(--ink);
+}
+.carousel-arrow:active:not(:disabled) { transform: translate(3px, 3px); }
+.carousel-arrow:disabled { opacity: 0.38; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) {
+  .carousel-arrow { transition: background 0.14s ease; }
+  .carousel-arrow:hover:not(:disabled) { transform: none; box-shadow: var(--brut-shadow-sm); }
 }
 
 /* ── Inputs ── */
@@ -2344,10 +2444,11 @@ body {
   transform: rotate(var(--tape-rot, -6deg));
   pointer-events: none;
 }
-.brut-tape--butter { --tape: rgba(236, 206, 148, 0.72); }  /* warm gold washi */
-.brut-tape--blush  { --tape: rgba(214, 158, 138, 0.7);  }  /* clay / dusty rose */
-.brut-tape--mint   { --tape: rgba(188, 196, 162, 0.7);  }  /* sage */
-.brut-tape--clay   { --tape: rgba(189, 82, 50, 0.45);   }  /* sheer terracotta */
+.brut-tape--butter   { --tape: rgba(236, 206, 148, 0.72); }  /* warm gold washi */
+.brut-tape--blush    { --tape: rgba(214, 158, 138, 0.7);  }  /* clay / dusty rose */
+.brut-tape--mint     { --tape: rgba(188, 196, 162, 0.7);  }  /* sage */
+.brut-tape--clay     { --tape: rgba(189, 82, 50, 0.45);   }  /* sheer terracotta */
+.brut-tape--marigold { --tape: rgba(243, 180, 49, 0.7);   }  /* playful marigold */
 
 /* ── Sticky-note card ──
    Paper card pinned to the board at a slight tilt; straightens + lifts on hover.

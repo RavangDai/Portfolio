@@ -91,7 +91,7 @@ export function ContactSection() {
                 className="brut-note flex items-center justify-between gap-3 p-4"
                 style={{ "--tilt": "-2deg" } as React.CSSProperties}
               >
-                <Tape rotate={-4} style={{ top: "-0.55rem", left: "1.1rem", width: "3.4rem", height: "1.2rem" }} />
+                <Tape color="marigold" rotate={-4} style={{ top: "-0.55rem", left: "1.1rem", width: "3.4rem", height: "1.2rem" }} />
                 <div className="min-w-0">
                   <p className="brut-kicker mb-1.5 text-[0.72rem]">Email</p>
                   <div className="relative overflow-hidden">

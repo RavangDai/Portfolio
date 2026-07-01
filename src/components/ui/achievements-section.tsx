@@ -51,6 +51,8 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                 <span className="brut-h brut-mono text-[clamp(2rem,5vw,3rem)] text-[var(--ink)]">
                   {stat.value}
                 </span>
+                {/* marigold tick — the playful secondary pop, consistent across every stat */}
+                <span aria-hidden className="h-[3px] w-7 rounded-full bg-[var(--marigold)]" />
                 <span className="brut-kicker text-[0.72rem] tracking-[0.18em]">{stat.label}</span>
               </div>
             ))}

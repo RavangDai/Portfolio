@@ -196,7 +196,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             transition={{ duration: 0.6, ease }}
             className="relative md:col-span-2"
           >
-            <Tape color="butter" rotate={-5} style={{ top: "-0.6rem", left: "1.8rem", width: "4rem", height: "1.35rem" }} />
+            <Tape color="marigold" rotate={-5} style={{ top: "-0.6rem", left: "1.8rem", width: "4rem", height: "1.35rem" }} />
             <FeaturedCard project={featured} index={0} pastel={PASTELS[0]} />
           </motion.div>
 
