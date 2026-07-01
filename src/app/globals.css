@@ -1402,6 +1402,7 @@ body {
 /* ── Pinned stage — left column swaps per beat, right (portrait) persists ── */
 .hero-stage {
   pointer-events: auto;
+  position: relative; /* anchor for the portrait when it drops out of flow on the BUILDER beat */
   width: min(1180px, 94vw);
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
@@ -1411,6 +1412,13 @@ body {
   /* 3D context so the per-beat left panel can flip like a turning page (see hero-beat-in). */
   perspective: 1500px;
 }
+/* BUILDER beat — portrait is gone (see .hero-stage-right[data-beat="1"] below), so the stage
+   collapses to a single column and the swapping content centers as one block. */
+.hero-stage[data-beat="1"] { grid-template-columns: 1fr; }
+.hero-stage-left[data-beat="1"] { align-items: center; text-align: center; }
+.hero-stage-left[data-beat="1"] .hero-id-sub { align-items: center; text-align: center; }
+.hero-stage-left[data-beat="1"] .hero-id-rule { margin-inline: auto; }
+.hero-stage-left[data-beat="1"] .hero-proof { margin-inline: auto; }
 /* Holds the column's height while the exiting "page" is out of flow (framer popLayout), so the
    stage + persistent portrait don't jump during the turn; centers the active page. */
 .hero-stage-left-wrap {
@@ -1506,19 +1514,30 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-proof-card { transition: none; }
+  /* Portrait leaves as a plain crossfade — no drift or scale. */
+  .hero-stage-right { transition: opacity 0.3s ease; }
+  .hero-stage-right[data-beat="1"] { transform: translateY(-50%); }
 }
 
-/* right column — PERSISTENT portrait over a hard cobalt block (shifts subtly per beat) */
+/* right column — portrait over a hard cobalt block. Present on IDENTITY (beat 0); on the BUILDER
+   beat it fades + drifts right and drops out of flow so the stage can center the work. */
 .hero-stage-right {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   transform-origin: bottom center;
 }
-.hero-stage-right[data-beat="1"] { transform: translateX(3%) scale(0.95); }
+.hero-stage-right[data-beat="1"] {
+  position: absolute; /* out of flow → the single-column stage centers the text cleanly */
+  right: 0;
+  top: 50%;
+  opacity: 0;
+  transform: translate(40px, -50%) scale(0.92);
+  pointer-events: none;
+}
 
 .hero-photo {
   position: relative;
@@ -2123,6 +2142,16 @@ body {
   box-shadow: var(--brut-lit), 0 0 0 0 var(--ink);
 }
 
+/* Taped cards lean slightly — the washi tape reads as holding them on at an angle.
+   --tilt is set per-instance on the .brut-taped wrapper; the inner .brut-card-i inherits it
+   and rotates. The lean is a static resting state (like the hero sticker proof-cards), so it
+   persists under reduced-motion — only the hover straighten is motion. Dropped on phones so
+   rotated corners can't overflow a tight viewport. */
+.brut-taped > .brut-card-i        { transform: rotate(var(--tilt, -1.4deg)); }
+.brut-taped > .brut-card-i:hover  { transform: translate(2px, 2px); }   /* straighten + press */
+.brut-taped > .brut-card-i:active { transform: translate(5px, 5px); }
+@media (max-width: 640px) { .brut-taped > .brut-card-i { transform: none; } }
+
 /* ── Buttons ── */
 .brut-btn {
   display: inline-flex;
@@ -2474,11 +2503,9 @@ body {
   transform: rotate(0deg) translateY(-4px);
   box-shadow: 7px 9px 0 0 var(--ink, #1a1714);
 }
-@media (prefers-reduced-motion: reduce) {
-  .brut-note { transform: none; }
-  .brut-note:hover { transform: none; box-shadow: 6px 6px 0 0 var(--ink, #1a1714); }
-}
-/* Phones: drop the tilt so rotated corners can't push past a tight viewport. */
+/* The tilt is a static resting state (like .brut-taped / the hero sticker cards), so it persists
+   under reduced-motion — dropping it there would hide the taped look from reduced-motion users.
+   Phones still drop it so rotated corners can't push past a tight viewport. */
 @media (max-width: 640px) {
   .brut-note { transform: none; }
 }

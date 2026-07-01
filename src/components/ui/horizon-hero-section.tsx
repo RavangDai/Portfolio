@@ -131,6 +131,25 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
   const beatLine1 = currentSection === 0 ? site.heroLine1 : site.builderLine1;
   const beatLine2 = currentSection === 0 ? site.heroLine2 : site.builderLine2;
 
+  // Per-beat entrance for the swapping left column. IDENTITY keeps its left-hinged page-turn;
+  // BUILDER (portrait gone, layout collapsed to one centered column) rises up + settles. Because
+  // AnimatePresence mode="wait" preserves an exiting element's last-rendered props, branching on
+  // currentSection gives the leaving page beat-0's exit and the entering page beat-1's entrance.
+  const stageMotion =
+    currentSection === 1
+      ? {
+          initial: { opacity: 0, y: reduceMotion ? 0 : 44, scale: reduceMotion ? 1 : 0.965 },
+          animate: { opacity: 1, y: 0, scale: 1 },
+          exit: { opacity: 0, y: reduceMotion ? 0 : 24, scale: reduceMotion ? 1 : 0.98 },
+          origin: "center",
+        }
+      : {
+          initial: { opacity: 0, rotateY: reduceMotion ? 0 : -32, x: reduceMotion ? 0 : 64 },
+          animate: { opacity: 1, rotateY: 0, x: 0 },
+          exit: { opacity: 0, rotateY: reduceMotion ? 0 : 24, x: reduceMotion ? 0 : -48 },
+          origin: "left center",
+        };
+
   return (
     <div ref={containerRef} className="hero-container">
       <div className="hero-sticky">
@@ -151,7 +170,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
 
         {/* ── Pinned stage: left column swaps per beat, right (photo) persists ── */}
         <div className="hero-content">
-          <div className="hero-stage">
+          <div className="hero-stage" data-beat={currentSection}>
             {/* LEFT — each beat is a "page" hinged at its left edge: the IDENTITY page swings away
                 while the BUILDER page turns in from the right, like leafing through a blueprint. */}
             <div className="hero-stage-left-wrap" style={{ perspective: reduceMotion ? undefined : 1400 }}>
@@ -160,10 +179,10 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                   key={currentSection}
                   className="hero-stage-left"
                   data-beat={currentSection}
-                  style={{ transformOrigin: "left center" }}
-                  initial={{ opacity: 0, rotateY: reduceMotion ? 0 : -32, x: reduceMotion ? 0 : 64 }}
-                  animate={{ opacity: 1, rotateY: 0, x: 0 }}
-                  exit={{ opacity: 0, rotateY: reduceMotion ? 0 : 24, x: reduceMotion ? 0 : -48 }}
+                  style={{ transformOrigin: stageMotion.origin }}
+                  initial={stageMotion.initial}
+                  animate={stageMotion.animate}
+                  exit={stageMotion.exit}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
               <h1 className="hero-title hero-id-name">

@@ -169,16 +169,11 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           transition={{ duration: 0.7, ease }}
           className="mb-12 md:mb-16"
         >
-          <p className="brut-kicker mb-4">Selected Work · 2025-2026</p>
           <h1 className="brut-title text-[clamp(2.8rem,9vw,6rem)]">
             Built &amp; <HighlightText mode="scroll" ink underline>Shipped.</HighlightText>
           </h1>
           <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <p className="max-w-md text-base leading-relaxed text-[var(--ink-2)]">
-              Real products taken from zero to deployed: full-stack apps, AI tooling,
-              and computer-vision systems.
-            </p>
             <span className="brut-mono text-[0.8rem] uppercase tracking-[0.12em] text-[var(--ink-3)]">
               {projects.length} project{projects.length !== 1 ? "s" : ""}
             </span>
@@ -195,7 +190,8 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
           <motion.div
             variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
             transition={{ duration: 0.6, ease }}
-            className="relative md:col-span-2"
+            className="brut-taped relative md:col-span-2"
+            style={{ "--tilt": "-0.8deg" } as React.CSSProperties}
           >
             <Tape color="marigold" rotate={-5} style={{ top: "-0.6rem", left: "1.8rem", width: "4rem", height: "1.35rem" }} />
             <FeaturedCard project={featured} index={0} pastel={PASTELS[0]} />
@@ -206,7 +202,8 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               key={project.id}
               variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6, ease }}
-              className="relative"
+              className={i === 0 ? "brut-taped relative" : "relative"}
+              style={i === 0 ? ({ "--tilt": "1.5deg" } as React.CSSProperties) : undefined}
             >
               {i === 0 && (
                 <Tape color="blush" rotate={5} style={{ top: "-0.55rem", right: "1.4rem", width: "3.4rem", height: "1.2rem" }} />

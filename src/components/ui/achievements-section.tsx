@@ -26,17 +26,12 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
           transition={{ duration: 0.8, ease }}
           className="mb-14 md:mb-16"
         >
-          <p className="brut-kicker mb-4">Track Record</p>
           <h1 className="brut-title text-[clamp(3rem,9vw,6.5rem)]">
             <HighlightText mode="scroll" ink underline>
               Achieve<span className="text-[var(--accent)]">-</span>ments.
             </HighlightText>
           </h1>
           <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
-          <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
-            Competition wins, academic recognition, and certifications earned while
-            building and shipping real products.
-          </p>
         </motion.div>
 
         {/* ── Stats ── */}
@@ -72,6 +67,8 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.55, delay: i * 0.05, ease }}
+                className={cn(hi && "brut-taped")}
+                style={hi ? ({ "--tilt": "-1.2deg" } as React.CSSProperties) : undefined}
               >
                 <article
                   className={cn(

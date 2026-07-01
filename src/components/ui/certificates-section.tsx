@@ -31,8 +31,12 @@ function useIsMobile() {
 
 // Card + its decorative washi tape (used by both the desktop grid and the mobile carousel).
 function CertCardWithTape({ certificate, i }: { certificate: Certificate; i: number }) {
+  const taped = i === 0 || i === 1;
   return (
-    <div className="relative h-full pt-2">
+    <div
+      className={taped ? "brut-taped relative h-full pt-2" : "relative h-full pt-2"}
+      style={taped ? ({ "--tilt": i === 0 ? "-1.5deg" : "1.4deg" } as React.CSSProperties) : undefined}
+    >
       {i === 0 && (
         <Tape color="mint" rotate={-5} style={{ top: "-0.1rem", left: "1.3rem", width: "3.4rem", height: "1.2rem", zIndex: 5 }} />
       )}
@@ -139,14 +143,10 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           transition={{ duration: 0.7, ease }}
           className="mb-12 md:mb-16"
         >
-          <p className="brut-kicker mb-4">Certificates · Verified</p>
           <h1 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
             Proof wall. <HighlightText mode="scroll" ink underline from="right">Real receipts.</HighlightText>
           </h1>
           <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
-          <p className="mt-6 max-w-md text-base leading-relaxed text-[var(--ink-2)]">
-            Issuer-backed credentials, each linking to its public verification page.
-          </p>
         </motion.header>
 
         {/* ── Desktop: grid. Mobile: swipeable carousel (Embla mounts only on phones). ── */}
