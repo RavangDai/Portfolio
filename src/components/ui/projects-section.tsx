@@ -191,7 +191,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
             transition={{ duration: 0.6, ease }}
             className="brut-taped relative md:col-span-2"
-            style={{ "--tilt": "-0.8deg" } as React.CSSProperties}
+            style={{ "--tilt": "0.8deg", "--tox": "0%" } as React.CSSProperties}
           >
             <Tape color="marigold" rotate={-5} style={{ top: "-0.6rem", left: "1.8rem", width: "4rem", height: "1.35rem" }} />
             <FeaturedCard project={featured} index={0} pastel={PASTELS[0]} />
@@ -203,7 +203,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
               variants={{ hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.6, ease }}
               className={i === 0 ? "brut-taped relative" : "relative"}
-              style={i === 0 ? ({ "--tilt": "1.5deg" } as React.CSSProperties) : undefined}
+              style={i === 0 ? ({ "--tilt": "-1.5deg", "--tox": "100%" } as React.CSSProperties) : undefined}
             >
               {i === 0 && (
                 <Tape color="blush" rotate={5} style={{ top: "-0.55rem", right: "1.4rem", width: "3.4rem", height: "1.2rem" }} />

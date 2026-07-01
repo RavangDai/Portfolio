@@ -68,7 +68,7 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.55, delay: i * 0.05, ease }}
                 className={cn(hi && "brut-taped")}
-                style={hi ? ({ "--tilt": "-1.2deg" } as React.CSSProperties) : undefined}
+                style={hi ? ({ "--tilt": "-1.2deg", "--tox": "100%" } as React.CSSProperties) : undefined}
               >
                 <article
                   className={cn(

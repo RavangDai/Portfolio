@@ -85,7 +85,7 @@ export function ContactSection() {
               {/* Email — pinned sticky-note */}
               <div
                 className="brut-note flex items-center justify-between gap-3 p-4"
-                style={{ "--tilt": "-2deg" } as React.CSSProperties}
+                style={{ "--tilt": "2deg", "--tox": "0%" } as React.CSSProperties}
               >
                 <Tape color="marigold" rotate={-4} style={{ top: "-0.55rem", left: "1.1rem", width: "3.4rem", height: "1.2rem" }} />
                 <div className="min-w-0">
@@ -140,7 +140,7 @@ export function ContactSection() {
               {/* Location — pinned sticky-note */}
               <div
                 className="brut-note p-4"
-                style={{ "--tilt": "1.5deg" } as React.CSSProperties}
+                style={{ "--tilt": "-1.5deg", "--tox": "100%" } as React.CSSProperties}
               >
                 <Tape color="blush" rotate={5} style={{ top: "-0.55rem", right: "1.2rem", width: "3rem", height: "1.2rem" }} />
                 <p className="brut-kicker mb-1.5 text-[0.72rem]">Based at</p>
@@ -151,7 +151,7 @@ export function ContactSection() {
               {/* Focus — pinned sticky-note */}
               <div
                 className="brut-note p-4"
-                style={{ "--tilt": "-1deg" } as React.CSSProperties}
+                style={{ "--tilt": "1deg", "--tox": "0%" } as React.CSSProperties}
               >
                 <Tape color="mint" rotate={-6} style={{ top: "-0.55rem", left: "1.4rem", width: "3.2rem", height: "1.2rem" }} />
                 <p className="brut-kicker mb-1.5 text-[0.72rem]">Focus</p>

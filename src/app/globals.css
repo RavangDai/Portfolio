@@ -2142,12 +2142,14 @@ body {
   box-shadow: var(--brut-lit), 0 0 0 0 var(--ink);
 }
 
-/* Taped cards lean slightly — the washi tape reads as holding them on at an angle.
-   --tilt is set per-instance on the .brut-taped wrapper; the inner .brut-card-i inherits it
-   and rotates. The lean is a static resting state (like the hero sticker proof-cards), so it
-   persists under reduced-motion — only the hover straighten is motion. Dropped on phones so
-   rotated corners can't overflow a tight viewport. */
-.brut-taped > .brut-card-i        { transform: rotate(var(--tilt, -1.4deg)); }
+/* Taped cards hang from their washi tape — real tape physics. The card pivots at the tape
+   (transform-origin = --tox at the top edge, where the strip sits) and its free side droops
+   under gravity (--tilt: positive = tape on the left so the right sags; negative = tape right).
+   Both are per-instance on the .brut-taped wrapper; the inner .brut-card-i inherits them.
+   The lean is a static resting state (like the hero sticker proof-cards), so it persists under
+   reduced-motion — only the hover straighten is motion. Dropped on phones so the drooping
+   corner can't overflow a tight viewport. */
+.brut-taped > .brut-card-i        { transform-origin: var(--tox, 50%) 0; transform: rotate(var(--tilt, -1.4deg)); }
 .brut-taped > .brut-card-i:hover  { transform: translate(2px, 2px); }   /* straighten + press */
 .brut-taped > .brut-card-i:active { transform: translate(5px, 5px); }
 @media (max-width: 640px) { .brut-taped > .brut-card-i { transform: none; } }
@@ -2495,6 +2497,8 @@ body {
   border: 2px solid var(--ink, #1a1714);
   border-radius: 4px;
   box-shadow: 4px 4px 0 0 var(--ink, #1a1714);
+  /* Pivot at the tape (top edge, --tox), so the note hangs from it rather than spinning at its centre. */
+  transform-origin: var(--tox, 50%) 0;
   transform: rotate(var(--tilt, -2deg));
   transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1);

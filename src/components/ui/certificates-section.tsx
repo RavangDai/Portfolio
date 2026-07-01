@@ -35,7 +35,7 @@ function CertCardWithTape({ certificate, i }: { certificate: Certificate; i: num
   return (
     <div
       className={taped ? "brut-taped relative h-full pt-2" : "relative h-full pt-2"}
-      style={taped ? ({ "--tilt": i === 0 ? "-1.5deg" : "1.4deg" } as React.CSSProperties) : undefined}
+      style={taped ? ({ "--tilt": i === 0 ? "1.5deg" : "-1.4deg", "--tox": i === 0 ? "0%" : "100%" } as React.CSSProperties) : undefined}
     >
       {i === 0 && (
         <Tape color="mint" rotate={-5} style={{ top: "-0.1rem", left: "1.3rem", width: "3.4rem", height: "1.2rem", zIndex: 5 }} />
