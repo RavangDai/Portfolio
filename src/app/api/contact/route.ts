@@ -1,16 +1,38 @@
 import nodemailer from "nodemailer";
+import { isSameOrigin } from "@/lib/http";
+import { publicRateLimit } from "@/lib/rate-limit";
 
 // Basic email shape check — not exhaustive, just enough to reject obvious junk.
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Strip CR/LF and cap length. Used on values that end up in mail headers
+// (replyTo / the `From:` line), so newlines could otherwise inject extra headers
+// (e.g. a "\nBCC: attacker@evil.com" payload smuggled through the name field).
+function sanitizeHeaderValue(s: string, max = 200): string {
+  return s.replace(/[\r\n]+/g, " ").slice(0, max);
+}
+
 export async function POST(req: Request) {
   try {
+    // Same-origin only — the form lives on our own contact page.
+    if (!isSameOrigin(req)) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Throttle per IP — this route sends real email. 5 messages / 10 minutes.
+    if (!(await publicRateLimit(req, "contact", 5, 600))) {
+      return Response.json(
+        { error: "Too many messages. Please try again in a few minutes." },
+        { status: 429 },
+      );
+    }
+
     const { name, email, subject, message } = await req.json();
 
     // ── Validate ──────────────────────────────────────────────────────────────
-    const cleanName    = typeof name === "string" ? name.trim() : "";
-    const cleanEmail   = typeof email === "string" ? email.trim() : "";
-    const cleanSubject = typeof subject === "string" ? subject.trim() : "";
+    const cleanName    = typeof name === "string" ? sanitizeHeaderValue(name.trim()) : "";
+    const cleanEmail   = typeof email === "string" ? email.trim().slice(0, 200) : "";
+    const cleanSubject = typeof subject === "string" ? sanitizeHeaderValue(subject.trim()) : "";
     const cleanMessage = typeof message === "string" ? message.trim() : "";
 
     if (!cleanName || !cleanEmail || !cleanMessage) {

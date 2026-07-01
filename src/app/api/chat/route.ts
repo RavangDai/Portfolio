@@ -1,7 +1,32 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
+import { z } from "zod";
 import { getContent } from "@/lib/storage";
+import { isSameOrigin } from "@/lib/http";
+import { publicRateLimit } from "@/lib/rate-limit";
 import type { Project, Certificate } from "@/lib/content/types";
+
+// Bound the request: reject oversized/abusive payloads before they reach Gemini.
+const chatRequestSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant", "system"]),
+        content: z.string().max(4000),
+      })
+    )
+    .min(1)
+    .max(40),
+});
+
+// Plain-text helper so throttle/validation replies keep the client's parsing
+// contract (it reads text + the trailing [[FOLLOWUPS: ...]] line).
+function textResponse(body: string, status = 200): Response {
+  return new Response(body, {
+    status,
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // KNOWLEDGE BASE — built from Vercel Blob storage, falls back to defaults
@@ -405,11 +430,29 @@ Under 120 words unless explicitly asked for more.
 
 export async function POST(req: Request) {
   try {
+    // Same-origin only — the chatbot is invoked from our own pages. Cheap CSRF-style
+    // layer; the real abuse defense is the per-IP rate limit below.
+    if (!isSameOrigin(req)) {
+      return textResponse("Forbidden", 403);
+    }
+
+    // Throttle per IP — each Gemini call costs money. 20 requests / minute.
+    if (!(await publicRateLimit(req, "chat", 20, 60))) {
+      return textResponse(
+        "You're going a bit fast — give it a minute and try again.\n[[FOLLOWUPS: see projects | contact | certificates]]",
+        429
+      );
+    }
+
     // Refresh KB from Vercel Blob (60 s cache — effectively free)
     await refreshKB();
 
-    const { messages } = await req.json();
-    const lastUserMsg: string = messages.findLast((m: { role: string; content: string }) => m.role === "user")?.content ?? "";
+    const parsed = chatRequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return textResponse("Invalid request.", 400);
+    }
+    const { messages } = parsed.data;
+    const lastUserMsg: string = messages.findLast((m) => m.role === "user")?.content ?? "";
 
     const mentionsGitHub = /\b(github|repo|repositor)/i.test(lastUserMsg);
 

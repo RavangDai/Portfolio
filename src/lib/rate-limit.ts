@@ -38,7 +38,7 @@ function getRatelimit(): Ratelimit | null {
   return ratelimit;
 }
 
-function clientIp(request: NextRequest): string {
+function clientIp(request: Request): string {
   const xff = request.headers.get("x-forwarded-for");
   if (xff) return xff.split(",")[0]!.trim();
   const real = request.headers.get("x-real-ip");
@@ -65,6 +65,69 @@ export async function loginRateLimit(
   }
   const { allowed, remaining } = await checkRateLimitCookie(request);
   return { allowed, remaining, durable: false };
+}
+
+// --- Public endpoint limiter ---------------------------------------------------
+// Generic per-IP throttle for unauthenticated, cost-bearing public routes
+// (/api/chat -> Gemini spend, /api/contact -> SMTP send). Reuses the same Upstash
+// setup as the login limiter. The login flow's signed-cookie fallback is useless
+// here — an anonymous abuser just discards cookies between requests — so when
+// Upstash is absent (local dev) we fall back to a best-effort in-memory sliding
+// window. In-memory is per-instance only (serverless spins up many), so it is a
+// dev convenience, not a production guarantee; production must set the Upstash vars.
+
+const publicLimiters = new Map<string, Ratelimit>();
+
+function getPublicLimiter(name: string, limit: number, windowSecs: number): Ratelimit | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  const key = `${name}:${limit}:${windowSecs}`;
+  let rl = publicLimiters.get(key);
+  if (!rl) {
+    rl = new Ratelimit({
+      redis: new Redis({ url, token }),
+      limiter: Ratelimit.slidingWindow(limit, `${windowSecs} s`),
+      prefix: `ratelimit:${name}`,
+      analytics: false,
+    });
+    publicLimiters.set(key, rl);
+  }
+  return rl;
+}
+
+const memBuckets = new Map<string, number[]>();
+
+function memRateLimit(bucket: string, limit: number, windowSecs: number): boolean {
+  const now = Date.now();
+  const windowMs = windowSecs * 1000;
+  const hits = (memBuckets.get(bucket) ?? []).filter((t) => now - t < windowMs);
+  if (hits.length >= limit) {
+    memBuckets.set(bucket, hits);
+    return false;
+  }
+  hits.push(now);
+  memBuckets.set(bucket, hits);
+  return true;
+}
+
+/**
+ * Allow at most `limit` requests per `windowSecs` per client IP for the named
+ * bucket. Returns true when the request is within budget, false when throttled.
+ */
+export async function publicRateLimit(
+  request: Request,
+  name: string,
+  limit: number,
+  windowSecs: number
+): Promise<boolean> {
+  const ip = clientIp(request);
+  const rl = getPublicLimiter(name, limit, windowSecs);
+  if (rl) {
+    const { success } = await rl.limit(ip);
+    return success;
+  }
+  return memRateLimit(`${name}:${ip}`, limit, windowSecs);
 }
 
 // --- Cookie fallback -----------------------------------------------------------
