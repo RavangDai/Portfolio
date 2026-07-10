@@ -119,7 +119,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
     return (
       <section
         id="certificates"
-        className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36"
+        className="theme-brut brut-bg brut-veil relative min-h-screen w-full pt-28 pb-24 md:pt-36"
       >
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
           <p className="text-[var(--ink-2)]">No certificates yet.</p>
@@ -133,7 +133,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
   return (
     <section
       id="certificates"
-      className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36"
+      className="theme-brut brut-bg brut-veil relative min-h-screen w-full pt-28 pb-24 md:pt-36"
     >
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
         {/* ── Header ── */}

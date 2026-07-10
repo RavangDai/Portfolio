@@ -17,7 +17,7 @@ interface AchievementsSectionProps {
 
 export function AchievementsSection({ achievements, stats }: AchievementsSectionProps) {
   return (
-    <div id="achievements" className="theme-brut brut-bg relative min-h-screen w-full pt-28 pb-24 md:pt-36">
+    <div id="achievements" className="theme-brut brut-bg brut-veil relative min-h-screen w-full pt-28 pb-24 md:pt-36">
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 md:px-8">
         {/* ── Header ── */}
         <motion.div

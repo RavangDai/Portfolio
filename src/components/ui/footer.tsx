@@ -51,7 +51,7 @@ export function Footer() {
   if (pathname.startsWith("/admin")) return null;
 
   return (
-      <footer className="theme-brut relative w-full border-t-2 border-[var(--ink)] bg-[var(--paper)]">
+      <footer className="theme-brut brut-veil relative w-full border-t-2 border-[var(--ink)]">
         {/* Extra bottom padding on small screens clears the fixed mobile tab bar (main-navbar.tsx). */}
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 pt-10 pb-24 sm:pt-14 md:pb-8">
           <div className="grid grid-cols-2 gap-x-6 gap-y-8 border-b-2 border-[var(--ink)] pb-8 sm:gap-10 lg:grid-cols-[1.8fr_1fr_1fr_auto] lg:gap-12 lg:pb-10">

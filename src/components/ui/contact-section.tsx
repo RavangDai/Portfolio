@@ -60,7 +60,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="theme-brut brut-bg relative w-full overflow-hidden pt-28 pb-24 md:pt-36"
+      className="theme-brut brut-bg brut-veil relative w-full overflow-hidden pt-28 pb-24 md:pt-36"
     >
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.25fr] lg:gap-16">

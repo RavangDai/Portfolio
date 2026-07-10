@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { NeatGradient } from "@firecms/neat";
 
 import { useIsBrut } from "@/lib/theme";
 
@@ -19,6 +20,50 @@ import { useIsBrut } from "@/lib/theme";
  */
 export function SiteBackground() {
   const isBrut = useIsBrut();
+  const neatRef = useRef<HTMLCanvasElement>(null);
+
+  // ── Warm sunrise gradient — one fixed @firecms/neat WebGL wash behind the WHOLE brut site. The
+  // hero + content sections are translucent over it (.brut-veil / transparent .hero-sticky) so it
+  // shows through everywhere while ink content stays readable. Bright/light palette keeps the site
+  // light; static under reduced motion (speed 0); WebGL failures fall back to the .brut-bg paper. ──
+  useEffect(() => {
+    const canvas = neatRef.current;
+    if (!isBrut || !canvas) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let gradient: NeatGradient | null = null;
+    try {
+      gradient = new NeatGradient({
+        ref: canvas,
+        // All warm tones (no cream) so the wash stays consistently orange as the waves drift —
+        // peach-dominant keeps it LIGHT, the deeper oranges read as visible blooms.
+        colors: [
+          { color: "#ffbe7a", enabled: true },
+          { color: "#ff9a3d", enabled: true },
+          { color: "#ff6a1a", enabled: true },
+          { color: "#FD4912", enabled: true },
+          { color: "#ffd9b0", enabled: true },
+        ],
+        speed: reduce ? 0 : 3,
+        horizontalPressure: 3,
+        verticalPressure: 4,
+        waveFrequencyX: 2,
+        waveFrequencyY: 3,
+        waveAmplitude: 8,
+        shadows: 0,
+        highlights: 1,
+        colorBrightness: 1.08,
+        colorSaturation: 5,
+        wireframe: false,
+        colorBlending: 6,
+        backgroundColor: "#ffe9d2",
+        backgroundAlpha: 1,
+        resolution: 0.5,
+      });
+    } catch {
+      // WebGL unavailable — the .brut-bg paper base stays as the background.
+    }
+    return () => gradient?.destroy();
+  }, [isBrut]);
 
   // Desktop-only: drift the paper's refracted light a few percent as you scroll, so the
   // "sun" feels alive without ever animating on mobile (perf/battery) or for reduced-motion
@@ -55,6 +100,8 @@ export function SiteBackground() {
         aria-hidden
         className="brut-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden"
       >
+        {/* the one site-wide warm gradient (WebGL); paper base above sits behind it as fallback */}
+        <canvas ref={neatRef} className="brut-neat" aria-hidden />
         {/* faint grain to break the flatness */}
         <div className="grain-layer opacity-[0.4]" />
       </div>

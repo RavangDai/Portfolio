@@ -33,6 +33,13 @@ const BEATS: Beat[] = [
     line1: "10+ shipped projects across full-stack web,",
     line2: "applied AI, and computer vision.",
   },
+  {
+    // T-shaped expertise — the finale. Depth (the T's stem) is data engineering; breadth (the
+    // crossbar) spans AI/ML + software. Its sublines are used as-is (not CMS-driven like 0/1).
+    title: "T-SHAPED",
+    line1: "Deep in data engineering,",
+    line2: "broad across AI/ML and software.",
+  },
 ];
 
 const TOTAL_BEATS = BEATS.length;
@@ -50,6 +57,11 @@ const STACK = [
   "REACT", "NEXT.JS", "TYPESCRIPT", "NODE", "PYTHON",
   "AI / ML", "COMPUTER VISION", "TAILWIND", "POSTGRES", "GSAP",
 ] as const;
+
+// Beat 02 — T-shaped expertise. BREADTH caps the crossbar; DEPTH_LAYERS descend the stem to
+// give the vertical "length" concrete weight. Design content, so it lives here like PROOF/STACK.
+const BREADTH = ["AI / ML", "SWE"] as const;
+const DEPTH_LAYERS = ["Pipelines", "Warehousing", "Orchestration"] as const;
 
 // Editable hero copy + links come from the content doc (`site.*`), so the CMS drives them without
 // a redeploy. Falls back to DEFAULT_CONTENT.site for the read-only / no-token case.
@@ -119,6 +131,36 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
     };
   }, []);
 
+  // ── Pointer parallax — writes normalized cursor offset (-1..1) into --mx/--my on the drafting
+  // field so its depth planes slide toward the cursor (CSS does the per-plane weighting). rAF-
+  // coalesced; skipped for coarse pointers + reduced motion, where the planes just rest at 0. ──
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    const fine = window.matchMedia("(pointer: fine)").matches;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!fine || reduce) return;
+
+    let raf = 0;
+    let mx = 0;
+    let my = 0;
+    const apply = () => {
+      raf = 0;
+      scene.style.setProperty("--mx", mx.toFixed(3));
+      scene.style.setProperty("--my", my.toFixed(3));
+    };
+    const onMove = (e: PointerEvent) => {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = (e.clientY / window.innerHeight) * 2 - 1;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   const splitTitle = (text: string) =>
     text.split("").map((char, i) => (
       <span key={i} className="title-char">
@@ -127,16 +169,17 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
     ));
 
   const beat = BEATS[currentSection];
-  // Both beats' sublines are CMS-editable: IDENTITY uses hero*, BUILDER uses builder*.
-  const beatLine1 = currentSection === 0 ? site.heroLine1 : site.builderLine1;
-  const beatLine2 = currentSection === 0 ? site.heroLine2 : site.builderLine2;
+  // Sublines: IDENTITY + BUILDER are CMS-editable (hero* / builder*); the T-SHAPED finale uses its
+  // own beat copy (structural, not portfolio data), so it falls through to beat.line1/2.
+  const beatLine1 = currentSection === 0 ? site.heroLine1 : currentSection === 1 ? site.builderLine1 : beat.line1;
+  const beatLine2 = currentSection === 0 ? site.heroLine2 : currentSection === 1 ? site.builderLine2 : beat.line2;
 
-  // Per-beat entrance for the swapping left column. IDENTITY keeps its left-hinged page-turn;
-  // BUILDER (portrait gone, layout collapsed to one centered column) rises up + settles. Because
+  // Per-beat entrance for the swapping left column. IDENTITY keeps its left-hinged page-turn; the
+  // centered beats (BUILDER + T-SHAPED, portrait gone, one column) rise up + settle. Because
   // AnimatePresence mode="wait" preserves an exiting element's last-rendered props, branching on
-  // currentSection gives the leaving page beat-0's exit and the entering page beat-1's entrance.
+  // currentSection gives the leaving page beat-0's exit and the entering page's entrance.
   const stageMotion =
-    currentSection === 1
+    currentSection >= 1
       ? {
           initial: { opacity: 0, y: reduceMotion ? 0 : 44, scale: reduceMotion ? 1 : 0.965 },
           animate: { opacity: 1, y: 0, scale: 1 },
@@ -153,12 +196,24 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
   return (
     <div ref={containerRef} className="hero-container">
       <div className="hero-sticky">
-        {/* Calm creamy scene: just the camera push-in (--p on the wrapper) + the near fly-past
-            markers. No grid / drafting marks — the paper stays clean behind the name + portrait. */}
+        {/* Reactive drafting field: faint engineered marks on layered depth planes. Each plane
+            keeps its scroll dolly (--p) and adds a pointer-parallax slide (--mx/--my), nearer
+            planes moving more, so the backdrop reads as looking into a 3D drafting table. */}
         <div ref={sceneRef} className="hero-blueprint" data-beat={currentSection} aria-hidden>
-          <span className="bp-fly bp-fly--a" />
-          <span className="bp-fly bp-fly--b" />
-          <span className="bp-fly bp-fly--c" />
+          <span className="bp-grid bp-plane" data-depth="1" />
+          <span className="bp-grid bp-grid--fine bp-plane" data-depth="2" />
+          <span className="bp-dim bp-plane" data-depth="3">
+            <span className="bp-dim-tick bp-dim-tick--a" />
+            <span className="bp-dim-tick bp-dim-tick--b" />
+          </span>
+          <span className="bp-node bp-plane" data-depth="4">
+            <span className="bp-node-dot" />
+            <span className="bp-node-ring" />
+            <span className="bp-node-ring bp-node-ring--2" />
+          </span>
+          <svg className="bp-tri bp-tri--lg bp-plane" data-depth="4" viewBox="0 0 100 100" aria-hidden>
+            <polygon points="4,96 96,96 4,4" />
+          </svg>
         </div>
 
         {/* Top bar — monogram */}
@@ -234,6 +289,35 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                       <span className="hero-proof-tag">{p.tag}</span>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Beat 02 — a literal, outlined capital T. The disciplines live INSIDE the wide
+                  crossbar (breadth); data engineering + its layers live INSIDE the centered stem
+                  (depth), which merges into the bar's underside. BREADTH / DEPTH annotate the two
+                  axes from outside the glyph. */}
+              {currentSection === 2 && (
+                <div
+                  className="hero-tee"
+                  aria-label="T-shaped skills: broad across AI/ML and software engineering, deep in data engineering"
+                >
+                  <span className="hero-tee-tag hero-tee-tag--breadth">BREADTH</span>
+                  <div className="hero-tee-glyph">
+                    <div className="hero-tee-bar">
+                      {BREADTH.map((b) => (
+                        <span className="hero-tee-cap" key={b}>{b}</span>
+                      ))}
+                    </div>
+                    <div className="hero-tee-stem">
+                      <span className="hero-tee-stem-title">DATA ENGINEERING</span>
+                      <ul className="hero-tee-layers">
+                        {DEPTH_LAYERS.map((l) => (
+                          <li key={l}>{l}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <span className="hero-tee-tag hero-tee-tag--depth">DEPTH</span>
                 </div>
               )}
 

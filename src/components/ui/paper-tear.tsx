@@ -43,10 +43,11 @@ export function PaperTear({ tape = "tan" }: { tape?: "tan" | "blush" | "mint" | 
       {/* shadowed torn backing, revealed while the rip is open */}
       <motion.div className="ptear-gap" style={{ opacity: gapO }} />
 
-      {/* lower sheet — anchored at its base; rises + stretches up to close the rip */}
+      {/* lower sheet — anchored at its base; rises + stretches up to close the rip. Translucent
+          (matches the .brut-veil sections) so the site gradient runs continuously through the seam. */}
       <motion.div className="ptear-bottom" style={{ scaleY: botScaleY, y: botY, originY: 1 }}>
         <svg viewBox="0 0 1440 64" preserveAspectRatio="none">
-          <path d={BOT_EDGE} fill="#f7f1e8" />
+          <path d={BOT_EDGE} fill="#f7f1e8" fillOpacity={0.8} />
         </svg>
       </motion.div>
 
@@ -58,7 +59,7 @@ export function PaperTear({ tape = "tan" }: { tape?: "tan" | "blush" | "mint" | 
               <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#1a1714" floodOpacity="0.32" />
             </filter>
           </defs>
-          <path d={TOP_EDGE} fill="#f7f1e8" filter={`url(#${sh})`} />
+          <path d={TOP_EDGE} fill="#f7f1e8" fillOpacity={0.8} filter={`url(#${sh})`} />
         </svg>
       </div>
 

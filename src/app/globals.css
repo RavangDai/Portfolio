@@ -1020,8 +1020,10 @@ body {
 .hero-container {
   position: relative;
   width: 100%;
-  height: 200vh; /* two scroll beats */
-  background: #f7f1e8; /* paper */
+  height: 300vh; /* three scroll beats: IDENTITY / BUILDER / T-SHAPED */
+  /* A light warm veil over the fixed site gradient (.brut-neat): the hero reads BOLD-warm but
+     calmed enough that ink text + the terracotta buttons/portrait stay separated from the bg. */
+  background: rgba(247, 241, 232, 0.3);
   color: #1a1714;
   /* Warm marigold — the hero's one loud secondary pop (sticker cards + base ticker), alongside
      the terracotta brand accent. Local to the hero, which sits outside .theme-brut. */
@@ -1042,19 +1044,9 @@ body {
   height: 100svh;
   width: 100%;
   overflow: hidden;
-  /* Warm paper + a single soft warm light wash + fibre tooth, matching .brut-bg. The
-     wash runs a touch stronger than the inner pages so it reads against the busy
-     blueprint. Static here (no --brut-sun): the hero runs its own scroll system.
-     Literal hex because the hero sits outside .theme-brut, where --paper isn't defined. */
-  background-color: #f7f1e8;
-  background-image:
-    radial-gradient(150% 125% at 50% -18%,
-      rgba(214, 156, 99, 0.22) 0%, rgba(214, 156, 99, 0.08) 34%, rgba(214, 156, 99, 0) 64%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='paperfiber'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncG type='linear' slope='0.06' intercept='0.94'/%3E%3CfeFuncB type='linear' slope='0.06' intercept='0.94'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperfiber)'/%3E%3C/svg%3E");
-  background-repeat: no-repeat, repeat;
-  background-position: center, top left;
-  background-size: cover, 200px 200px;
-  background-blend-mode: normal, multiply;
+  /* Transparent: the one site-wide warm gradient (.brut-neat inside the fixed .brut-bg) shows
+     through the hero at full strength. The blueprint marks + ink content sit on top of it. */
+  background: transparent;
 }
 
 /* ── Brutalist blueprint scene — scales/pans with scroll via --p (0→1) ── */
@@ -1316,54 +1308,32 @@ body {
 .bp-dim-tick--a { top: 0; }
 .bp-dim-tick--b { bottom: 0; }
 
-/* ── Near fly-past plane — foreground markers that rush toward the camera and dissolve,
-   selling the depth fly-through. Pure transform/opacity, so it's GPU-composited and cheap. ── */
-.bp-fly {
+/* ── Reactive drafting field — the revived engineering marks (grid, dimension line, survey node,
+   set-square) parallax toward the cursor. --mx/--my (-1..1) come from the pointer effect; each
+   plane's data-depth scales the slide, so nearer planes move more and the field reads as depth.
+   The individual `translate` property composes with each mark's existing scroll `transform`, so
+   the camera dolly is preserved. --mx/--my default to 0 → touch + reduced-motion get a still
+   field. Transform-only, so it stays GPU-composited and cheap. ── */
+.bp-plane {
+  /* All drafting marks are absolutely placed in the blueprint; some of the revived dormant marks
+     (bp-dim, bp-node) never declared it themselves, and without it they'd fall back to static
+     inline boxes where top/left AND translate are ignored. Assert it once here for every plane. */
   position: absolute;
-  pointer-events: none;
-  transform-origin: center;
-  will-change: transform, opacity;
+  transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: translate;
 }
-/* Each one starts small + faint (far away), then balloons huge while sweeping off toward an
-   edge and fading out before the end — you fly straight through it. Different directions +
-   sizes read as a stream of foreground objects rushing past. */
-.bp-fly--a {
-  top: 48%;
-  left: 38%;
-  width: clamp(70px, 12vw, 190px);
-  aspect-ratio: 1;
-  border: 3px solid rgba(189, 82, 50, 0.55);
-  transform:
-    translate(-50%, -50%)
-    translate3d(calc(var(--p) * -34vw), calc(var(--p) * -18vh), 0)
-    scale(calc(0.35 + var(--p) * 7));
-  opacity: calc(0.62 - var(--p) * 0.72);
-}
-.bp-fly--b {
-  top: 54%;
-  left: 60%;
-  width: clamp(54px, 9vw, 150px);
-  aspect-ratio: 1;
-  border: 3px solid rgba(26, 23, 20, 0.22);
-  border-radius: 50%;
-  transform:
-    translate(-50%, -50%)
-    translate3d(calc(var(--p) * 38vw), calc(var(--p) * 20vh), 0)
-    scale(calc(0.3 + var(--p) * 8));
-  opacity: calc(0.55 - var(--p) * 0.66);
-}
-.bp-fly--c {
-  top: 60%;
-  left: 50%;
-  width: clamp(40px, 7vw, 110px);
-  aspect-ratio: 1;
-  border: 3px solid rgba(189, 82, 50, 0.4);
-  transform:
-    translate(-50%, -50%)
-    translate3d(0, calc(var(--p) * -30vh), 0)
-    rotate(calc(var(--p) * 35deg))
-    scale(calc(0.2 + var(--p) * 9));
-  opacity: calc(0.5 - var(--p) * 0.62);
+.bp-plane[data-depth="1"] { translate: calc(var(--mx, 0) * 3px)  calc(var(--my, 0) * 2px); }
+.bp-plane[data-depth="2"] { translate: calc(var(--mx, 0) * 6px)  calc(var(--my, 0) * 4px); }
+.bp-plane[data-depth="3"] { translate: calc(var(--mx, 0) * 11px) calc(var(--my, 0) * 8px); }
+.bp-plane[data-depth="4"] { translate: calc(var(--mx, 0) * 17px) calc(var(--my, 0) * 12px); }
+
+/* Quiet the grid behind the name (beat 0) and the T-SHAPED finale (beat 2) so text stays clear.
+   (The tri / node / dim are already calmed on those beats by the rules below.) */
+.hero-blueprint[data-beat="0"] .bp-grid,
+.hero-blueprint[data-beat="2"] .bp-grid { opacity: 0.5; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-plane { transition: none; translate: none; }
 }
 
 /* Keep the new pieces quiet on beat 0 (identity) and the EXPLORE finale so the
@@ -1412,13 +1382,18 @@ body {
   /* 3D context so the per-beat left panel can flip like a turning page (see hero-beat-in). */
   perspective: 1500px;
 }
-/* BUILDER beat — portrait is gone (see .hero-stage-right[data-beat="1"] below), so the stage
-   collapses to a single column and the swapping content centers as one block. */
-.hero-stage[data-beat="1"] { grid-template-columns: 1fr; }
-.hero-stage-left[data-beat="1"] { align-items: center; text-align: center; }
-.hero-stage-left[data-beat="1"] .hero-id-sub { align-items: center; text-align: center; }
-.hero-stage-left[data-beat="1"] .hero-id-rule { margin-inline: auto; }
+/* BUILDER + T-SHAPED beats — portrait is gone (see .hero-stage-right[data-beat="1"/"2"] below),
+   so the stage collapses to a single column and the swapping content centers as one block. */
+.hero-stage[data-beat="1"],
+.hero-stage[data-beat="2"] { grid-template-columns: 1fr; }
+.hero-stage-left[data-beat="1"],
+.hero-stage-left[data-beat="2"] { align-items: center; text-align: center; }
+.hero-stage-left[data-beat="1"] .hero-id-sub,
+.hero-stage-left[data-beat="2"] .hero-id-sub { align-items: center; text-align: center; }
+.hero-stage-left[data-beat="1"] .hero-id-rule,
+.hero-stage-left[data-beat="2"] .hero-id-rule { margin-inline: auto; }
 .hero-stage-left[data-beat="1"] .hero-proof { margin-inline: auto; }
+.hero-stage-left[data-beat="2"] .hero-tee { margin-inline: auto; }
 /* Holds the column's height while the exiting "page" is out of flow (framer popLayout), so the
    stage + persistent portrait don't jump during the turn; centers the active page. */
 .hero-stage-left-wrap {
@@ -1458,7 +1433,8 @@ body {
     font-size: clamp(3rem, 7.4vw, 6rem);
     letter-spacing: -0.03em;
   }
-  .hero-stage-left[data-beat="1"] .hero-id-name {
+  .hero-stage-left[data-beat="1"] .hero-id-name,
+  .hero-stage-left[data-beat="2"] .hero-id-name {
     font-size: clamp(3rem, 7.6vw, 6rem);
   }
 }
@@ -1516,7 +1492,130 @@ body {
   .hero-proof-card { transition: none; }
   /* Portrait leaves as a plain crossfade — no drift or scale. */
   .hero-stage-right { transition: opacity 0.3s ease; }
-  .hero-stage-right[data-beat="1"] { transform: translateY(-50%); }
+  .hero-stage-right[data-beat="1"],
+  .hero-stage-right[data-beat="2"] { transform: translateY(-50%); }
+}
+
+/* ── Beat 02 — the constructed T. An outlined "blueprint" capital T: a wide paper crossbar
+   (breadth) with the two disciplines set INSIDE it, and a centered paper stem (depth) whose top
+   edge merges into the bar's underside (shared border, no seam) carrying data engineering + its
+   layers. Ink borders, one marigold accent, a single hard terracotta offset — drafting-table,
+   not heavy ink. Bar wipes in center-out, stem wipes top-down (clip-path, so the inner text isn't
+   distorted); full reduced-motion fallback below. ── */
+.hero-tee {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(30rem, 94%);
+  margin-top: 0.4rem;
+}
+/* micro axis labels — mono, muted, tracked (AA against paper) */
+.hero-tee-tag {
+  font-family: var(--font-inter), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #7a6f62;
+}
+.hero-tee-tag--breadth { margin-bottom: 0.5rem; }
+.hero-tee-tag--depth { margin-top: 0.5rem; }
+
+/* the T glyph itself (bar + stem). The single hard terracotta offset lives here — not on
+   .hero-tee — so it casts over the composite T silhouette while the muted axis tags stay clean.
+   drop-shadow (not box-shadow) because the offset must follow the T shape, not two rectangles. */
+.hero-tee-glyph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  filter: drop-shadow(5px 5px 0 var(--cobalt, #bd5232));
+}
+
+/* crossbar — a wide outlined block; the disciplines sit centered INSIDE it */
+.hero-tee-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0.5rem 1.1rem;
+  background: #fff;
+  border: 3px solid #1a1714;
+  border-radius: 12px 12px 0 0;            /* round the T's top corners only */
+  clip-path: inset(0 50% 0 50%);
+  animation: tee-bar-draw 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+.hero-tee-cap {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #1a1714;
+}
+/* marigold divider between the disciplines — the one accent on the breadth axis */
+.hero-tee-cap + .hero-tee-cap::before {
+  content: "·";
+  margin: 0 0.85rem;
+  color: var(--marigold, #f3b431);
+  font-weight: 800;
+}
+
+/* stem — a narrower outlined block that merges into the bar's underside (drops its top border and
+   tucks up by the border width) so the strokes join into one T; the depth copy stacks inside */
+.hero-tee-stem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(15rem, 62%);
+  margin-top: -3px;
+  padding: 0.8rem 0.9rem 0.9rem;
+  background: #fff;
+  border: 3px solid #1a1714;
+  border-top: none;
+  border-radius: 0 0 12px 12px;            /* round the T's bottom corners only */
+  clip-path: inset(0 0 100% 0);
+  animation: tee-stem-draw 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+.hero-tee-stem-title {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #1a1714;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--marigold, #f3b431);   /* short marigold accent underline */
+}
+.hero-tee-layers {
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  width: 100%;
+}
+.hero-tee-layers li {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #1a1714;
+  text-align: center;
+  padding: 0.4rem 0;
+}
+/* hairline ink dividers between rows so the stack reads as engineered layers inside the stem */
+.hero-tee-layers li + li { border-top: 1px solid rgba(26, 23, 20, 0.18); }
+
+@keyframes tee-bar-draw {
+  from { clip-path: inset(0 50% 0 50%); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+@keyframes tee-stem-draw {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-tee-bar,
+  .hero-tee-stem { animation: none; clip-path: none; }
 }
 
 /* right column — portrait over a hard cobalt block. Present on IDENTITY (beat 0); on the BUILDER
@@ -1530,7 +1629,8 @@ body {
   transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   transform-origin: bottom center;
 }
-.hero-stage-right[data-beat="1"] {
+.hero-stage-right[data-beat="1"],
+.hero-stage-right[data-beat="2"] {
   position: absolute; /* out of flow → the single-column stage centers the text cleanly */
   right: 0;
   top: 50%;
@@ -1696,6 +1796,13 @@ body {
   .hero-proof-card:nth-child(2),
   .hero-proof-card:nth-child(3) { transform: none; }
   .hero-proof-card { box-shadow: 4px 4px 0 0 var(--cobalt); }
+  /* T beat — shrink the type + narrow the stem so the whole T fits the pinned frame. */
+  .hero-tee { width: 100%; }
+  .hero-tee-bar { min-height: 3.1rem; padding: 0.45rem 0.9rem; }
+  .hero-tee-cap { font-size: 0.9rem; }
+  .hero-tee-stem { width: min(13rem, 74%); }
+  .hero-tee-stem-title { font-size: 0.82rem; }
+  .hero-tee-layers li { font-size: 0.74rem; padding: 0.34rem 0; }
   .hero-marquee-chip { font-size: 0.66rem; margin-left: 0.5rem; padding: 0.3rem 0.7rem; letter-spacing: 0.1em; }
 }
 
@@ -2314,6 +2421,26 @@ body {
   background-position: center, top left;
   background-size: cover, 200px 200px;
   background-blend-mode: normal, multiply;
+}
+
+/* The one site-wide warm gradient (@firecms/neat WebGL canvas) — fills the fixed .brut-bg backdrop
+   behind ALL content. Opaque: its own bright/light palette IS the background; the .brut-bg paper
+   sits behind it only as a WebGL-failure fallback, and the grain-layer (next sibling) textures it. */
+.brut-neat {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Translucent warm-paper veil for content sections. Layered as `brut-bg brut-veil`: it reuses
+   .brut-bg's fibre + sun wash and only drops the base paper to ~85% opacity, so the fixed
+   .brut-neat gradient glows softly through every section while ink text stays readable. .brut-bg
+   itself stays fully opaque (used by the fixed fallback base + /admin). Frosted, not bold. */
+.brut-veil {
+  background-color: rgba(247, 241, 232, 0.8);
 }
 
 /* visible keyboard focus inside brut pages */
