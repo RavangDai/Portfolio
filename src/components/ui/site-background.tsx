@@ -34,14 +34,15 @@ export function SiteBackground() {
     try {
       gradient = new NeatGradient({
         ref: canvas,
-        // All warm tones (no cream) so the wash stays consistently orange as the waves drift —
-        // peach-dominant keeps it LIGHT, the deeper oranges read as visible blooms.
+        // Soft peach-and-cream sunrise: the deep saturated oranges were reading as heavy blooms
+        // that fought the ink text + terracotta boxes (worst in the hero, where the wash shows at
+        // full strength). Kept to light peach/soft-orange tones so it stays an airy warm wash.
         colors: [
-          { color: "#ffbe7a", enabled: true },
-          { color: "#ff9a3d", enabled: true },
-          { color: "#ff6a1a", enabled: true },
-          { color: "#FD4912", enabled: true },
-          { color: "#ffd9b0", enabled: true },
+          { color: "#ffd8b4", enabled: true },
+          { color: "#ffc48f", enabled: true },
+          { color: "#ffb072", enabled: true },
+          { color: "#ff9a52", enabled: true },
+          { color: "#ffe6cf", enabled: true },
         ],
         speed: reduce ? 0 : 3,
         horizontalPressure: 3,
@@ -51,11 +52,11 @@ export function SiteBackground() {
         waveAmplitude: 8,
         shadows: 0,
         highlights: 1,
-        colorBrightness: 1.08,
-        colorSaturation: 5,
+        colorBrightness: 1.1,
+        colorSaturation: 3,
         wireframe: false,
         colorBlending: 6,
-        backgroundColor: "#ffe9d2",
+        backgroundColor: "#fff1e2",
         backgroundAlpha: 1,
         resolution: 0.5,
       });

@@ -1021,9 +1021,9 @@ body {
   position: relative;
   width: 100%;
   height: 300vh; /* three scroll beats: IDENTITY / BUILDER / T-SHAPED */
-  /* A light warm veil over the fixed site gradient (.brut-neat): the hero reads BOLD-warm but
-     calmed enough that ink text + the terracotta buttons/portrait stay separated from the bg. */
-  background: rgba(247, 241, 232, 0.3);
+  /* A warm paper veil over the fixed site gradient (.brut-neat): raised so the warm wash stays
+     soft under the hero and the ink text + terracotta buttons/portrait keep clear separation. */
+  background: rgba(247, 241, 232, 0.45);
   color: #1a1714;
   /* Warm marigold — the hero's one loud secondary pop (sticker cards + base ticker), alongside
      the terracotta brand accent. Local to the hero, which sits outside .theme-brut. */
