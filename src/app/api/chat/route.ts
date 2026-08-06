@@ -79,6 +79,7 @@ async function refreshKB() {
 }
 
 const PROJECT_ALIASES: Record<string, string> = {
+  cruze: "cruze", "driving co-pilot": "cruze", "co-pilot": "cruze", "dash cam": "cruze", dashcam: "cruze",
   karya: "karyaai", "karya ai": "karyaai", karyaai: "karyaai",
   crumb: "crumbcraft", craft: "crumbcraft", crumbcraft: "crumbcraft",
   // "car deal" / "car-deal" still map here: that's the GitHub repo name, kept after the pivot.
@@ -118,7 +119,7 @@ function detectCertQuery(text: string): boolean {
 function detectStackQuery(text: string): boolean {
   const lower = text.toLowerCase();
   return /\bstack\b|tech.*use|what.*build with|language|framework|tool|skill/i.test(lower) &&
-    !/project|built|karya|crumb|wasitcheaper|was it cheaper|vector|buzz|message\s*board/i.test(lower);
+    !/project|built|cruze|karya|crumb|wasitcheaper|was it cheaper|vector|buzz|message\s*board/i.test(lower);
 }
 
 function detectContactQuery(text: string): boolean {

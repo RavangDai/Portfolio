@@ -7,14 +7,13 @@ import type { SiteContent } from "./types";
 export const DEFAULT_CONTENT: SiteContent = {
   projects: [
     {
-      // NOTE: needs a screenshot at public/cruze.png — the schema requires `image`, and no
-      // asset exists yet. Add the GitHub URL here (or via /admin/projects) once it's public.
       id: "cruze",
       name: "Cruze",
       tag: "Computer Vision · Real-time · Edge AI",
       description:
         "Vision-first driving co-pilot built as an async pub/sub pipeline (camera → detection → depth → tracking → scene → rules → voice), so each perception stage stays decoupled and independently testable. Flags forward collisions under a 3s time-to-collision, plus tailgating, speeding, and stop signs. A hardware-abstraction layer swaps YOLOv8 CPU, TensorRT on Jetson, and TFLite on Raspberry Pi with a one-line config change.",
       tech: ["Python", "YOLOv8", "OpenCV", "TensorRT", "TFLite", "faster-whisper", "Piper", "Claude API"],
+      github: "https://github.com/RavangDai/Cruze",
       year: 2026,
       status: "In progress",
       image: "/cruze.png",
