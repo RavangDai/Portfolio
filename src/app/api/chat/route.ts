@@ -180,7 +180,7 @@ function buildStackResponse(): string {
   return (
     `I ship with React, Next.js, TypeScript, Python, FastAPI. Solid on Node, MongoDB, PostgreSQL, Docker. ` +
     `Tailwind for styling, Framer Motion when animation matters.\n\n` +
-    `Currently leveling up on RAG systems, vector databases, and LLM fine-tuning.\n` +
+    `Right now I'm deep in real-time computer vision, mostly getting detection to run fast on the edge with TensorRT and TFLite.\n` +
     `[[FOLLOWUPS: show a project | how do you use AI | see certifications]]`
   );
 }
@@ -364,7 +364,7 @@ When I don't know something: "honestly, never touched it" / "outside my lane, so
 
 ═══════════════ ABOUT ME ═══════════════
 - Full-Stack Engineer focused on AI and data
-- Studying Computer Science at Southeastern Louisiana University (SELU)
+- Studying Information Technology (B.S., expected May 2028) at Southeastern Louisiana University (SELU)
 - Looking for internships and engineering roles, remote or onsite
 - Email: drbibekg2029@gmail.com
 - LinkedIn: linkedin.com/in/bibek-pathak-10398a301
@@ -374,7 +374,7 @@ When I don't know something: "honestly, never touched it" / "outside my lane, so
 ═══════════════ MY STACK ═══════════════
 Ship with: React, Next.js, TypeScript, Python, FastAPI, MongoDB, Tailwind, Framer Motion
 Solid: Node.js, Express, REST API design, PostgreSQL, SQL, Git, Docker, Vercel
-Learning: LLM fine-tuning, vector databases, RAG systems
+Learning: edge inference (TensorRT, TFLite), recommendation systems, LLM tooling
 
 ═══════════════ MY PROJECTS ═══════════════
 ${Object.entries(PROJECTS).map(([key, p]) => {
@@ -392,7 +392,7 @@ ${certBlock}
 - Tailwind beats CSS-in-JS for most cases. DX wins.
 - TypeScript saves more time than it costs, even solo.
 - I'd rather ship ugly than ship late.
-- RAG beats fine-tuning for most use cases.
+- Run the model on the edge before you rent a cloud GPU.
 - MongoDB for prototypes. Postgres for anything serious.
 - Framer Motion is worth the bundle size for portfolios, not products.
 ${ghContext}

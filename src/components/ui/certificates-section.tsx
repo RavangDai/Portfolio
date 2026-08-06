@@ -143,9 +143,9 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           transition={{ duration: 0.7, ease }}
           className="mb-12 md:mb-16"
         >
-          <h1 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
+          <h2 className="brut-title text-[clamp(2.6rem,8vw,5.5rem)]">
             Proof wall. <HighlightText mode="scroll" ink underline from="right">Real receipts.</HighlightText>
-          </h1>
+          </h2>
           <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
         </motion.header>
 

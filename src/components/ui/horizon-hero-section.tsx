@@ -34,10 +34,10 @@ const BEATS: Beat[] = [
     line2: "applied AI, and computer vision.",
   },
   {
-    // T-shaped expertise — the finale. Depth (the T's stem) is data engineering; breadth (the
-    // crossbar) spans AI/ML + software. Its sublines are used as-is (not CMS-driven like 0/1).
+    // T-shaped expertise — the finale. Depth (the T's stem) is real-time computer vision; breadth
+    // (the crossbar) spans AI/ML + software. Its sublines are used as-is (not CMS-driven like 0/1).
     title: "T-SHAPED",
-    line1: "Deep in data engineering,",
+    line1: "Deep in real-time computer vision,",
     line2: "broad across AI/ML and software.",
   },
 ];
@@ -61,7 +61,8 @@ const STACK = [
 // Beat 02 — T-shaped expertise. BREADTH caps the crossbar; DEPTH_LAYERS descend the stem to
 // give the vertical "length" concrete weight. Design content, so it lives here like PROOF/STACK.
 const BREADTH = ["AI / ML", "SWE"] as const;
-const DEPTH_LAYERS = ["Pipelines", "Warehousing", "Orchestration"] as const;
+// The stem's layers are Cruze's actual perception stages, so the depth claim points at shipped work.
+const DEPTH_LAYERS = ["Detection", "Depth", "Tracking"] as const;
 
 // Editable hero copy + links come from the content doc (`site.*`), so the CMS drives them without
 // a redeploy. Falls back to DEFAULT_CONTENT.site for the read-only / no-token case.
@@ -240,7 +241,10 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                   exit={stageMotion.exit}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 >
-              <h1 className="hero-title hero-id-name">
+              {/* Visual title only. The page's single real <h1> is the SSR'd sr-only one in
+                  app/page.tsx — this hero is ssr:false, so it can't carry the heading for
+                  crawlers, and marking it <h1> just produced a duplicate at runtime. */}
+              <div className="hero-title hero-id-name">
                 {currentSection === 0 ? (
                   <>
                     <span className="title-line">{splitTitle("BIBEK")}</span>
@@ -249,7 +253,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                 ) : (
                   splitTitle(beat.title)
                 )}
-              </h1>
+              </div>
 
               <div className="hero-id-rule" />
 
@@ -293,13 +297,13 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
               )}
 
               {/* Beat 02 — a literal, outlined capital T. The disciplines live INSIDE the wide
-                  crossbar (breadth); data engineering + its layers live INSIDE the centered stem
-                  (depth), which merges into the bar's underside. BREADTH / DEPTH annotate the two
-                  axes from outside the glyph. */}
+                  crossbar (breadth); computer vision + its pipeline stages live INSIDE the centered
+                  stem (depth), which merges into the bar's underside. BREADTH / DEPTH annotate the
+                  two axes from outside the glyph. */}
               {currentSection === 2 && (
                 <div
                   className="hero-tee"
-                  aria-label="T-shaped skills: broad across AI/ML and software engineering, deep in data engineering"
+                  aria-label="T-shaped skills: broad across AI/ML and software engineering, deep in real-time computer vision"
                 >
                   <span className="hero-tee-tag hero-tee-tag--breadth">BREADTH</span>
                   <div className="hero-tee-glyph">
@@ -309,7 +313,7 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
                       ))}
                     </div>
                     <div className="hero-tee-stem">
-                      <span className="hero-tee-stem-title">DATA ENGINEERING</span>
+                      <span className="hero-tee-stem-title">COMPUTER VISION</span>
                       <ul className="hero-tee-layers">
                         {DEPTH_LAYERS.map((l) => (
                           <li key={l}>{l}</li>

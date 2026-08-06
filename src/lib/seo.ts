@@ -37,7 +37,9 @@ export const PROFILE = {
     "Python",
     "FastAPI",
     "Computer Vision",
-    "RAG systems",
+    "OpenCV",
+    "YOLOv8",
+    "SQL",
   ],
 } as const;
 

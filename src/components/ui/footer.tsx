@@ -62,7 +62,8 @@ export function Footer() {
                 <span className="brut-h text-base tracking-tight text-[var(--ink)]">BIBEK.TECH</span>
               </button>
               <p className="max-w-[220px] text-[0.9rem] leading-relaxed text-[var(--ink-2)]">
-                Full-stack engineer &amp; AI developer building clean, performant web experiences.
+                Real-time computer vision and full-stack web. IT student at Southeastern
+                Louisiana University.
               </p>
               <div className="flex items-center gap-2.5 pt-1">
                 {SOCIALS.map((s) => {

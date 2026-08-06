@@ -7,6 +7,19 @@ import type { SiteContent } from "./types";
 export const DEFAULT_CONTENT: SiteContent = {
   projects: [
     {
+      // NOTE: needs a screenshot at public/cruze.png — the schema requires `image`, and no
+      // asset exists yet. Add the GitHub URL here (or via /admin/projects) once it's public.
+      id: "cruze",
+      name: "Cruze",
+      tag: "Computer Vision · Real-time · Edge AI",
+      description:
+        "Vision-first driving co-pilot built as an async pub/sub pipeline (camera → detection → depth → tracking → scene → rules → voice), so each perception stage stays decoupled and independently testable. Flags forward collisions under a 3s time-to-collision, plus tailgating, speeding, and stop signs. A hardware-abstraction layer swaps YOLOv8 CPU, TensorRT on Jetson, and TFLite on Raspberry Pi with a one-line config change.",
+      tech: ["Python", "YOLOv8", "OpenCV", "TensorRT", "TFLite", "faster-whisper", "Piper", "Claude API"],
+      year: 2026,
+      status: "In progress",
+      image: "/cruze.png",
+    },
+    {
       id: "karyaai",
       name: "KaryaAI",
       tag: "MERN Stack · Productivity",
@@ -37,8 +50,8 @@ export const DEFAULT_CONTENT: SiteContent = {
       name: "Revveal",
       tag: "Full-stack · AI · Data",
       description:
-        "Finds underpriced used cars before everyone else. An async Celery + Redis pipeline scrapes marketplaces, predicts fair market price, and ranks listings by discount, behind JWT auth and rate-limited APIs.",
-      tech: ["FastAPI", "React", "PostgreSQL", "Celery", "Redis", "Docker"],
+        "Finds underpriced used cars. An async Celery + Redis pipeline scrapes marketplaces, predicts fair market price with a gradient-boosted model, and ranks listings by discount, behind JWT auth and rate-limited APIs.",
+      tech: ["FastAPI", "React", "PostgreSQL", "Celery", "Redis", "XGBoost", "LightGBM", "Docker"],
       github: "https://github.com/RavangDai/car-deal",
       year: 2026,
       status: "In progress",
@@ -49,7 +62,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       name: "VectorVance",
       tag: "Raspberry Pi · Computer Vision · Robotics",
       description:
-        "Autonomous car on Raspberry Pi that follows lanes, detects obstacles and traffic signs via SSD MobileNet, navigates colour-coded forks, and streams live telemetry to a web dashboard.",
+        "Autonomous car prototyped in Python simulation, then deployed to Raspberry Pi. Vector-based navigation and pathfinding steer it around dynamic obstacles, SSD MobileNet reads traffic signs and colour-coded forks, and live telemetry streams to a web dashboard.",
       tech: ["Python", "OpenCV", "Flask", "Raspberry Pi", "SSD MobileNet", "PID Control", "NumPy", "lgpio"],
       github: "https://github.com/RavangDai/VectorVance",
       year: 2025,
@@ -141,7 +154,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       title: "Honors Scholarship",
       org: "Southeastern Louisiana University",
       category: "Academic",
-      desc: "Awarded the Honors Scholarship at Southeastern Louisiana University in recognition of outstanding academic achievement and potential.",
+      desc: "Honors Scholarship recipient at Southeastern Louisiana University, where I'm finishing a B.S. in Information Technology in May 2028.",
       icon: "Star",
     },
     {
@@ -150,7 +163,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       title: "Software Engineer Certificate",
       org: "HackerRank",
       category: "Certification",
-      desc: "Demonstrated expertise in problem-solving, REST API design, full-stack architecture, and data structures.",
+      desc: "Timed role certification covering problem solving, REST API design, full-stack structure, and data structures.",
       icon: "Code2",
       url: "https://www.hackerrank.com/certificates/iframe/1ec7df9efdd8",
     },
@@ -160,7 +173,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       title: "SQL (Advanced) Certificate",
       org: "HackerRank",
       category: "Certification",
-      desc: "Validated advanced SQL skills including complex queries, joins, subqueries, indexing, and performance tuning.",
+      desc: "Advanced tier: window functions, complex joins, subqueries, indexing, and query performance tuning.",
       icon: "Zap",
       url: "https://www.hackerrank.com/certificates/a0f6fb1fb4af",
     },
@@ -180,7 +193,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     { value: "10+", label: "Projects Shipped" },
     { value: "3.5+", label: "GPA" },
     { value: "1/1", label: "Hackathon Win Rate" },
-    { value: "3", label: "Certifications" },
+    { value: "4", label: "Certifications" },
   ],
 
   site: {
@@ -191,6 +204,6 @@ export const DEFAULT_CONTENT: SiteContent = {
     email: "drbibekg2029@gmail.com",
     githubUrl: "https://github.com/RavangDai",
     linkedinUrl: "https://www.linkedin.com/in/bibek-pathak-10398a301/",
-    resumeUrl: "/Bibek_Pathak_Resume_Mar26.pdf",
+    resumeUrl: "/Bibek_Pathak_Resume_June26.pdf",
   },
 };

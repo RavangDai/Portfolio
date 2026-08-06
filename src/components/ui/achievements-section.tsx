@@ -26,11 +26,11 @@ export function AchievementsSection({ achievements, stats }: AchievementsSection
           transition={{ duration: 0.8, ease }}
           className="mb-14 md:mb-16"
         >
-          <h1 className="brut-title text-[clamp(3rem,9vw,6.5rem)]">
+          <h2 className="brut-title text-[clamp(3rem,9vw,6.5rem)]">
             <HighlightText mode="scroll" ink underline>
               Achieve<span className="text-[var(--accent)]">-</span>ments.
             </HighlightText>
-          </h1>
+          </h2>
           <span aria-hidden className="mt-5 block h-[4px] w-12 rounded-full bg-[var(--marigold)]" />
         </motion.div>
 
