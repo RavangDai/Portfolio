@@ -75,7 +75,7 @@ First-person "I am Bibek" assistant. Three tiers, checked in order, **before** f
 3. **Gemini** — `gemini-2.5-flash` via `@ai-sdk/google` `streamText`, with a large first-person system prompt + live GitHub context injected. Streams plain text.
 
 Conventions to preserve:
-- Repo names differ from app names: `car-deal`→Revveal, `SmartTodo`→KaryaAI, `crumb`→CrumbCraft. The KB maps these so a repo and its app are never treated as two projects. Prefer the app name.
+- Repo names differ from app names: `car-deal`→WasItCheaper, `SmartTodo`→KaryaAI, `crumb`→CrumbCraft. The KB maps these so a repo and its app are never treated as two projects. Prefer the app name. (`car-deal` is a leftover name — that repo was a car-deal finder before it was pivoted into WasItCheaper, a price-history tracker. It is not about cars.)
 - Every reply ends with a `[[FOLLOWUPS: chip | chip | chip]]` line (2–3 lowercase chips) — the client parses these into quick-reply buttons.
 - System-prompt voice rules are deliberate (first person, no em dashes, no "as an AI" fallbacks). Don't soften them.
 

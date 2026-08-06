@@ -46,16 +46,19 @@ export const DEFAULT_CONTENT: SiteContent = {
       image: "/CrumbCraft.png",
     },
     {
-      id: "revveal",
-      name: "Revveal",
-      tag: "Full-stack · AI · Data",
+      // The GitHub repo is still named "car-deal" — a leftover from the car-deal-finder this
+      // pivoted from. Same repo, different product. The deal math is deliberately deterministic
+      // statistics, not ML; don't reintroduce XGBoost/LightGBM here.
+      id: "wasitcheaper",
+      name: "WasItCheaper",
+      tag: "Full-stack · AI · Price intelligence",
       description:
-        "Finds underpriced used cars. An async Celery + Redis pipeline scrapes marketplaces, predicts fair market price with a gradient-boosted model, and ranks listings by discount, behind JWT auth and rate-limited APIs.",
-      tech: ["FastAPI", "React", "PostgreSQL", "Celery", "Redis", "XGBoost", "LightGBM", "Docker"],
+        "Paste any product URL and it tracks the real price daily, building an append-only price history. Deals are scored against the last 90 days, so a store that inflates a price for three weeks then drops it back to baseline scores near zero instead of looking like a sale. Structured-data extraction with a Claude API fallback, Celery-beat rechecks, email alerts, and dependency-free step-after SVG charts.",
+      tech: ["FastAPI", "React 19", "PostgreSQL", "Celery", "Redis", "Claude API", "TanStack Query", "Docker"],
       github: "https://github.com/RavangDai/car-deal",
       year: 2026,
       status: "In progress",
-      image: "/revveal.png",
+      image: "/wasitcheaper.png",
     },
     {
       id: "vectorvance",

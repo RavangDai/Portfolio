@@ -81,7 +81,10 @@ async function refreshKB() {
 const PROJECT_ALIASES: Record<string, string> = {
   karya: "karyaai", "karya ai": "karyaai", karyaai: "karyaai",
   crumb: "crumbcraft", craft: "crumbcraft", crumbcraft: "crumbcraft",
-  revveal: "revveal", "car deal": "revveal", "car-deal": "revveal",
+  // "car deal" / "car-deal" still map here: that's the GitHub repo name, kept after the pivot.
+  wasitcheaper: "wasitcheaper", "was it cheaper": "wasitcheaper",
+  "price history": "wasitcheaper", "price track": "wasitcheaper",
+  "car deal": "wasitcheaper", "car-deal": "wasitcheaper",
   vector: "vectorvance", vectorvance: "vectorvance", "autonomous car": "vectorvance",
   buzz: "buzzboard", buzzboard: "buzzboard", "buzz board": "buzzboard", messageboard: "buzzboard", "message board": "buzzboard", "topic stats": "buzzboard",
 };
@@ -115,7 +118,7 @@ function detectCertQuery(text: string): boolean {
 function detectStackQuery(text: string): boolean {
   const lower = text.toLowerCase();
   return /\bstack\b|tech.*use|what.*build with|language|framework|tool|skill/i.test(lower) &&
-    !/project|built|karya|crumb|revveal|vector|buzz|message\s*board/i.test(lower);
+    !/project|built|karya|crumb|wasitcheaper|was it cheaper|vector|buzz|message\s*board/i.test(lower);
 }
 
 function detectContactQuery(text: string): boolean {
@@ -129,7 +132,7 @@ function detectAllProjectsQuery(text: string): boolean {
 // ── Local response builders ───────────────────────────────────────────────────
 
 // Canonical display names (the app name, which can differ from the GitHub repo name —
-// e.g. the "car-deal" repo is the Revveal app).
+// e.g. the "car-deal" repo is the WasItCheaper app).
 // DISPLAY_NAMES is rebuilt from storage in refreshKB(); fall back to title-casing the id.
 let DISPLAY_NAMES: Record<string, string> = {};
 
@@ -383,7 +386,7 @@ ${Object.entries(PROJECTS).map(([key, p]) => {
   return `- ${displayName(key)} (${p.tag})${repoNote}: ${p.description} Stack: ${p.stack}. Status: ${p.status}.`;
 }).join("\n")}
 
-NAMING: some of my repos are named differently from the app. The "car-deal" repo on GitHub IS my Revveal project — same thing, one project. Likewise the "SmartTodo" repo is KaryaAI, and the "crumb" repo is CrumbCraft. Never describe a repo and its app as two separate projects, and always prefer the app name (Revveal, KaryaAI, CrumbCraft).
+NAMING: some of my repos are named differently from the app. The "car-deal" repo on GitHub IS my WasItCheaper project — same thing, one project. That repo started life as a car-deal finder and I pivoted it; the repo name just never changed. Never call it a car-deal app or describe it as being about cars. Likewise the "SmartTodo" repo is KaryaAI, and the "crumb" repo is CrumbCraft. Never describe a repo and its app as two separate projects, and always prefer the app name (WasItCheaper, KaryaAI, CrumbCraft).
 
 ═══════════════ MY CERTIFICATES ═══════════════
 ${certBlock}
@@ -468,7 +471,7 @@ export async function POST(req: Request) {
       const repo = matchRepoByName(lastUserMsg, repos);
       if (repo) {
         // If this repo is actually one of my curated projects (the repo name may differ
-        // from the app name, e.g. car-deal -> Revveal), always answer with the rich curated
+        // from the app name, e.g. car-deal -> WasItCheaper), always answer with the rich curated
         // card so the bot never treats the repo and the app as two different projects.
         const mappedKey = repoKeyFor(repo.name);
         if (mappedKey) {
