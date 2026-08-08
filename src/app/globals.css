@@ -1045,305 +1045,12 @@ body {
   width: 100%;
   overflow: hidden;
   /* Transparent: the one site-wide warm gradient (.brut-neat inside the fixed .brut-bg) shows
-     through the hero at full strength. The blueprint marks + ink content sit on top of it. */
+     through the hero at full strength. The ink content sits directly on top of it — there is
+     no decorative backdrop layer any more. */
   background: transparent;
 }
 
-/* ── Brutalist blueprint scene — scales/pans with scroll via --p (0→1) ── */
-.hero-blueprint {
-  --p: 0;
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  /* Camera push-in: the whole blueprint dollies toward the viewer as you scroll, so the
-     layered parallax below reads as flying through 3D space. The text/portrait stage is a
-     separate sibling, so it stays crisp and stable as the nearest plane. */
-  transform: scale(calc(1 + var(--p) * 0.16));
-  transform-origin: 50% 42%;
-  will-change: transform;
-}
-
-.bp-grid {
-  position: absolute;
-  inset: -30%;
-  background-image:
-    linear-gradient(to right, rgba(10, 10, 10, 0.08) 1.5px, transparent 1.5px),
-    linear-gradient(to bottom, rgba(10, 10, 10, 0.08) 1.5px, transparent 1.5px);
-  background-size: 64px 64px;
-  transform: scale(calc(1 + var(--p) * 0.8)) translateY(calc(var(--p) * -8%));
-  transform-origin: 50% 45%;
-  will-change: transform;
-}
-.bp-grid--fine {
-  background-size: 16px 16px;
-  background-image:
-    linear-gradient(to right, rgba(10, 10, 10, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(10, 10, 10, 0.05) 1px, transparent 1px);
-  transform: scale(calc(1 + var(--p) * 1.7)) translateY(calc(var(--p) * -16%));
-  opacity: 0.55;
-}
-
-.bp-monument {
-  position: absolute;
-  will-change: transform;
-  transition: opacity 0.5s ease;
-}
-.bp-initials {
-  top: 50%;
-  left: 50%;
-  font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: clamp(14rem, 40vw, 38rem);
-  line-height: 0.8;
-  letter-spacing: -0.02em;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(10, 10, 10, 0.08);
-  transform: translate(-50%, -50%) translateY(calc(var(--p) * -160px)) scale(calc(1 + var(--p) * 0.55));
-}
-.bp-bar {
-  top: 22%;
-  left: 12%;
-  width: clamp(60px, 9vw, 130px);
-  height: 14px;
-  background: var(--cobalt);
-  border: 2px solid #1a1714;
-  transform: translate3d(calc(var(--p) * -50px), calc(var(--p) * 260px), 0);
-}
-.bp-ring {
-  bottom: 15%;
-  right: 13%;
-  width: clamp(80px, 12vw, 180px);
-  aspect-ratio: 1;
-  border: 2px solid #1a1714;
-  border-radius: 50%;
-  transform: translateY(calc(var(--p) * -220px)) scale(calc(1 + var(--p) * 0.4));
-}
-.bp-square {
-  top: 28%;
-  right: 17%;
-  width: clamp(50px, 7vw, 100px);
-  aspect-ratio: 1;
-  background: #fbe7b0;
-  border: 2px solid #1a1714;
-  transform: translate3d(calc(var(--p) * 60px), calc(var(--p) * 320px), 0) rotate(calc(var(--p) * 12deg));
-}
-.bp-rule {
-  background: rgba(10, 10, 10, 0.12);
-}
-.bp-rule--a {
-  top: 0;
-  left: 28%;
-  width: 2px;
-  height: 100%;
-  transform: translateY(calc(var(--p) * -30%));
-}
-.bp-rule--b {
-  left: 0;
-  top: 64%;
-  width: 100%;
-  height: 2px;
-  transform: translateX(calc(var(--p) * 12%));
-}
-
-.bp-cross {
-  position: absolute;
-  top: 38%;
-  left: 22%;
-  width: 26px;
-  height: 26px;
-  transform: translateY(calc(var(--p) * 180px));
-}
-.bp-cross-h {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--cobalt);
-}
-.bp-cross-v {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  height: 100%;
-  width: 2px;
-  background: var(--cobalt);
-}
-
-.bp-tele {
-  position: absolute;
-  font-family: var(--font-brut-mono), ui-monospace, monospace;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #5c5349;
-}
-.bp-tele--tl { top: 6.5rem; left: 1.5rem; }
-.bp-tele--tr { top: 6.5rem; right: 1.5rem; }
-.bp-tele--bl { bottom: 6rem; left: 1.5rem; }
-.bp-tele--br { bottom: 6rem; right: 1.5rem; color: var(--cobalt); }
-
-/* Scan line — a single thin cobalt sweep that tracks scroll progress (intentional, calm) */
-.bp-scan {
-  position: absolute;
-  left: 0; right: 0;
-  top: calc(8% + var(--p, 0) * 84%);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(189, 82, 50, 0.45), transparent);
-}
-
-.bp-stats {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(1rem, 4vw, 3rem);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  font-family: var(--font-brut-display), "Space Grotesk", sans-serif;
-  font-weight: 700;
-  font-size: clamp(2rem, 7vw, 6rem);
-  letter-spacing: -0.01em;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(189, 82, 50, 0.22);
-}
-
-/* Per-beat emphasis */
-.hero-blueprint[data-beat="1"] .bp-stats { opacity: 1; }
-.hero-blueprint[data-beat="2"] .bp-monument { opacity: 0.3; }
-.hero-blueprint[data-beat="2"] .bp-tele { opacity: 0.5; }
-/* Beat 0 (identity comp) — calm the loud monuments so the name + photo read clean */
-.hero-blueprint[data-beat="0"] .bp-bar,
-.hero-blueprint[data-beat="0"] .bp-ring,
-.hero-blueprint[data-beat="0"] .bp-square { opacity: 0.45; }
-.hero-blueprint[data-beat="0"] .bp-initials { opacity: 0.5; }
-
-/* ── Set-square triangles — drafting tools; rotate + drift as the sheet scrolls ── */
-.bp-tri {
-  position: absolute;
-  overflow: visible;
-  will-change: transform;
-  transition: opacity 0.5s ease;
-}
-.bp-tri polygon {
-  fill: none;
-  stroke: rgba(10, 10, 10, 0.16);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-.bp-tri--lg {
-  top: 15%;
-  right: 13%;
-  width: clamp(96px, 13vw, 210px);
-  height: clamp(96px, 13vw, 210px);
-  transform: translate3d(calc(var(--p) * 36px), calc(var(--p) * 210px), 0) rotate(calc(var(--p) * -26deg));
-}
-.bp-tri--sm {
-  bottom: 19%;
-  left: 14%;
-  width: clamp(48px, 6vw, 100px);
-  height: clamp(48px, 6vw, 100px);
-  transform: translate3d(calc(var(--p) * 28px), calc(var(--p) * -190px), 0) rotate(calc(var(--p) * 42deg));
-}
-.bp-tri--sm polygon { stroke: rgba(189, 82, 50, 0.5); }
-
-/* ── Survey node — a plotted "you are here" point that pans across the sheet ── */
-.bp-node {
-  top: 58%;
-  left: 70%;
-  width: 0;
-  height: 0;
-  transform: translate3d(calc(var(--p) * -64px), calc(var(--p) * -130px), 0);
-}
-.bp-node-dot {
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--cobalt);
-}
-.bp-node-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 26px;
-  height: 26px;
-  margin: -13px 0 0 -13px;
-  border: 1.5px solid rgba(189, 82, 50, 0.4);
-  border-radius: 50%;
-}
-.bp-node-ring--2 {
-  width: 54px;
-  height: 54px;
-  margin: -27px 0 0 -27px;
-  opacity: 0.45;
-}
-
-/* ── Dimension line — measurement / precision; echoes the "precision" tagline ── */
-.bp-dim {
-  top: 23%;
-  left: 6%;
-  width: 1px;
-  height: clamp(120px, 22vh, 260px);
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(10, 10, 10, 0.32) 0 5px,
-    transparent 5px 10px
-  );
-  transform: translateY(calc(var(--p) * 130px));
-}
-.bp-dim-tick {
-  position: absolute;
-  left: -4px;
-  width: 9px;
-  height: 2px;
-  background: rgba(10, 10, 10, 0.42);
-}
-.bp-dim-tick--a { top: 0; }
-.bp-dim-tick--b { bottom: 0; }
-
-/* ── Reactive drafting field — the revived engineering marks (grid, dimension line, survey node,
-   set-square) parallax toward the cursor. --mx/--my (-1..1) come from the pointer effect; each
-   plane's data-depth scales the slide, so nearer planes move more and the field reads as depth.
-   The individual `translate` property composes with each mark's existing scroll `transform`, so
-   the camera dolly is preserved. --mx/--my default to 0 → touch + reduced-motion get a still
-   field. Transform-only, so it stays GPU-composited and cheap. ── */
-.bp-plane {
-  /* All drafting marks are absolutely placed in the blueprint; some of the revived dormant marks
-     (bp-dim, bp-node) never declared it themselves, and without it they'd fall back to static
-     inline boxes where top/left AND translate are ignored. Assert it once here for every plane. */
-  position: absolute;
-  transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: translate;
-}
-.bp-plane[data-depth="1"] { translate: calc(var(--mx, 0) * 3px)  calc(var(--my, 0) * 2px); }
-.bp-plane[data-depth="2"] { translate: calc(var(--mx, 0) * 6px)  calc(var(--my, 0) * 4px); }
-.bp-plane[data-depth="3"] { translate: calc(var(--mx, 0) * 11px) calc(var(--my, 0) * 8px); }
-.bp-plane[data-depth="4"] { translate: calc(var(--mx, 0) * 17px) calc(var(--my, 0) * 12px); }
-
-/* Quiet the grid behind the name (beat 0) and the T-SHAPED finale (beat 2) so text stays clear.
-   (The tri / node / dim are already calmed on those beats by the rules below.) */
-.hero-blueprint[data-beat="0"] .bp-grid,
-.hero-blueprint[data-beat="2"] .bp-grid { opacity: 0.5; }
-
-@media (prefers-reduced-motion: reduce) {
-  .bp-plane { transition: none; translate: none; }
-}
-
-/* Keep the new pieces quiet on beat 0 (identity) and the EXPLORE finale so the
-   name, photo, and nav cards stay the clear focus. */
-.hero-blueprint[data-beat="0"] .bp-tri,
-.hero-blueprint[data-beat="0"] .bp-node,
-.hero-blueprint[data-beat="0"] .bp-dim { opacity: 0.4; }
-.hero-blueprint[data-beat="2"] .bp-tri { opacity: 0.5; }
-
-/* ── Top bar — blueprint framing (monogram + coordinate readout) ── */
+/* ── Top bar — monogram ── */
 .hero-topbar {
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -1836,7 +1543,7 @@ body {
   pointer-events: none; /* canvas stays interactive-free; buttons re-enable below */
 }
 
-/* No glow / radial behind the text — the blueprint grid is faint enough that ink text on
+/* No glow / radial behind the text — the paper is clean enough that ink text on
    paper stays perfectly legible. (Removed the paper halo per design direction.) */
 
 .hero-beat-inner {
@@ -2441,6 +2148,197 @@ body {
    itself stays fully opaque (used by the fixed fallback base + /admin). Frosted, not bold. */
 .brut-veil {
   background-color: rgba(247, 241, 232, 0.8);
+}
+
+/* ── Footer curtain ──
+   The footer is a fixed, full-viewport panel sitting BEHIND the page (z-index below the
+   in-flow content, above the fixed .brut-neat wash at -10). `.brut-curtain-slot` is a
+   transparent block of scroll room at the end of the document; scrolling into it slides the
+   page content up and off, progressively uncovering the curtain. No scroll hijacking — the
+   reveal is just the browser scrolling in-flow content over an out-of-flow panel.
+
+   Content sections are 80% opaque (.brut-veil above), so the curtain stays `visibility:
+   hidden` until the slot reaches the viewport, otherwise it would ghost through every
+   section on the way down. The contact section is opaque (.brut-curtain-edge) so the
+   uncovering edge is clean. ── */
+.brut-curtain-slot {
+  height: 100vh; /* fallback for browsers without small-viewport units */
+  height: 100svh;
+  pointer-events: none;
+}
+
+.brut-curtain {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh; /* fallback for browsers without small-viewport units */
+  height: 100svh;
+  z-index: -5;
+  visibility: hidden;
+  /* Progress 0..1, written by ScrollTrigger in footer.tsx and read by the halftone shader. */
+  --curtain-p: 0;
+}
+
+.brut-curtain.is-revealed {
+  visibility: visible;
+}
+
+/* The dot field sits under the footer's text, over the paper. */
+.brut-curtain-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  /* Fades in with the curtain so the first frame never pops. */
+  opacity: calc(var(--curtain-p) * 1.4);
+}
+
+/* Lift the footer's own content a little as the curtain rises — a parallax against the
+   page sliding away, which is what sells it as a panel rather than another section. */
+.brut-curtain-inner {
+  transform: translate3d(0, calc((1 - var(--curtain-p)) * 3.5vh), 0);
+  will-change: transform;
+}
+
+/* Opaque edge for the section directly above the curtain (contact), so the dot field can't
+   be seen through it while it slides away. */
+.brut-curtain-edge {
+  background-color: var(--paper);
+}
+
+/* ── The signature ──
+   BIBEK / PATHAK at display scale, running the full width of the curtain. Each word draws
+   itself left to right as the curtain rises — a clip-path wipe scrubbed off --curtain-p, so
+   it is pure CSS, needs no JS tween, and tracks the scroll in both directions for free.
+
+   The negative left offset lets the ink bleed past the container edge, which is the brutalist
+   move: type that refuses to sit politely inside its margin. */
+.brut-signature {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  margin-left: -0.06em;
+  user-select: text;
+
+  /* Remap the curtain's progress so the writing STARTS just after the reveal begins and
+     FINISHES before it ends — otherwise the name is still being drawn while you are already
+     parked at the bottom of the page. */
+  --sig-p: clamp(0, calc((var(--curtain-p) - 0.12) / 0.66), 1);
+}
+
+.brut-sig-line {
+  display: block;
+  position: relative;
+  /* NOT overflow:hidden — the nib sits outside the clipped text and would be eaten. The
+     clip-path on .brut-sig-word does all the masking. */
+  font-family: var(--font-brut-display), "EB Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(3.4rem, 19vw, 15rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  /* Trim the extra leading a serif carries, so the two words lock together as one mark. */
+  padding-bottom: 0.06em;
+  /* Base-state transition so the hover colour animates BOTH ways. Long and eased-out, so
+     releasing the pointer lets the terracotta bleed back to ink rather than cutting. */
+  transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Per-word progress, so the two words are written in SEQUENCE rather than together. The
+   0.48/0.52 overlap is deliberate: the second word starts a hair before the first finishes,
+   so the pen reads as lifting and moving rather than stopping dead between words. */
+.brut-sig-line:nth-child(1) { --line-p: clamp(0, calc(var(--sig-p) / 0.52), 1); }
+.brut-sig-line:nth-child(2) { --line-p: clamp(0, calc((var(--sig-p) - 0.48) / 0.52), 1); }
+
+/* Second word is outlined rather than solid: two weights of the same name reads as a printed
+   mark, and it keeps a 15rem slab of solid ink off the page. */
+.brut-sig-line:nth-child(2) {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+}
+
+.brut-sig-word {
+  display: inline-block;
+  /* The wipe. The edge is SLANTED (top runs ahead of the bottom) so it reads as a pen held at
+     an angle rather than a shutter sliding across. The 108% overshoot guarantees the last
+     letter is fully uncovered at --line-p 1. */
+  clip-path: polygon(
+    0 0,
+    calc(var(--line-p) * 108% - 1%) 0,
+    calc(var(--line-p) * 108% - 7%) 100%,
+    0 100%
+  );
+}
+
+/* The nib: a small ink mark riding its word's wipe edge, visible only while that word is
+   actually being written. */
+.brut-sig-nib {
+  position: absolute;
+  bottom: 0.22em;
+  left: calc(var(--line-p) * 100%);
+  width: 0.42rem;
+  height: 1.5rem;
+  border-radius: 40% 40% 45% 45%;
+  background: var(--accent);
+  transform: rotate(-24deg);
+  transform-origin: bottom center;
+  pointer-events: none;
+  /* Fades in as the word starts and out as it lands, so no mark is left sitting on the page. */
+  opacity: calc(min(var(--line-p) * 6, 1) * min((1 - var(--line-p)) * 8, 1));
+}
+
+/* Terracotta flash on BIBEK as the pointer crosses it — the one moment of colour in an
+   otherwise ink-and-paper block.
+
+   The transition lives on the BASE rule above, deliberately. A transition declared inside
+   :hover ceases to exist the instant the pointer leaves, so the colour snaps back with no
+   animation — it fades in but not out. Declaring it on the base state is what makes the
+   release animate too. */
+.brut-signature:hover .brut-sig-line:first-child {
+  color: var(--accent);
+  /* Quick to catch colour, slow to let it go (the base rule's 0.6s handles the way out). */
+  transition-duration: 0.18s;
+}
+
+@media (max-width: 640px) {
+  .brut-sig-line:nth-child(2) {
+    -webkit-text-stroke-width: 1.5px;
+  }
+  .brut-sig-nib {
+    height: 1rem;
+    width: 0.3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No reveal choreography: the footer becomes an ordinary full-height block in flow. */
+  .brut-curtain-slot {
+    display: none;
+  }
+  .brut-curtain {
+    position: relative;
+    height: auto;
+    min-height: 100svh;
+    z-index: auto;
+    visibility: visible;
+  }
+  .brut-curtain-canvas {
+    opacity: 1;
+  }
+  .brut-curtain-inner {
+    transform: none;
+  }
+  /* --curtain-p is pinned to 1 by footer.tsx here, so both --line-p resolve to 1 and the name
+     is simply fully drawn. Kill the wipe and the nib outright so nothing animates. */
+  .brut-sig-word {
+    clip-path: none;
+  }
+  .brut-sig-nib {
+    display: none;
+  }
 }
 
 /* visible keyboard focus inside brut pages */

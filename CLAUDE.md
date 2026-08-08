@@ -22,7 +22,8 @@ There is **no test suite** — verify changes by running `npm run dev` and check
 - **Next.js 16** (App Router) + **React 19**, **TypeScript** (strict).
 - **React Compiler is ON** (`reactCompiler: true` in `next.config.ts`) — do not hand-add `useMemo`/`useCallback` for things the compiler already handles; follow the Rules of React or it will bail out.
 - **Tailwind CSS v4** (PostCSS plugin, no `tailwind.config.js`; theme tokens live in `src/app/globals.css` under `@theme inline`). `components.json` is shadcn-style; `cn()` is in `src/lib/utils.ts`.
-- **Framer Motion** (forced on via `<MotionConfig reducedMotion="never">` — animations always play), **GSAP**, **three** + **cobe** (globe) for the hero.
+- **Framer Motion** (forced on via `<MotionConfig reducedMotion="never">` — animations always play), **GSAP** (+ ScrollTrigger; drives the hero beats and the footer curtain).
+- **WebGL, two contexts, never both animating.** `@firecms/neat` runs one permanent full-viewport gradient wash behind the whole brut site (`site-background.tsx`). **three.js** runs the footer curtain's halftone dot field (`footer-halftone.tsx`), lazy-loaded via `next/dynamic` so it stays out of the initial payload. The footer parks the gradient (speed → 0) while its own scene is on screen through `lib/neat-control.ts`. If you add a third WebGL surface, park something. (`cobe` is not installed.)
 - **Vercel** is the deploy + storage target (`@vercel/blob`).
 - Path alias: `@/*` → `src/*`.
 

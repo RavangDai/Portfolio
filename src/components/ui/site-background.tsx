@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { NeatGradient } from "@firecms/neat";
 
 import { useIsBrut } from "@/lib/theme";
+import { registerNeat } from "@/lib/neat-control";
 
 /**
  * Site-wide animated background.
@@ -63,7 +64,13 @@ export function SiteBackground() {
     } catch {
       // WebGL unavailable — the .brut-bg paper base stays as the background.
     }
-    return () => gradient?.destroy();
+    // Hand the instance to the footer curtain so it can park this gradient while its own
+    // WebGL scene is on screen (see lib/neat-control.ts).
+    registerNeat(gradient);
+    return () => {
+      registerNeat(null);
+      gradient?.destroy();
+    };
   }, [isBrut]);
 
   // Desktop-only: drift the paper's refracted light a few percent as you scroll, so the

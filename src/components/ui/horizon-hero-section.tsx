@@ -20,7 +20,7 @@ type Beat = {
   cta?: "primary" | "explore";
 };
 
-// Narrative beats — the pinned blueprint stage swaps its left column across these.
+// Narrative beats — the pinned stage swaps its left column across these.
 const BEATS: Beat[] = [
   {
     title: "BIBEK PATHAK",
@@ -68,7 +68,6 @@ const DEPTH_LAYERS = ["Detection", "Depth", "Tracking"] as const;
 // a redeploy. Falls back to DEFAULT_CONTENT.site for the read-only / no-token case.
 export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const sceneRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
 
   const [currentSection, setCurrentSection] = useState(0);
@@ -99,16 +98,15 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
     return () => ctx.revert();
   }, [isReady]);
 
-  // ── Scroll handling — GSAP ScrollTrigger scrubs --p across the 300vh container, which drives
-  // the camera dolly + fly-past and the beat index. `scrub` eases the catch-up for a smooth,
-  // inertial feel; the sticky CSS frame does the pinning. Reduced-motion drops the smoothing. ──
+  // ── Scroll handling — GSAP ScrollTrigger scrubs a 0→1 proxy across the 300vh container, which
+  // drives the beat index. `scrub` eases the catch-up for a smooth, inertial feel; the sticky CSS
+  // frame does the pinning. Reduced-motion drops the smoothing. ──
   useEffect(() => {
     if (!containerRef.current) return;
     gsap.registerPlugin(ScrollTrigger);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const proxy = { p: 0 };
-    const setVar = (p: number) => sceneRef.current?.style.setProperty("--p", p.toFixed(4));
 
     const tween = gsap.to(proxy, {
       p: 1,
@@ -120,7 +118,6 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
         scrub: reduce ? true : 0.8,
       },
       onUpdate: () => {
-        setVar(proxy.p);
         const newSection = Math.min(Math.floor(proxy.p * TOTAL_BEATS), TOTAL_BEATS - 1);
         setCurrentSection((s) => (s === newSection ? s : newSection));
       },
@@ -132,35 +129,9 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
     };
   }, []);
 
-  // ── Pointer parallax — writes normalized cursor offset (-1..1) into --mx/--my on the drafting
-  // field so its depth planes slide toward the cursor (CSS does the per-plane weighting). rAF-
-  // coalesced; skipped for coarse pointers + reduced motion, where the planes just rest at 0. ──
-  useEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!fine || reduce) return;
-
-    let raf = 0;
-    let mx = 0;
-    let my = 0;
-    const apply = () => {
-      raf = 0;
-      scene.style.setProperty("--mx", mx.toFixed(3));
-      scene.style.setProperty("--my", my.toFixed(3));
-    };
-    const onMove = (e: PointerEvent) => {
-      mx = (e.clientX / window.innerWidth) * 2 - 1;
-      my = (e.clientY / window.innerHeight) * 2 - 1;
-      if (!raf) raf = requestAnimationFrame(apply);
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+  // (The pointer-parallax effect that lived here drove the blueprint's depth planes via
+  // --mx/--my. With the backdrop gone it had no consumer, so the pointermove listener and its
+  // rAF loop were removed rather than left running for nothing.)
 
   const splitTitle = (text: string) =>
     text.split("").map((char, i) => (
@@ -197,25 +168,9 @@ export const Component = ({ site = DEFAULT_CONTENT.site }: { site?: SiteInfo } =
   return (
     <div ref={containerRef} className="hero-container">
       <div className="hero-sticky">
-        {/* Reactive drafting field: faint engineered marks on layered depth planes. Each plane
-            keeps its scroll dolly (--p) and adds a pointer-parallax slide (--mx/--my), nearer
-            planes moving more, so the backdrop reads as looking into a 3D drafting table. */}
-        <div ref={sceneRef} className="hero-blueprint" data-beat={currentSection} aria-hidden>
-          <span className="bp-grid bp-plane" data-depth="1" />
-          <span className="bp-grid bp-grid--fine bp-plane" data-depth="2" />
-          <span className="bp-dim bp-plane" data-depth="3">
-            <span className="bp-dim-tick bp-dim-tick--a" />
-            <span className="bp-dim-tick bp-dim-tick--b" />
-          </span>
-          <span className="bp-node bp-plane" data-depth="4">
-            <span className="bp-node-dot" />
-            <span className="bp-node-ring" />
-            <span className="bp-node-ring bp-node-ring--2" />
-          </span>
-          <svg className="bp-tri bp-tri--lg bp-plane" data-depth="4" viewBox="0 0 100 100" aria-hidden>
-            <polygon points="4,96 96,96 4,4" />
-          </svg>
-        </div>
+        {/* No decorative backdrop. The hero is warm paper, the type, and the portrait — the
+            abstract drafting marks (grid, dimension line, triangle, target node) were removed
+            deliberately: they were ornament that said nothing about the work. */}
 
         {/* Top bar — monogram */}
         <div className="hero-topbar" aria-hidden>

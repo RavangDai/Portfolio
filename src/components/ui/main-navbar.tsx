@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { FolderGit2, BadgeCheck, Trophy, Mail, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  subscribeCurtain,
+  getCurtainOpen,
+  getCurtainOpenServer,
+} from "@/lib/curtain-state";
 import { HireMeModal } from "./hire-me-modal";
 
 // Single-page anchors — every destination is a section of the home page now.
@@ -20,9 +25,20 @@ export function MainNavbar() {
   const [hireOpen, setHireOpen] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [active, setActive] = useState("home");
+  // Over the hero the nav rides bare on the paper; past it, the brutalist box assembles
+  // around it. Starts false so the hero is never covered by a box on first paint.
+  const [boxed, setBoxed] = useState(false);
 
   const pathname = usePathname();
   const reduce = useReducedMotion();
+
+  // The footer curtain is a full-screen panel whose whole point is the signature; both nav
+  // pieces get out of its way while it's open. Published by footer.tsx via lib/curtain-state.
+  const curtainOpen = useSyncExternalStore(
+    subscribeCurtain,
+    getCurtainOpen,
+    getCurtainOpenServer
+  );
 
   // Scroll-spy: mark the section sitting in a band near the top of the viewport as active.
   // Runs only on the single-page home (the only place the sections exist).
@@ -45,6 +61,44 @@ export function MainNavbar() {
     return () => io.disconnect();
   }, [pathname]);
 
+  // ── Box up once the hero is behind us ──
+  // .hero-container is 300vh tall with a position:sticky 100vh frame inside it, so the hero
+  // stops filling the screen when scrollY reaches (its bottom − one viewport). That's the
+  // moment the box should assemble.
+  //
+  // The hero is `ssr:false` AND mount-gated (home-hero.tsx), so it does not exist when this
+  // effect first runs — hence the lazy lookup on every read via `??=`, which keeps retrying
+  // until the element appears and then caches it. Falls back to one viewport if it never does.
+  useEffect(() => {
+    if (pathname !== "/") return setBoxed(true); // non-home routes have no hero to ride over
+
+    let raf = 0;
+    let hero: HTMLElement | null = null;
+
+    const read = () => {
+      raf = 0;
+      hero ??= document.querySelector<HTMLElement>(".hero-container");
+      const heroEnd = hero
+        ? hero.offsetTop + hero.offsetHeight - window.innerHeight
+        : window.innerHeight * 0.6;
+      setBoxed(window.scrollY > heroEnd);
+    };
+
+    // rAF-throttled: scroll fires far more often than we can usefully repaint.
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
+
   const handleBrandClick = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   // The admin panel ships its own chrome (see app/admin/layout.tsx); suppress the public nav there.
@@ -60,11 +114,33 @@ export function MainNavbar() {
       <motion.header
         className="theme-brut fixed top-0 z-50 w-full"
         initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
+        animate={{ y: curtainOpen ? -110 : 0, opacity: curtainOpen ? 0 : 1 }}
+        transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
+        // Off-screen is still tabbable — `inert` pulls it out of the tab order and the
+        // accessibility tree entirely, so focus can't disappear into a hidden navbar.
+        inert={curtainOpen}
+        style={{ pointerEvents: curtainOpen ? "none" : undefined }}
       >
         <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-8">
-          <nav className="mx-auto flex w-full items-center gap-3 rounded-[6px] border-2 border-[var(--ink)] bg-[var(--paper)] px-5 py-3 shadow-[4px_4px_0_0_#1a1714]">
+          {/* The border stays `border-2` in BOTH states and only its colour changes — animating
+              border-width instead would reflow the whole bar every frame. Same reason the
+              shadow animates from a zero-size transparent shadow rather than `none`: `none`
+              is not interpolatable, so it would pop instead of growing.
+
+              Duration/easing live in each BRANCH, not on the shared line, because a CSS
+              transition is governed by the state it is moving INTO. That asymmetry is the
+              point: the box snaps together quickly when you leave the hero, then dissolves
+              slowly on the way back up so scrolling into the hero feels like the chrome
+              getting out of the way rather than blinking off. */}
+          <nav
+            className={cn(
+              "mx-auto flex w-full items-center gap-3 rounded-[6px] border-2 px-5 py-3",
+              "transition-[background-color,border-color,box-shadow]",
+              boxed
+                ? "border-[var(--ink)] bg-[var(--paper)] shadow-[4px_4px_0_0_#1a1714] duration-300 ease-out"
+                : "border-transparent bg-transparent shadow-[0_0_0_0_rgba(26,23,20,0)] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            )}
+          >
             {/* Brand */}
             <div className="flex flex-1 items-center">
               <button onClick={handleBrandClick} className="group flex shrink-0 items-center gap-2">
@@ -122,8 +198,10 @@ export function MainNavbar() {
       <motion.nav
         className="theme-brut fixed inset-x-0 bottom-0 z-50 border-t-2 border-[var(--ink)] bg-[var(--paper)] shadow-[0_-4px_0_0_var(--ink)] md:hidden"
         initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
+        animate={{ y: curtainOpen ? 110 : 0 }}
+        transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 360, damping: 34, mass: 0.85 }}
+        inert={curtainOpen}
+        style={{ pointerEvents: curtainOpen ? "none" : undefined }}
       >
         <div className="mx-auto flex max-w-md items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)]">
           {links.map((link) => {
